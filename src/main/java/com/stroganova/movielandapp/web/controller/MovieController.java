@@ -15,7 +15,7 @@ public class MovieController {
         this.movieService = movieService;
     }
 
-    @GetMapping("/v1/movie")
+    @GetMapping("/movie")
     public ResponseEntity<?> getAll() {
         return new ResponseEntity<>(movieService.getAll(), HttpStatus.OK);
     }

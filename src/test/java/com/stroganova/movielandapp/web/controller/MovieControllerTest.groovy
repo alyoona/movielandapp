@@ -62,7 +62,7 @@ class MovieControllerTest {
 
         when(movieService.getAll()).thenReturn(expectedMovies)
 
-        def response = mockMvc.perform(get("/v1/movie")).andReturn().response
+        def response = mockMvc.perform(get("/movie")).andReturn().response
         response.status == HttpStatus.OK.value()
         response.contentType.contains('application/json')
         response.contentType == 'application/json;charset=UTF-8'
