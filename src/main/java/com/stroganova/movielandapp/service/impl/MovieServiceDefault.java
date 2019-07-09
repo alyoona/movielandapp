@@ -6,6 +6,8 @@ import com.stroganova.movielandapp.service.MovieService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 public class MovieServiceDefault implements MovieService {
@@ -19,5 +21,14 @@ public class MovieServiceDefault implements MovieService {
     @Override
     public List<Movie> getAll() {
         return movieDao.getAll();
+    }
+
+    @Override
+    public List<Movie> getThreeRandomMovies() {
+        Random random = new Random();
+        List<Movie> allMovies = movieDao.getAll();
+        return random.ints(3, 0, allMovies.size())
+                .mapToObj(allMovies::get)
+                .collect(Collectors.toList());
     }
 }
