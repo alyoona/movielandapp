@@ -4,6 +4,9 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <import resource="movieQueryContext.xml"/>
-    <import resource="genreQueryContext.xml"/>
+    <bean id="getAllGenresSql" class="java.lang.String">
+        <constructor-arg value="SELECT id, name
+                                FROM movieland.genre;"/>
+    </bean>
+
 </beans>
