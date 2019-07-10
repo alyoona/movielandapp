@@ -46,6 +46,39 @@ class MovieServiceDefaultTest  {
     }
 
     @Test
+    void testGetAllByGenreId(){
+        def movieFirst = new Movie()
+        movieFirst.setId(1L)
+        movieFirst.setNameRussian("NameRussian")
+        movieFirst.setNameNative("NameNative")
+        movieFirst.setYearOfRelease(LocalDate.of(1994, 1, 1))
+        movieFirst.setRating(8.99D)
+        movieFirst.setPrice(150.15D)
+        movieFirst.setPicturePath("https://picture_path.png")
+        def movieSecond = new Movie()
+        movieSecond.setId(2L)
+        movieSecond.setNameRussian("NameRussian")
+        movieSecond.setNameNative("NameNative")
+        movieSecond.setYearOfRelease(LocalDate.of(1996, 1, 1))
+        movieSecond.setRating(8D)
+        movieSecond.setPrice(150D)
+        movieSecond.setPicturePath("https://picture_path.png")
+
+        def expectedMovies = [movieFirst, movieSecond]
+
+        def movieDao = mock(MovieDao.class)
+        when(movieDao.getAll(1L)).thenReturn(expectedMovies)
+
+        def movieService = new MovieServiceDefault(movieDao)
+
+        def actualMovies = movieService.getAll(1L)
+
+        actualMovies.eachWithIndex { actualMovie, index ->
+            assertEquals(expectedMovies[index], actualMovie )
+        }
+    }
+
+    @Test
     void testGetThreeRandomMovies(){
         def movieFirst = new Movie()
         movieFirst.setId(1L)

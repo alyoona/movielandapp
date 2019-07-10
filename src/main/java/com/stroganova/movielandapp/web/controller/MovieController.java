@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,6 +26,12 @@ public class MovieController {
     public ResponseEntity<?> getAll() {
         LOGGER.info("Get all movies");
         return new ResponseEntity<>(movieService.getAll(), HttpStatus.OK);
+    }
+
+    @GetMapping("/genre/{genreId}")
+    public ResponseEntity<?> getAll(@PathVariable long genreId) {
+        LOGGER.info("Get all movies by genre id");
+        return new ResponseEntity<>(movieService.getAll(genreId), HttpStatus.OK);
     }
 
     @GetMapping("/random")
