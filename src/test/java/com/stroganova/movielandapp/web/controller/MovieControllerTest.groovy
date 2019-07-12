@@ -70,21 +70,114 @@ class MovieControllerTest {
         println(response.contentAsString)
 
         def content = new JsonSlurper().parseText(response.contentAsString)
-        content.eachWithIndex{ actualMovie, index ->
+        content.eachWithIndex { actualMovie, index ->
             println(actualMovie)
             assertEquals(expectedMovies[index].id, actualMovie.id)
             assertEquals(expectedMovies[index].nameRussian, actualMovie.nameRussian)
             assertEquals(expectedMovies[index].nameNative, actualMovie.nameNative)
             assertEquals(expectedMovies[index].yearOfRelease.format(DateTimeFormatter.ofPattern("yyyy")), actualMovie.yearOfRelease)
             DecimalFormat decimalFormat = new DecimalFormat("0.00")
-            assertEquals(decimalFormat.format(expectedMovies[index].rating).replace(",","."), actualMovie.rating)
-            assertEquals(decimalFormat.format(expectedMovies[index].price).replace(",","."), actualMovie.price)
+            assertEquals(decimalFormat.format(expectedMovies[index].rating).replace(",", "."), actualMovie.rating)
+            assertEquals(decimalFormat.format(expectedMovies[index].price).replace(",", "."), actualMovie.price)
             assertEquals(expectedMovies[index].picturePath, actualMovie.picturePath)
         }
     }
 
     @Test
-    void testGetAllByGenreId(){
+    void testGetAllAndSortByRatingDesc() {
+        def movieFirst = new Movie()
+        movieFirst.setId(1L)
+        movieFirst.setRating(8.99D)
+        def movieSecond = new Movie()
+        movieSecond.setId(2L)
+        movieSecond.setRating(8D)
+
+        def expectedMovies = [movieFirst, movieSecond]
+
+        def params = ["rating": "desc"]
+
+        when(movieService.getAll(params)).thenReturn(expectedMovies)
+
+        def response = mockMvc.perform(get("/movie?rating=desc")).andReturn().response
+        response.status == HttpStatus.OK.value()
+        response.contentType.contains('application/json')
+        response.contentType == 'application/json;charset=UTF-8'
+
+        println(response.contentAsString)
+
+        def content = new JsonSlurper().parseText(response.contentAsString)
+        content.eachWithIndex { actualMovie, index ->
+            println(actualMovie)
+            assertEquals(expectedMovies[index].id, actualMovie.id)
+            DecimalFormat decimalFormat = new DecimalFormat("0.00")
+            assertEquals(decimalFormat.format(expectedMovies[index].rating).replace(",", "."), actualMovie.rating)
+        }
+    }
+
+    @Test
+    void testGetAllAndSortByPriceDesc() {
+        def movieFirst = new Movie()
+        movieFirst.setId(1L)
+        movieFirst.setPrice(8.99D)
+        def movieSecond = new Movie()
+        movieSecond.setId(2L)
+        movieSecond.setPrice(8D)
+
+        def expectedMovies = [movieFirst, movieSecond]
+
+        def params = ["price": "desc"]
+
+        when(movieService.getAll(params)).thenReturn(expectedMovies)
+
+        def response = mockMvc.perform(get("/movie?price=desc")).andReturn().response
+        response.status == HttpStatus.OK.value()
+        response.contentType.contains('application/json')
+        response.contentType == 'application/json;charset=UTF-8'
+
+        println(response.contentAsString)
+
+        def content = new JsonSlurper().parseText(response.contentAsString)
+        content.eachWithIndex { actualMovie, index ->
+            println(actualMovie)
+            assertEquals(expectedMovies[index].id, actualMovie.id)
+            DecimalFormat decimalFormat = new DecimalFormat("0.00")
+            assertEquals(decimalFormat.format(expectedMovies[index].price).replace(",", "."), actualMovie.price)
+        }
+    }
+
+    @Test
+    void testGetAllAndSortByPriceAsc() {
+        def movieFirst = new Movie()
+        movieFirst.setId(1L)
+        movieFirst.setPrice(8.99D)
+        def movieSecond = new Movie()
+        movieSecond.setId(2L)
+        movieSecond.setPrice(8D)
+
+        def expectedMovies = [movieSecond, movieFirst]
+
+        def params = ["price": "asc"]
+
+        when(movieService.getAll(params)).thenReturn(expectedMovies)
+
+        def response = mockMvc.perform(get("/movie?price=asc")).andReturn().response
+        response.status == HttpStatus.OK.value()
+        response.contentType.contains('application/json')
+        response.contentType == 'application/json;charset=UTF-8'
+
+        println(response.contentAsString)
+
+        def content = new JsonSlurper().parseText(response.contentAsString)
+        content.eachWithIndex { actualMovie, index ->
+            println(actualMovie)
+            assertEquals(expectedMovies[index].id, actualMovie.id)
+            DecimalFormat decimalFormat = new DecimalFormat("0.00")
+            assertEquals(decimalFormat.format(expectedMovies[index].price).replace(",", "."), actualMovie.price)
+        }
+    }
+
+    @Test
+    void testGetAllByGenreId() {
         def movieFirst = new Movie()
         movieFirst.setId(1L)
         movieFirst.setNameRussian("NameRussianFirst")
@@ -114,21 +207,114 @@ class MovieControllerTest {
         println(response.contentAsString)
 
         def content = new JsonSlurper().parseText(response.contentAsString)
-        content.eachWithIndex{ actualMovie, index ->
+        content.eachWithIndex { actualMovie, index ->
             println(actualMovie)
             assertEquals(expectedMovies[index].id, actualMovie.id)
             assertEquals(expectedMovies[index].nameRussian, actualMovie.nameRussian)
             assertEquals(expectedMovies[index].nameNative, actualMovie.nameNative)
             assertEquals(expectedMovies[index].yearOfRelease.format(DateTimeFormatter.ofPattern("yyyy")), actualMovie.yearOfRelease)
             DecimalFormat decimalFormat = new DecimalFormat("0.00")
-            assertEquals(decimalFormat.format(expectedMovies[index].rating).replace(",","."), actualMovie.rating)
-            assertEquals(decimalFormat.format(expectedMovies[index].price).replace(",","."), actualMovie.price)
+            assertEquals(decimalFormat.format(expectedMovies[index].rating).replace(",", "."), actualMovie.rating)
+            assertEquals(decimalFormat.format(expectedMovies[index].price).replace(",", "."), actualMovie.price)
             assertEquals(expectedMovies[index].picturePath, actualMovie.picturePath)
         }
     }
 
     @Test
-    void testGetThreeRandomMovies(){
+    void testGetAllByGenreIdAndSortByRatingDesc() {
+        def movieFirst = new Movie()
+        movieFirst.setId(1L)
+        movieFirst.setRating(8.99D)
+        def movieSecond = new Movie()
+        movieSecond.setId(2L)
+        movieSecond.setRating(8D)
+
+        def expectedMovies = [movieFirst, movieSecond]
+
+        def params = ["rating": "desc"]
+
+        when(movieService.getAll(1L, params)).thenReturn(expectedMovies)
+
+        def response = mockMvc.perform(get("/movie/genre/1?rating=desc")).andReturn().response
+        response.status == HttpStatus.OK.value()
+        response.contentType.contains('application/json')
+        response.contentType == 'application/json;charset=UTF-8'
+
+        println(response.contentAsString)
+
+        def content = new JsonSlurper().parseText(response.contentAsString)
+        content.eachWithIndex { actualMovie, index ->
+            println(actualMovie)
+            assertEquals(expectedMovies[index].id, actualMovie.id)
+            DecimalFormat decimalFormat = new DecimalFormat("0.00")
+            assertEquals(decimalFormat.format(expectedMovies[index].rating).replace(",", "."), actualMovie.rating)
+        }
+    }
+
+    @Test
+    void testGetAllByGenreIdAndSortByPriceDesc() {
+        def movieFirst = new Movie()
+        movieFirst.setId(1L)
+        movieFirst.setPrice(8.99D)
+        def movieSecond = new Movie()
+        movieSecond.setId(2L)
+        movieSecond.setPrice(8D)
+
+        def expectedMovies = [movieFirst, movieSecond]
+
+        def params = ["price": "desc"]
+
+        when(movieService.getAll(1L, params)).thenReturn(expectedMovies)
+
+        def response = mockMvc.perform(get("/movie/genre/1?price=desc")).andReturn().response
+        response.status == HttpStatus.OK.value()
+        response.contentType.contains('application/json')
+        response.contentType == 'application/json;charset=UTF-8'
+
+        println(response.contentAsString)
+
+        def content = new JsonSlurper().parseText(response.contentAsString)
+        content.eachWithIndex { actualMovie, index ->
+            println(actualMovie)
+            assertEquals(expectedMovies[index].id, actualMovie.id)
+            DecimalFormat decimalFormat = new DecimalFormat("0.00")
+            assertEquals(decimalFormat.format(expectedMovies[index].price).replace(",", "."), actualMovie.price)
+        }
+    }
+
+    @Test
+    void testGetAllByGenreIdAndSortByPriceAsc() {
+        def movieFirst = new Movie()
+        movieFirst.setId(1L)
+        movieFirst.setPrice(8.99D)
+        def movieSecond = new Movie()
+        movieSecond.setId(2L)
+        movieSecond.setPrice(8D)
+
+        def expectedMovies = [movieSecond, movieFirst]
+
+        def params = ["price": "asc"]
+
+        when(movieService.getAll(1L, params)).thenReturn(expectedMovies)
+
+        def response = mockMvc.perform(get("/movie/genre/1?price=asc")).andReturn().response
+        response.status == HttpStatus.OK.value()
+        response.contentType.contains('application/json')
+        response.contentType == 'application/json;charset=UTF-8'
+
+        println(response.contentAsString)
+
+        def content = new JsonSlurper().parseText(response.contentAsString)
+        content.eachWithIndex { actualMovie, index ->
+            println(actualMovie)
+            assertEquals(expectedMovies[index].id, actualMovie.id)
+            DecimalFormat decimalFormat = new DecimalFormat("0.00")
+            assertEquals(decimalFormat.format(expectedMovies[index].price).replace(",", "."), actualMovie.price)
+        }
+    }
+
+    @Test
+    void testGetThreeRandomMovies() {
         def movieFirst = new Movie()
         movieFirst.setId(1L)
         movieFirst.setNameRussian("NameRussianFirst")
@@ -156,15 +342,16 @@ class MovieControllerTest {
         response.contentType == 'application/json;charset=UTF-8'
 
         def content = new JsonSlurper().parseText(response.contentAsString)
-        content.eachWithIndex{ actualMovie, index ->
+        content.eachWithIndex { actualMovie, index ->
             assertEquals(expectedMovies[index].id, actualMovie.id)
             assertEquals(expectedMovies[index].nameRussian, actualMovie.nameRussian)
             assertEquals(expectedMovies[index].nameNative, actualMovie.nameNative)
             assertEquals(expectedMovies[index].yearOfRelease.format(DateTimeFormatter.ofPattern("yyyy")), actualMovie.yearOfRelease)
             DecimalFormat decimalFormat = new DecimalFormat("0.00")
-            assertEquals(decimalFormat.format(expectedMovies[index].rating).replace(",","."), actualMovie.rating)
-            assertEquals(decimalFormat.format(expectedMovies[index].price).replace(",","."), actualMovie.price)
+            assertEquals(decimalFormat.format(expectedMovies[index].rating).replace(",", "."), actualMovie.rating)
+            assertEquals(decimalFormat.format(expectedMovies[index].price).replace(",", "."), actualMovie.price)
             assertEquals(expectedMovies[index].picturePath, actualMovie.picturePath)
         }
     }
+
 }

@@ -1,16 +1,14 @@
 package com.stroganova.movielandapp.web.controller;
 
 
-
 import com.stroganova.movielandapp.service.MovieService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/movie")
@@ -23,19 +21,25 @@ public class MovieController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAll() {
+    public ResponseEntity<?> getAll(@RequestParam Map<String, String> allParams) {
         LOGGER.info("Get all movies");
-        return new ResponseEntity<>(movieService.getAll(), HttpStatus.OK);
+
+        return new ResponseEntity<>(allParams.isEmpty()
+                ? movieService.getAll() : movieService.getAll(allParams)
+                , HttpStatus.OK);
     }
 
     @GetMapping("/genre/{genreId}")
-    public ResponseEntity<?> getAll(@PathVariable long genreId) {
+    public ResponseEntity<?> getAll(@PathVariable long genreId, @RequestParam Map<String, String> allParams) {
         LOGGER.info("Get all movies by genre id");
-        return new ResponseEntity<>(movieService.getAll(genreId), HttpStatus.OK);
+
+        return new ResponseEntity<>(allParams.isEmpty()
+                ? movieService.getAll(genreId) : movieService.getAll(genreId, allParams)
+                , HttpStatus.OK);
     }
 
     @GetMapping("/random")
-    public ResponseEntity<?> getThreeRandomMovies(){
+    public ResponseEntity<?> getThreeRandomMovies() {
         LOGGER.info("Get 3 random movies.");
         return new ResponseEntity<>(movieService.getThreeRandomMovies(), HttpStatus.OK);
     }
