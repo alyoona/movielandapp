@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals
 import static org.mockito.Mockito.mock
 import static org.mockito.Mockito.when
 
-class MovieServiceDefaultTest  {
+class DefaultMovieServiceTest {
 
     @Test
     void testGetAll() {
@@ -36,7 +36,7 @@ class MovieServiceDefaultTest  {
         def movieDao = mock(MovieDao.class)
         when(movieDao.getAll()).thenReturn(expectedMovies)
 
-        def movieService = new MovieServiceDefault(movieDao)
+        def movieService = new DefaultMovieService(movieDao)
 
         def actualMovies = movieService.getAll()
 

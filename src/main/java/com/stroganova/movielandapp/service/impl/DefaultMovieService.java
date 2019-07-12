@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class MovieServiceDefault implements MovieService {
+public class DefaultMovieService implements MovieService {
 
     private final MovieDao movieDao;
 
-    public MovieServiceDefault(MovieDao movieDao) {
+    public DefaultMovieService(MovieDao movieDao) {
         this.movieDao = movieDao;
     }
 

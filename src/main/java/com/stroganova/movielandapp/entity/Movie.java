@@ -1,8 +1,8 @@
 package com.stroganova.movielandapp.entity;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.stroganova.movielandapp.web.jsonserializer.DoubleSerializer;
-import com.stroganova.movielandapp.web.jsonserializer.YearLocalDateSerializer;
+import com.stroganova.movielandapp.web.json.serializer.DoubleSerializer;
+import com.stroganova.movielandapp.web.json.serializer.YearLocalDateSerializer;
 
 import java.time.LocalDate;
 
