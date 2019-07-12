@@ -1,4 +1,4 @@
-package com.stroganova.movielandapp.entity.jsonserializer;
+package com.stroganova.movielandapp.web.jsonserializer;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -9,6 +9,8 @@ import java.text.DecimalFormat;
 
 public class DoubleSerializer extends StdSerializer<Double> {
 
+    private final static DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.00");
+
     public DoubleSerializer() {
         super(Double.class);
     }
@@ -16,8 +18,7 @@ public class DoubleSerializer extends StdSerializer<Double> {
 
     @Override
     public void serialize(Double aDouble, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-        DecimalFormat decimalFormat = new DecimalFormat("0.00");
-        jsonGenerator.writeString(decimalFormat.format(aDouble).replace(",","."));
+        jsonGenerator.writeString(DECIMAL_FORMAT.format(aDouble).replace(",","."));
     }
 
 

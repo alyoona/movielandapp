@@ -1,10 +1,8 @@
 package com.stroganova.movielandapp.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.NumberSerializers;
-import com.stroganova.movielandapp.entity.jsonserializer.DoubleSerializer;
-import com.stroganova.movielandapp.entity.jsonserializer.YearLocalDateSerializer;
+import com.stroganova.movielandapp.web.jsonserializer.DoubleSerializer;
+import com.stroganova.movielandapp.web.jsonserializer.YearLocalDateSerializer;
 
 import java.time.LocalDate;
 
@@ -103,4 +101,5 @@ public class Movie {
     public int hashCode() {
         return (int) (id ^ (id >>> 32));
     }
+
 }
