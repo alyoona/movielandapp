@@ -6,7 +6,6 @@ import org.junit.Test
 
 import java.time.LocalDate
 
-import static org.junit.Assert.assertEquals
 import static org.mockito.Mockito.mock
 import static org.mockito.Mockito.when
 
@@ -14,22 +13,25 @@ class DefaultMovieServiceTest {
 
     @Test
     void testGetAll() {
-        def movieFirst = new Movie()
-        movieFirst.setId(1L)
-        movieFirst.setNameRussian("NameRussian")
-        movieFirst.setNameNative("NameNative")
-        movieFirst.setYearOfRelease(LocalDate.of(1994, 1, 1))
-        movieFirst.setRating(8.99D)
-        movieFirst.setPrice(150.15D)
-        movieFirst.setPicturePath("https://picture_path.png")
-        def movieSecond = new Movie()
-        movieSecond.setId(2L)
-        movieSecond.setNameRussian("NameRussian")
-        movieSecond.setNameNative("NameNative")
-        movieSecond.setYearOfRelease(LocalDate.of(1996, 1, 1))
-        movieSecond.setRating(8D)
-        movieSecond.setPrice(150D)
-        movieSecond.setPicturePath("https://picture_path.png")
+
+        def movieFirst = new Movie(
+                id: 1L,
+                nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                picturePath: "https://picture_path.png"
+        )
+        def movieSecond = new Movie(
+                id: 2L,
+                nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1996, 1, 1),
+                rating: 8D,
+                price: 150D,
+                picturePath: "https://picture_path2.png"
+        )
 
         def expectedMovies = [movieFirst, movieSecond]
 
@@ -40,8 +42,6 @@ class DefaultMovieServiceTest {
 
         def actualMovies = movieService.getAll()
 
-        actualMovies.eachWithIndex { actualMovie, index ->
-            assertEquals(expectedMovies[index], actualMovie )
-        }
+        assert expectedMovies == actualMovies
     }
 }

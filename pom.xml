@@ -21,6 +21,7 @@
         <groovy-all.version>2.4.14</groovy-all.version>
         <mockito-all.version>1.10.19</mockito-all.version>
         <servlet-api.version>3.0.1</servlet-api.version>
+        <h2.version>1.4.199</h2.version>
     </properties>
 
     <build>
@@ -111,6 +112,12 @@
             <artifactId>javax.servlet-api</artifactId>
             <version>${servlet-api.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.version}</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

@@ -94,12 +94,26 @@ public class Movie {
 
         Movie movie = (Movie) o;
 
-        return id == movie.id;
+        return (Double.compare(movie.rating, rating) == 0)
+                && (Double.compare(movie.price, price) == 0)
+                && (nameRussian != null ? nameRussian.equals(movie.nameRussian) : movie.nameRussian == null)
+                && (nameNative != null ? nameNative.equals(movie.nameNative) : movie.nameNative == null)
+                && (yearOfRelease != null ? yearOfRelease.equals(movie.yearOfRelease) : movie.yearOfRelease == null)
+                && (picturePath != null ? picturePath.equals(movie.picturePath) : movie.picturePath == null);
     }
 
     @Override
     public int hashCode() {
-        return (int) (id ^ (id >>> 32));
+        int result;
+        long temp;
+        result = nameRussian != null ? nameRussian.hashCode() : 0;
+        result = 31 * result + (nameNative != null ? nameNative.hashCode() : 0);
+        result = 31 * result + (yearOfRelease != null ? yearOfRelease.hashCode() : 0);
+        temp = Double.doubleToLongBits(rating);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(price);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (picturePath != null ? picturePath.hashCode() : 0);
+        return result;
     }
-
 }

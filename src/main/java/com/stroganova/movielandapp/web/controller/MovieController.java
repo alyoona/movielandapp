@@ -1,11 +1,12 @@
 package com.stroganova.movielandapp.web.controller;
 
 
+import com.stroganova.movielandapp.entity.Movie;
 import com.stroganova.movielandapp.service.MovieService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 public class MovieController {
@@ -16,7 +17,7 @@ public class MovieController {
     }
 
     @GetMapping("/movie")
-    public ResponseEntity<?> getAll() {
-        return new ResponseEntity<>(movieService.getAll(), HttpStatus.OK);
+    public List<Movie> getAll() {
+        return movieService.getAll();
     }
 }
