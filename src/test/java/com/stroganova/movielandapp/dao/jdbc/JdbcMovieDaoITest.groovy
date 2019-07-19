@@ -1,9 +1,11 @@
 package com.stroganova.movielandapp.dao.jdbc
 
 import com.stroganova.movielandapp.entity.Movie
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringRunner
@@ -18,6 +20,19 @@ class JdbcMovieDaoITest {
     NamedParameterJdbcTemplate namedParameterJdbcTemplate
     @Autowired
     JdbcMovieDao movieDao
+
+    def movieInsertSql = "INSERT INTO movieland.movie (id, name_russian, name_native, year, description, rating, price)" +
+            " VALUES (:id, :name_russian, :name_native, :year, :description, :rating, :price)"
+    def posterInsertSql = "INSERT INTO movieland.poster (id, movie_id, picture_path)" +
+            " VALUES (:id, :movie_id, :picture_path)"
+
+    @Before
+    void clear() {
+        def movieDeleteSql = "DELETE FROM movieland.movie;"
+        def posterDeleteSql = "DELETE FROM movieland.poster;"
+        namedParameterJdbcTemplate.update(movieDeleteSql,EmptySqlParameterSource.INSTANCE)
+        namedParameterJdbcTemplate.update(posterDeleteSql,EmptySqlParameterSource.INSTANCE)
+    }
 
     @Test
     void testGetAll() {
@@ -45,12 +60,6 @@ class JdbcMovieDaoITest {
                  movie_id    : 2L,
                  picture_path: "https://picture_path2.png"]]
 
-        def movieInsertSql = "INSERT INTO movieland.movie (id, name_russian, name_native, year, description, rating, price)" +
-                " VALUES (:id, :name_russian, :name_native, :year, :description, :rating, :price)"
-
-        def posterInsertSql = "INSERT INTO movieland.poster (id, movie_id, picture_path)" +
-                " VALUES (:id, :movie_id, :picture_path)"
-
         namedParameterJdbcTemplate.batchUpdate(movieInsertSql, movieBatchValues)
         namedParameterJdbcTemplate.batchUpdate(posterInsertSql, posterBatchValues)
 
@@ -74,5 +83,98 @@ class JdbcMovieDaoITest {
         def actualMovies = movieDao.getAll()
 
         assert expectedMovies == actualMovies
+    }
+
+    @Test
+    void testGetThreeRandomMoviesFromLessThanThree() {
+        Map<String, ?>[] movieBatchValues = [
+                        [id          : 1L,
+                         name_russian: "NameRussian",
+                         name_native : "NameNative",
+                         year        : "1995-01-01",
+                         description : "empty",
+                         rating      : 8.99D,
+                         price       : 150.15D],
+                        [id          : 2L,
+                         name_russian: "NameRussian",
+                         name_native : "NameNative",
+                         year        : "1994-01-01",
+                         description : "empty",
+                         rating      : 8.99D,
+                         price       : 150.15D]]
+
+        namedParameterJdbcTemplate.batchUpdate(movieInsertSql, movieBatchValues)
+
+        assert movieDao.getAll().size() == 2
+        assert movieDao.getThreeRandomMovies().size() == 2
+    }
+
+    @Test
+    void testGetThreeRandomMoviesFromThree() {
+        Map<String, ?>[] movieBatchValues = [
+                [id          : 1L,
+                 name_russian: "NameRussian",
+                 name_native : "NameNative",
+                 year        : "1995-01-01",
+                 description : "empty",
+                 rating      : 8.99D,
+                 price       : 150.15D],
+                [id          : 2L,
+                 name_russian: "NameRussian",
+                 name_native : "NameNative",
+                 year        : "1994-01-01",
+                 description : "empty",
+                 rating      : 8.99D,
+                 price       : 150.15D],
+                [id          : 3L,
+                 name_russian: "NameRussian",
+                 name_native : "NameNative",
+                 year        : "1994-01-01",
+                 description : "empty",
+                 rating      : 8.99D,
+                 price       : 150.15D]]
+
+        namedParameterJdbcTemplate.batchUpdate(movieInsertSql, movieBatchValues)
+
+        assert movieDao.getAll().size() == 3
+        assert movieDao.getThreeRandomMovies().size() == 3
+    }
+
+    @Test
+    void testGetThreeRandomMoviesFromMoreThanThree() {
+        Map<String, ?>[] movieBatchValues = [
+                [id          : 1L,
+                 name_russian: "NameRussian",
+                 name_native : "NameNative",
+                 year        : "1995-01-01",
+                 description : "empty",
+                 rating      : 8.99D,
+                 price       : 150.15D],
+                [id          : 2L,
+                 name_russian: "NameRussian",
+                 name_native : "NameNative",
+                 year        : "1994-01-01",
+                 description : "empty",
+                 rating      : 8.99D,
+                 price       : 150.15D],
+                [id          : 3L,
+                 name_russian: "NameRussian",
+                 name_native : "NameNative",
+                 year        : "1994-01-01",
+                 description : "empty",
+                 rating      : 8.99D,
+                 price       : 150.15D],
+                [id          : 4L,
+                 name_russian: "NameRussian",
+                 name_native : "NameNative",
+                 year        : "1994-01-01",
+                 description : "empty",
+                 rating      : 8.99D,
+                 price       : 150.15D]]
+
+        namedParameterJdbcTemplate.batchUpdate(movieInsertSql, movieBatchValues)
+
+        assert movieDao.getAll().size() == 4
+        assert movieDao.getThreeRandomMovies().size() == 3
     }
 }

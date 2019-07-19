@@ -71,4 +71,42 @@ class MovieControllerTest {
             assert expectedMovies[index].id, actualMovie.id
         }
     }
+
+    @Test
+    void testGetThreeRandomMovies(){
+        def movieFirst = new Movie(
+                id: 1L,
+                nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                picturePath: "https://picture_path.png"
+        )
+        def movieSecond = new Movie(
+                id: 2L,
+                nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1996, 1, 1),
+                rating: 8D,
+                price: 150D,
+                picturePath: "https://picture_path2.png"
+        )
+
+        when(movieService.getThreeRandomMovies()).thenReturn([movieFirst, movieSecond])
+
+        def response = mockMvc.perform(get("/movie")).andReturn().response
+        response.status == HttpStatus.OK.value()
+        response.contentType.contains('application/json')
+        response.contentType == 'application/json;charset=UTF-8'
+
+        def content = new JsonSlurper().parseText(response.contentAsString)
+
+        def expectedMovies = [movieFirst, movieSecond]
+
+        content.eachWithIndex { actualMovie, index ->
+            assert expectedMovies[index], actualMovie
+            assert expectedMovies[index].id, actualMovie.id
+        }
+    }
 }
