@@ -3,9 +3,7 @@ package com.stroganova.movielandapp.web.controller;
 
 import com.stroganova.movielandapp.entity.Movie;
 import com.stroganova.movielandapp.service.MovieService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import lombok.extern.slf4j.Slf4j;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -18,21 +16,23 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/movie")
+@Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal=true, level= AccessLevel.PRIVATE)
 public class MovieController {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @NonNull MovieService movieService;
 
     @GetMapping
     public List<Movie> getAll() {
+        log.info("Get all movies ");
         return movieService.getAll();
     }
 
     @GetMapping("/random")
     public List<Movie> getThreeRandomMovies(){
+        log.info("Get three random movies");
         return movieService.getThreeRandomMovies();
     }
 }
