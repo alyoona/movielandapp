@@ -20,10 +20,16 @@ public class JdbcMovieDao implements MovieDao {
     private final static MovieRowMapper MOVIE_ROW_MAPPER = new MovieRowMapper();
     @NonNull NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     @NonNull String getAllMoviesSql;
+    @NonNull String getThreeRandomMoviesSql;
 
     @Override
     public List<Movie> getAll() {
         return namedParameterJdbcTemplate.query(getAllMoviesSql, MOVIE_ROW_MAPPER);
+    }
+
+    @Override
+    public List<Movie> getThreeRandomMovies() {
+        return namedParameterJdbcTemplate.query(getThreeRandomMoviesSql, MOVIE_ROW_MAPPER);
     }
 
 }

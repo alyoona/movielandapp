@@ -10,8 +10,6 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,10 +25,6 @@ public class DefaultMovieService implements MovieService {
 
     @Override
     public List<Movie> getThreeRandomMovies() {
-        Random random = new Random();
-        List<Movie> allMovies = movieDao.getAll();
-        return random.ints(3, 0, allMovies.size())
-                .mapToObj(allMovies::get)
-                .collect(Collectors.toList());
+        return movieDao.getThreeRandomMovies();
     }
 }
