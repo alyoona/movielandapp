@@ -3,6 +3,10 @@ package com.stroganova.movielandapp.service.impl;
 import com.stroganova.movielandapp.dao.MovieDao;
 import com.stroganova.movielandapp.entity.Movie;
 import com.stroganova.movielandapp.service.MovieService;
+import lombok.AccessLevel;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,13 +14,11 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
-public class MovieServiceDefault implements MovieService {
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal=true, level= AccessLevel.PRIVATE)
+public class DefaultMovieService implements MovieService {
 
-    private final MovieDao movieDao;
-
-    public MovieServiceDefault(MovieDao movieDao) {
-        this.movieDao = movieDao;
-    }
+    @NonNull MovieDao movieDao;
 
     @Override
     public List<Movie> getAll() {

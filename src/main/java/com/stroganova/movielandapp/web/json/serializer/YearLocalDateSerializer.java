@@ -1,4 +1,4 @@
-package com.stroganova.movielandapp.entity.jsonserializer;
+package com.stroganova.movielandapp.web.json.serializer;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -11,13 +11,15 @@ import java.time.format.DateTimeFormatter;
 
 public class YearLocalDateSerializer extends StdSerializer<LocalDate> {
 
+    private final static DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy");
+
     public YearLocalDateSerializer() {
         super(LocalDate.class);
     }
 
     @Override
     public void serialize(LocalDate localDate, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-        jsonGenerator.writeString(localDate.format(DateTimeFormatter.ofPattern("yyyy")));
+        jsonGenerator.writeString(localDate.format(DATE_TIME_FORMATTER));
     }
 
 }
