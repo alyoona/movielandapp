@@ -1,6 +1,5 @@
 package com.stroganova.movielandapp.dao.jdbc
 
-import com.stroganova.movielandapp.dao.MovieDao
 import com.stroganova.movielandapp.entity.Movie
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,7 +17,7 @@ class JdbcMovieDaoITest {
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate
     @Autowired
-    MovieDao movieDao
+    JdbcMovieDao movieDao
 
     @Test
     void testGetAll() {
@@ -63,7 +62,7 @@ class JdbcMovieDaoITest {
                         rating: 8.99D,
                         price: 150.15D,
                         picturePath: "https://picture_path.png"),
-                new Movie(id: 1L,
+                new Movie(id: 2L,
                         nameRussian: "NameRussian",
                         nameNative: "NameNative",
                         yearOfRelease: LocalDate.of(1994, 1, 1),
