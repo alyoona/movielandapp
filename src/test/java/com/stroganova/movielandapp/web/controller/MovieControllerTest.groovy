@@ -1,7 +1,9 @@
 package com.stroganova.movielandapp.web.controller
 
+
 import com.stroganova.movielandapp.entity.Movie
 import com.stroganova.movielandapp.service.MovieService
+
 import groovy.json.JsonSlurper
 import org.junit.Before
 import org.junit.Test
@@ -54,7 +56,6 @@ class MovieControllerTest {
                 price: 150D,
                 picturePath: "https://picture_path2.png"
         )
-
         when(movieService.getAll()).thenReturn([movieFirst, movieSecond])
 
         def response = mockMvc.perform(get("/movie")).andReturn().response
@@ -62,18 +63,30 @@ class MovieControllerTest {
         response.contentType.contains('application/json')
         response.contentType == 'application/json;charset=UTF-8'
 
-        def content = new JsonSlurper().parseText(response.contentAsString)
+        def actualMovies = new JsonSlurper().parseText(response.contentAsString)
 
-        def expectedMovies = [movieFirst, movieSecond]
+        def expectedMovies = [[
+                                      id           : 1,
+                                      nameRussian  : "NameRussian",
+                                      nameNative   : "NameNative",
+                                      yearOfRelease: "1994",
+                                      rating       : "8.99",
+                                      price        : "150.15",
+                                      picturePath  : "https://picture_path.png"
+                              ],
+                              [id           : 2,
+                               nameRussian  : "NameRussian",
+                               nameNative   : "NameNative",
+                               yearOfRelease: "1996",
+                               rating       : "8.00",
+                               price        : "150.00",
+                               picturePath  : "https://picture_path2.png"]]
 
-        content.eachWithIndex { actualMovie, index ->
-            assert expectedMovies[index], actualMovie
-            assert expectedMovies[index].id, actualMovie.id
-        }
+        assert actualMovies == expectedMovies
     }
 
     @Test
-    void testGetThreeRandomMovies(){
+    void testGetThreeRandomMovies() {
         def movieFirst = new Movie(
                 id: 1L,
                 nameRussian: "NameRussian",
@@ -95,18 +108,28 @@ class MovieControllerTest {
 
         when(movieService.getThreeRandomMovies()).thenReturn([movieFirst, movieSecond])
 
-        def response = mockMvc.perform(get("/movie")).andReturn().response
+        def response = mockMvc.perform(get("/movie/random")).andReturn().response
         response.status == HttpStatus.OK.value()
         response.contentType.contains('application/json')
         response.contentType == 'application/json;charset=UTF-8'
 
-        def content = new JsonSlurper().parseText(response.contentAsString)
+        def actualMovies = new JsonSlurper().parseText(response.contentAsString)
 
-        def expectedMovies = [movieFirst, movieSecond]
+        def expectedMovies = [[id           : 1,
+                               nameRussian  : "NameRussian",
+                               nameNative   : "NameNative",
+                               yearOfRelease: "1994",
+                               rating       : "8.99",
+                               price        : "150.15",
+                               picturePath  : "https://picture_path.png"],
+                              [id           : 2,
+                               nameRussian  : "NameRussian",
+                               nameNative   : "NameNative",
+                               yearOfRelease: "1996",
+                               rating       : "8.00",
+                               price        : "150.00",
+                               picturePath  : "https://picture_path2.png"]]
 
-        content.eachWithIndex { actualMovie, index ->
-            assert expectedMovies[index], actualMovie
-            assert expectedMovies[index].id, actualMovie.id
-        }
+        assert actualMovies == expectedMovies
     }
 }
