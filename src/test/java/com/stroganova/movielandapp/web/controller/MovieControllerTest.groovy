@@ -65,14 +65,13 @@ class MovieControllerTest {
 
         def actualMovies = new JsonSlurper().parseText(response.contentAsString)
 
-        def expectedMovies = [[
-                                      id           : 1,
-                                      nameRussian  : "NameRussian",
-                                      nameNative   : "NameNative",
-                                      yearOfRelease: "1994",
-                                      rating       : "8.99",
-                                      price        : "150.15",
-                                      picturePath  : "https://picture_path.png"
+        def expectedMovies = [[id           : 1,
+                               nameRussian  : "NameRussian",
+                               nameNative   : "NameNative",
+                               yearOfRelease: "1994",
+                               rating       : "8.99",
+                               price        : "150.15",
+                               picturePath  : "https://picture_path.png"
                               ],
                               [id           : 2,
                                nameRussian  : "NameRussian",
@@ -86,47 +85,51 @@ class MovieControllerTest {
     }
 
     @Test
-    void testGetAllByGenreId(){
-        def movieFirst = new Movie()
-        movieFirst.setId(1L)
-        movieFirst.setNameRussian("NameRussianFirst")
-        movieFirst.setNameNative("NameNativeFirst")
-        movieFirst.setYearOfRelease(LocalDate.of(1994, 1, 1))
-        movieFirst.setRating(8.99D)
-        movieFirst.setPrice(150.15D)
-        movieFirst.setPicturePath("https://picture_path.png")
-        def movieSecond = new Movie()
-        movieSecond.setId(2L)
-        movieSecond.setNameRussian("NameRussianSecond")
-        movieSecond.setNameNative("NameNativeSecond")
-        movieSecond.setYearOfRelease(LocalDate.of(1996, 1, 1))
-        movieSecond.setRating(8D)
-        movieSecond.setPrice(150D)
-        movieSecond.setPicturePath("https://picture_path.png")
-
-        def expectedMovies = [movieFirst, movieSecond]
-
-        when(movieService.getAll(1L)).thenReturn(expectedMovies)
+    void testGetAllByGenreId() {
+        def movieFirst = new Movie(
+                id: 1L,
+                nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                picturePath: "https://picture_path.png"
+        )
+        def movieSecond = new Movie(
+                id: 2L,
+                nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1996, 1, 1),
+                rating: 8D,
+                price: 150D,
+                picturePath: "https://picture_path2.png"
+        )
+        when(movieService.getAll(1L)).thenReturn([movieFirst, movieSecond])
 
         def response = mockMvc.perform(get("/movie/genre/1")).andReturn().response
         response.status == HttpStatus.OK.value()
         response.contentType.contains('application/json')
         response.contentType == 'application/json;charset=UTF-8'
 
-        println(response.contentAsString)
+        def actualMovies = new JsonSlurper().parseText(response.contentAsString)
 
-        def content = new JsonSlurper().parseText(response.contentAsString)
-        content.eachWithIndex{ actualMovie, index ->
-            println(actualMovie)
-            assertEquals(expectedMovies[index].id, actualMovie.id)
-            assertEquals(expectedMovies[index].nameRussian, actualMovie.nameRussian)
-            assertEquals(expectedMovies[index].nameNative, actualMovie.nameNative)
-            assertEquals(expectedMovies[index].yearOfRelease.format(DateTimeFormatter.ofPattern("yyyy")), actualMovie.yearOfRelease)
-            DecimalFormat decimalFormat = new DecimalFormat("0.00")
-            assertEquals(decimalFormat.format(expectedMovies[index].rating).replace(",","."), actualMovie.rating)
-            assertEquals(decimalFormat.format(expectedMovies[index].price).replace(",","."), actualMovie.price)
-            assertEquals(expectedMovies[index].picturePath, actualMovie.picturePath)
-        }
+        def expectedMovies = [[id           : 1,
+                               nameRussian  : "NameRussian",
+                               nameNative   : "NameNative",
+                               yearOfRelease: "1994",
+                               rating       : "8.99",
+                               price        : "150.15",
+                               picturePath  : "https://picture_path.png"
+                              ],
+                              [id           : 2,
+                               nameRussian  : "NameRussian",
+                               nameNative   : "NameNative",
+                               yearOfRelease: "1996",
+                               rating       : "8.00",
+                               price        : "150.00",
+                               picturePath  : "https://picture_path2.png"]]
+
+        assert actualMovies == expectedMovies
     }
 
     @Test

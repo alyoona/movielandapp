@@ -25,13 +25,19 @@ class JdbcMovieDaoITest {
             " VALUES (:id, :name_russian, :name_native, :year, :description, :rating, :price)"
     def posterInsertSql = "INSERT INTO movieland.poster (id, movie_id, picture_path)" +
             " VALUES (:id, :movie_id, :picture_path)"
+    def genreInsertSql = "INSERT INTO movieland.genre (id, name) VALUES (:id, :name);"
+    def movieGenreInsertSql = "INSERT INTO movieland.movie_genre (id, movie_id, genre_id) VALUES (:id, :movie_id, :genre_id);"
 
     @Before
     void clear() {
         def movieDeleteSql = "DELETE FROM movieland.movie;"
         def posterDeleteSql = "DELETE FROM movieland.poster;"
+        def genreDeleteSql = "DELETE FROM movieland.genre;"
+        def movieGenreDeleteSql = "DELETE FROM movieland.movie_genre;"
         namedParameterJdbcTemplate.update(movieDeleteSql,EmptySqlParameterSource.INSTANCE)
         namedParameterJdbcTemplate.update(posterDeleteSql,EmptySqlParameterSource.INSTANCE)
+        namedParameterJdbcTemplate.update(genreDeleteSql, EmptySqlParameterSource.INSTANCE)
+        namedParameterJdbcTemplate.update(movieGenreDeleteSql, EmptySqlParameterSource.INSTANCE)
     }
 
     @Test
@@ -176,5 +182,62 @@ class JdbcMovieDaoITest {
 
         assert movieDao.getAll().size() == 4
         assert movieDao.getThreeRandomMovies().size() == 3
+    }
+
+    @Test
+    void testGetAllByGenreId(){
+        Map<String, ?>[] movieBatchValues = [
+                [id          : 1L,
+                 name_russian: "NameRussian",
+                 name_native : "NameNative",
+                 year        : "1995-01-01",
+                 description : "empty",
+                 rating      : 8.99D,
+                 price       : 150.15D],
+                [id          : 2L,
+                 name_russian: "NameRussian",
+                 name_native : "NameNative",
+                 year        : "1994-01-01",
+                 description : "empty",
+                 rating      : 8.99D,
+                 price       : 150.15D]]
+        Map<String, ?>[] posterBatchValues = [
+                [id          : 1L,
+                 movie_id    : 1L,
+                 picture_path: "https://picture_path.png"],
+                [id          : 2L,
+                 movie_id    : 2L,
+                 picture_path: "https://picture_path2.png"]]
+
+        Map<String, ?>[] genreBatchValues = [[id: 1L, name: "genreFirst"]]
+
+        Map<String, ?>[] movieGenreBatchValues = [[id: 10L, movie_id: 1L, genre_id: 1L],
+                                                  [id: 20L, movie_id: 2L, genre_id: 1L]]
+
+        namedParameterJdbcTemplate.batchUpdate(movieInsertSql, movieBatchValues)
+        namedParameterJdbcTemplate.batchUpdate(posterInsertSql, posterBatchValues)
+        namedParameterJdbcTemplate.batchUpdate(genreInsertSql, genreBatchValues)
+        namedParameterJdbcTemplate.batchUpdate(movieGenreInsertSql, movieGenreBatchValues)
+
+        def expectedMovies = [
+                new Movie(id: 1L,
+                        nameRussian: "NameRussian",
+                        nameNative: "NameNative",
+                        yearOfRelease: LocalDate.of(1995, 1, 1),
+                        rating: 8.99D,
+                        price: 150.15D,
+                        picturePath: "https://picture_path.png"),
+                new Movie(id: 2L,
+                        nameRussian: "NameRussian",
+                        nameNative: "NameNative",
+                        yearOfRelease: LocalDate.of(1994, 1, 1),
+                        rating: 8.99D,
+                        price: 150.15D,
+                        picturePath: "https://picture_path2.png")]
+
+
+        def actualMovies = movieDao.getAll(1L)
+
+        assert expectedMovies == actualMovies
     }
 }

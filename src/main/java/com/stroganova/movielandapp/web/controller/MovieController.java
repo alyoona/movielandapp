@@ -32,9 +32,9 @@ public class MovieController {
     }
 
     @GetMapping("/genre/{genreId}")
-    public ResponseEntity<?> getAll(@PathVariable long genreId) {
-        LOGGER.info("Get all movies by genre id");
-        return new ResponseEntity<>(movieService.getAll(genreId), HttpStatus.OK);
+    public List<Movie> getAll(@PathVariable long genreId) {
+        log.info("Get all movies by genre id");
+        return movieService.getAll(genreId);
     }
 
     @GetMapping("/random")
