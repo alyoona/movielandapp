@@ -9,6 +9,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,6 +29,12 @@ public class MovieController {
     public List<Movie> getAll() {
         log.info("Get all movies ");
         return movieService.getAll();
+    }
+
+    @GetMapping("/genre/{genreId}")
+    public List<Movie> getAll(@PathVariable long genreId) {
+        log.info("Get all movies by genre id");
+        return movieService.getAll(genreId);
     }
 
     @GetMapping("/random")

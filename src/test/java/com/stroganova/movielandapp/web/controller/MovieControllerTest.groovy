@@ -65,14 +65,61 @@ class MovieControllerTest {
 
         def actualMovies = new JsonSlurper().parseText(response.contentAsString)
 
-        def expectedMovies = [[
-                                      id           : 1,
-                                      nameRussian  : "NameRussian",
-                                      nameNative   : "NameNative",
-                                      yearOfRelease: "1994",
-                                      rating       : "8.99",
-                                      price        : "150.15",
-                                      picturePath  : "https://picture_path.png"
+        def expectedMovies = [[id           : 1,
+                               nameRussian  : "NameRussian",
+                               nameNative   : "NameNative",
+                               yearOfRelease: "1994",
+                               rating       : "8.99",
+                               price        : "150.15",
+                               picturePath  : "https://picture_path.png"
+                              ],
+                              [id           : 2,
+                               nameRussian  : "NameRussian",
+                               nameNative   : "NameNative",
+                               yearOfRelease: "1996",
+                               rating       : "8.00",
+                               price        : "150.00",
+                               picturePath  : "https://picture_path2.png"]]
+
+        assert actualMovies == expectedMovies
+    }
+
+    @Test
+    void testGetAllByGenreId() {
+        def movieFirst = new Movie(
+                id: 1L,
+                nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                picturePath: "https://picture_path.png"
+        )
+        def movieSecond = new Movie(
+                id: 2L,
+                nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1996, 1, 1),
+                rating: 8D,
+                price: 150D,
+                picturePath: "https://picture_path2.png"
+        )
+        when(movieService.getAll(1L)).thenReturn([movieFirst, movieSecond])
+
+        def response = mockMvc.perform(get("/movie/genre/1")).andReturn().response
+        response.status == HttpStatus.OK.value()
+        response.contentType.contains('application/json')
+        response.contentType == 'application/json;charset=UTF-8'
+
+        def actualMovies = new JsonSlurper().parseText(response.contentAsString)
+
+        def expectedMovies = [[id           : 1,
+                               nameRussian  : "NameRussian",
+                               nameNative   : "NameNative",
+                               yearOfRelease: "1994",
+                               rating       : "8.99",
+                               price        : "150.15",
+                               picturePath  : "https://picture_path.png"
                               ],
                               [id           : 2,
                                nameRussian  : "NameRussian",

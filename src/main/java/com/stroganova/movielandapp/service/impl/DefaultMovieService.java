@@ -27,6 +27,12 @@ public class DefaultMovieService implements MovieService {
     }
 
     @Override
+    public List<Movie> getAll(long genreId) {
+        log.info("Get all movies by genre id ");
+        return movieDao.getAll(genreId);
+    }
+
+    @Override
     public List<Movie> getThreeRandomMovies() {
         log.info("Get three random movies");
         return movieDao.getThreeRandomMovies();

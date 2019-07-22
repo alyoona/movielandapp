@@ -18,4 +18,12 @@
                                 ORDER BY RANDOM() LIMIT 3;"/>
     </bean>
 
+    <bean id="getMoviesByGenreIdSql" class="java.lang.String">
+        <constructor-arg value="SELECT m.id, m.name_russian, m.name_native, m.year, m.rating, m.price, p.picture_path
+                                FROM movieland.movie m
+                                JOIN movieland.poster p ON m.id = p.movie_id
+                                JOIN  movieland.movie_genre mg ON m.id = mg.movie_id
+                                WHERE mg.genre_id = :genre_id;"/>
+    </bean>
+
 </beans>
