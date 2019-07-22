@@ -1,43 +1,45 @@
 package com.stroganova.movielandapp.web.controller;
 
 
-
+import com.stroganova.movielandapp.entity.Movie;
 import com.stroganova.movielandapp.service.MovieService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
+import lombok.AccessLevel;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/movie")
+@Slf4j
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal=true, level= AccessLevel.PRIVATE)
 public class MovieController {
-    private final MovieService movieService;
-    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-    public MovieController(MovieService movieService) {
-        this.movieService = movieService;
-    }
+
+    @NonNull MovieService movieService;
 
     @GetMapping
-    public ResponseEntity<?> getAll() {
-        LOGGER.info("Get all movies");
-        return new ResponseEntity<>(movieService.getAll(), HttpStatus.OK);
+    public List<Movie> getAll() {
+        log.info("Get all movies ");
+        return movieService.getAll();
     }
 
     @GetMapping("/genre/{genreId}")
-    public ResponseEntity<?> getAll(@PathVariable long genreId) {
-        LOGGER.info("Get all movies by genre id");
-        return new ResponseEntity<>(movieService.getAll(genreId), HttpStatus.OK);
+    public List<Movie> getAll(@PathVariable long genreId) {
+        log.info("Get all movies by genre id");
+        return movieService.getAll(genreId);
     }
 
     @GetMapping("/random")
-    public ResponseEntity<?> getThreeRandomMovies(){
-        LOGGER.info("Get 3 random movies.");
-        return new ResponseEntity<>(movieService.getThreeRandomMovies(), HttpStatus.OK);
+    public List<Movie> getThreeRandomMovies(){
+        log.info("Get three random movies");
+        return movieService.getThreeRandomMovies();
     }
-
 }
