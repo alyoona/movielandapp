@@ -7,9 +7,7 @@ import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,8 +21,6 @@ public class JdbcGenreDao implements GenreDao{
     @NonNull NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     @NonNull String getAllGenresSql;
 
-    @Scheduled(fixedRate = 4*60*60*1000)
-    @CachePut(cacheNames = "genres")
     @Override
     public List<Genre> getAll() {
         return namedParameterJdbcTemplate.query(getAllGenresSql, genreRowMapper);
