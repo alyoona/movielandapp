@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
-import static org.junit.Assert.assertEquals
 import static org.mockito.Mockito.when
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 
@@ -34,14 +33,8 @@ class GenreControllerTest {
 
     @Test
     void testGetAll() {
-        def genreFirst = new Genre()
-        genreFirst.setId(1L)
-        genreFirst.setName("genreFirstName")
-        def genreSecond = new Genre()
-        genreSecond.setId(2L)
-        genreSecond.setName("genreSecondName")
-
-        def expectedGenres = [genreFirst, genreSecond]
+        def expectedGenres = [new Genre(id: 1L, name: "genreFirstName"),
+                              new Genre(id: 1L, name: "genreFirstName")]
 
         when(genreService.getAll()).thenReturn(expectedGenres)
 
@@ -50,13 +43,11 @@ class GenreControllerTest {
         response.contentType.contains('application/json')
         response.contentType == 'application/json;charset=UTF-8'
 
-        println(response.contentAsString)
+        def actualGenres = new JsonSlurper().parseText(response.contentAsString)
 
-        def content = new JsonSlurper().parseText(response.contentAsString)
-        content.eachWithIndex{ actualGenre, index ->
-            println(actualGenre)
-            assertEquals(expectedGenres[index].id, actualGenre.id)
-            assertEquals(expectedGenres[index].name, actualGenre.name)
+        actualGenres.eachWithIndex{ actualGenre, index ->
+            assert expectedGenres[index].id == actualGenre.id
+            assert expectedGenres[index].name == actualGenre.name
         }
     }
 }
