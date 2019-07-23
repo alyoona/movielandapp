@@ -8,6 +8,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,11 +19,14 @@ import java.util.List;
 @FieldDefaults(makeFinal=true, level= AccessLevel.PRIVATE)
 public class DefaultGenreService implements GenreService {
 
-    @NonNull GenreDao genreDao;
+
+    @NonNull
+    @Qualifier("cachedJdbcGenreDao")
+    GenreDao cachedJdbcGenreDao;
 
     @Override
     public List<Genre> getAll() {
         log.info("Get all genres ");
-        return genreDao.getAll();
+        return cachedJdbcGenreDao.getAll();
     }
 }
