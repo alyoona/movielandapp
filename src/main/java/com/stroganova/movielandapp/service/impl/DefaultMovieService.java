@@ -3,6 +3,7 @@ package com.stroganova.movielandapp.service.impl;
 import com.stroganova.movielandapp.dao.MovieDao;
 import com.stroganova.movielandapp.entity.Movie;
 import com.stroganova.movielandapp.service.MovieService;
+import com.stroganova.movielandapp.web.entity.SortDirection;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@FieldDefaults(makeFinal=true, level= AccessLevel.PRIVATE)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class DefaultMovieService implements MovieService {
 
     @NonNull MovieDao movieDao;
@@ -36,5 +37,16 @@ public class DefaultMovieService implements MovieService {
     public List<Movie> getThreeRandomMovies() {
         log.info("Get three random movies");
         return movieDao.getThreeRandomMovies();
+    }
+
+    @Override
+    public List<Movie> getAll(SortDirection sortDirection) {
+        return movieDao.getAll(sortDirection);
+    }
+
+    @Override
+    public List<Movie> getAll(long genreId, SortDirection sortDirection) {
+        log.info("Get all movies by genre id ");
+        return movieDao.getAll(genreId, sortDirection);
     }
 }

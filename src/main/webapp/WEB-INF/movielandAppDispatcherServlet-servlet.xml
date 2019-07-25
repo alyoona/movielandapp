@@ -13,6 +13,11 @@
 
     <context:component-scan base-package="com.stroganova.movielandapp.web"/>
 
-    <mvc:annotation-driven/>
+    <mvc:annotation-driven>
+        <mvc:argument-resolvers>
+            <bean class="com.stroganova.movielandapp.web.handler.SortDirectionArgumentResolver"/>
+        </mvc:argument-resolvers>
+    </mvc:annotation-driven>
+
 
 </beans>

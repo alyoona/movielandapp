@@ -1,17 +1,17 @@
-package com.stroganova.movielandapp.enums;
+package com.stroganova.movielandapp.web.entity;
 
-public enum SortingOrder {
+public enum SortOrder {
     DESC("desc"), ASC("asc");
 
     private final String name;
 
-    SortingOrder(String name) {
+    SortOrder(String name) {
         this.name = name;
     }
 
-    public static SortingOrder getByName(String name) {
-        SortingOrder[] values = values();
-        for (SortingOrder value : values) {
+    public static SortOrder getByName(String name) {
+        SortOrder[] values = values();
+        for (SortOrder value : values) {
             if (value.getName().equalsIgnoreCase(name)) {
                 return value;
             }
@@ -22,4 +22,5 @@ public enum SortingOrder {
     public String getName() {
         return name;
     }
+
 }
