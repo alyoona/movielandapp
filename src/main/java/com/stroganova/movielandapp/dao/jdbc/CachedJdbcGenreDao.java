@@ -33,7 +33,7 @@ public class CachedJdbcGenreDao implements GenreDao {
             return new ArrayList<>(genres);
     }
 
-    @Scheduled(fixedRateString = "${genresCache.updatingIntervalMilliseconds.everyFourHours}")
+    @Scheduled(fixedRateString = "${genresCache.refreshRate}")
     synchronized public void updateGenres(){
         log.info("Update genres cache from DB");
             genres = genreDao.getAll();
