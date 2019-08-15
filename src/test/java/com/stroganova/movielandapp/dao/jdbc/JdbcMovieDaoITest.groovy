@@ -34,10 +34,10 @@ class JdbcMovieDaoITest {
         def posterDeleteSql = "DELETE FROM movieland.poster;"
         def genreDeleteSql = "DELETE FROM movieland.genre;"
         def movieGenreDeleteSql = "DELETE FROM movieland.movie_genre;"
-        namedParameterJdbcTemplate.update(movieDeleteSql,EmptySqlParameterSource.INSTANCE)
-        namedParameterJdbcTemplate.update(posterDeleteSql,EmptySqlParameterSource.INSTANCE)
-        namedParameterJdbcTemplate.update(genreDeleteSql, EmptySqlParameterSource.INSTANCE)
         namedParameterJdbcTemplate.update(movieGenreDeleteSql, EmptySqlParameterSource.INSTANCE)
+        namedParameterJdbcTemplate.update(genreDeleteSql, EmptySqlParameterSource.INSTANCE)
+        namedParameterJdbcTemplate.update(posterDeleteSql,EmptySqlParameterSource.INSTANCE)
+        namedParameterJdbcTemplate.update(movieDeleteSql,EmptySqlParameterSource.INSTANCE)
     }
 
     @Test
