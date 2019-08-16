@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner
 class JdbcGenreDaoITest {
 
     @Autowired
-    NamedParameterJdbcTemplate namedParameterJdbcTemplate
+    NamedParameterJdbcTemplate namedJdbcTemplate
 
     @Autowired
     JdbcGenreDao genreDao
@@ -25,7 +25,7 @@ class JdbcGenreDaoITest {
     @Before
     void clear() {
         def genreDeleteSql = "DELETE FROM movieland.genre;"
-        namedParameterJdbcTemplate.update(genreDeleteSql, EmptySqlParameterSource.INSTANCE)
+        namedJdbcTemplate.update(genreDeleteSql, EmptySqlParameterSource.INSTANCE)
     }
 
     @Test
@@ -33,7 +33,7 @@ class JdbcGenreDaoITest {
         Map<String, ?>[] genreBatchValues = [[id: 1L, name: "genreFirst"],
                                              [id: 2L, name: "genreSecond"]]
 
-        namedParameterJdbcTemplate.batchUpdate(genreInsertSql, genreBatchValues)
+        namedJdbcTemplate.batchUpdate(genreInsertSql, genreBatchValues)
 
         def expectedGenres = [new Genre(id: 1L, name: "genreFirst"),
                               new Genre(id: 2L, name: "genreSecond")]

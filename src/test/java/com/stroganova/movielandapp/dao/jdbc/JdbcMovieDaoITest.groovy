@@ -19,7 +19,7 @@ import java.time.LocalDate
 class JdbcMovieDaoITest {
 
     @Autowired
-    NamedParameterJdbcTemplate namedParameterJdbcTemplate
+    NamedParameterJdbcTemplate namedJdbcTemplate
     @Autowired
     JdbcMovieDao movieDao
 
@@ -36,10 +36,10 @@ class JdbcMovieDaoITest {
         def posterDeleteSql = "DELETE FROM movieland.poster;"
         def genreDeleteSql = "DELETE FROM movieland.genre;"
         def movieGenreDeleteSql = "DELETE FROM movieland.movie_genre;"
-        namedParameterJdbcTemplate.update(movieGenreDeleteSql, EmptySqlParameterSource.INSTANCE)
-        namedParameterJdbcTemplate.update(genreDeleteSql, EmptySqlParameterSource.INSTANCE)
-        namedParameterJdbcTemplate.update(posterDeleteSql, EmptySqlParameterSource.INSTANCE)
-        namedParameterJdbcTemplate.update(movieDeleteSql, EmptySqlParameterSource.INSTANCE)
+        namedJdbcTemplate.update(movieGenreDeleteSql, EmptySqlParameterSource.INSTANCE)
+        namedJdbcTemplate.update(genreDeleteSql, EmptySqlParameterSource.INSTANCE)
+        namedJdbcTemplate.update(posterDeleteSql, EmptySqlParameterSource.INSTANCE)
+        namedJdbcTemplate.update(movieDeleteSql, EmptySqlParameterSource.INSTANCE)
     }
 
     @Test
@@ -68,8 +68,8 @@ class JdbcMovieDaoITest {
                  movie_id    : 2L,
                  picture_path: "https://picture_path2.png"]]
 
-        namedParameterJdbcTemplate.batchUpdate(movieInsertSql, movieBatchValues)
-        namedParameterJdbcTemplate.batchUpdate(posterInsertSql, posterBatchValues)
+        namedJdbcTemplate.batchUpdate(movieInsertSql, movieBatchValues)
+        namedJdbcTemplate.batchUpdate(posterInsertSql, posterBatchValues)
 
         def expectedMovies = [
                 new Movie(id: 1L,
@@ -111,7 +111,7 @@ class JdbcMovieDaoITest {
                  rating      : 8.99D,
                  price       : 150.15D]]
 
-        namedParameterJdbcTemplate.batchUpdate(movieInsertSql, movieBatchValues)
+        namedJdbcTemplate.batchUpdate(movieInsertSql, movieBatchValues)
 
         assert movieDao.getAll().size() == 2
         assert movieDao.getThreeRandomMovies().size() == 2
@@ -137,7 +137,7 @@ class JdbcMovieDaoITest {
                  rating      : 8.99D,
                  price       : 150.16D]]
 
-        namedParameterJdbcTemplate.batchUpdate(movieInsertSql, movieBatchValues)
+        namedJdbcTemplate.batchUpdate(movieInsertSql, movieBatchValues)
 
         def expectedMoviesPriceDesc = [
                 new Movie(id: 2L,
@@ -216,7 +216,7 @@ class JdbcMovieDaoITest {
                  rating      : 8.99D,
                  price       : 150.15D]]
 
-        namedParameterJdbcTemplate.batchUpdate(movieInsertSql, movieBatchValues)
+        namedJdbcTemplate.batchUpdate(movieInsertSql, movieBatchValues)
 
         assert movieDao.getAll().size() == 3
         assert movieDao.getThreeRandomMovies().size() == 3
@@ -254,7 +254,7 @@ class JdbcMovieDaoITest {
                  rating      : 8.99D,
                  price       : 150.15D]]
 
-        namedParameterJdbcTemplate.batchUpdate(movieInsertSql, movieBatchValues)
+        namedJdbcTemplate.batchUpdate(movieInsertSql, movieBatchValues)
 
         assert movieDao.getAll().size() == 4
         assert movieDao.getThreeRandomMovies().size() == 3
@@ -290,10 +290,10 @@ class JdbcMovieDaoITest {
         Map<String, ?>[] movieGenreBatchValues = [[id: 10L, movie_id: 1L, genre_id: 1L],
                                                   [id: 20L, movie_id: 2L, genre_id: 1L]]
 
-        namedParameterJdbcTemplate.batchUpdate(movieInsertSql, movieBatchValues)
-        namedParameterJdbcTemplate.batchUpdate(posterInsertSql, posterBatchValues)
-        namedParameterJdbcTemplate.batchUpdate(genreInsertSql, genreBatchValues)
-        namedParameterJdbcTemplate.batchUpdate(movieGenreInsertSql, movieGenreBatchValues)
+        namedJdbcTemplate.batchUpdate(movieInsertSql, movieBatchValues)
+        namedJdbcTemplate.batchUpdate(posterInsertSql, posterBatchValues)
+        namedJdbcTemplate.batchUpdate(genreInsertSql, genreBatchValues)
+        namedJdbcTemplate.batchUpdate(movieGenreInsertSql, movieGenreBatchValues)
 
         def expectedMovies = [
                 new Movie(id: 1L,
@@ -338,9 +338,9 @@ class JdbcMovieDaoITest {
 
         Map<String, ?>[] movieGenreBatchValues = [[id: 10L, movie_id: 1L, genre_id: 1L],
                                                   [id: 20L, movie_id: 2L, genre_id: 1L]]
-        namedParameterJdbcTemplate.batchUpdate(movieInsertSql, movieBatchValues)
-        namedParameterJdbcTemplate.batchUpdate(genreInsertSql, genreBatchValues)
-        namedParameterJdbcTemplate.batchUpdate(movieGenreInsertSql, movieGenreBatchValues)
+        namedJdbcTemplate.batchUpdate(movieInsertSql, movieBatchValues)
+        namedJdbcTemplate.batchUpdate(genreInsertSql, genreBatchValues)
+        namedJdbcTemplate.batchUpdate(movieGenreInsertSql, movieGenreBatchValues)
 
         def expectedMoviesPriceDesc = [
                 new Movie(id: 2L,
