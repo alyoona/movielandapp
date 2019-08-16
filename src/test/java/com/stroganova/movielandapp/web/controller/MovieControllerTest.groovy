@@ -3,7 +3,8 @@ package com.stroganova.movielandapp.web.controller
 
 import com.stroganova.movielandapp.entity.Movie
 import com.stroganova.movielandapp.service.MovieService
-import com.stroganova.movielandapp.web.entity.SortDirection
+import com.stroganova.movielandapp.request.SortDirection
+import com.stroganova.movielandapp.request.SortOrder
 import com.stroganova.movielandapp.web.handler.SortDirectionArgumentResolver
 import groovy.json.JsonSlurper
 import org.junit.Before
@@ -222,7 +223,7 @@ class MovieControllerTest {
                                price        : "150.00",
                                picturePath  : "https://picture_path2.png"]]
 
-        def priceDescSortDirection = new SortDirection(field: "price", orderValue: "desc")
+        def priceDescSortDirection = new SortDirection(field: "price", orderValue: SortOrder.DESC)
         when(movieService.getAll(priceDescSortDirection)).thenReturn([movieFirst, movieSecond])
 
         def priceDescResponse = mockMvc.perform(get("/movie?price=desc")).andReturn().response
@@ -232,7 +233,7 @@ class MovieControllerTest {
         assert priceDescActualMovies == expectedMovies
 
 
-        def priceAscSortDirection = new SortDirection(field: "price", orderValue: "asc")
+        def priceAscSortDirection = new SortDirection(field: "price", orderValue: SortOrder.ASC)
         when(movieService.getAll(priceAscSortDirection)).thenReturn([movieFirst, movieSecond])
 
         def priceAscResponse = mockMvc.perform(get("/movie?price=asc")).andReturn().response
@@ -242,7 +243,7 @@ class MovieControllerTest {
         assert priceAscActualMovies == expectedMovies
 
 
-        def ratingDescSortDirection = new SortDirection(field: "rating", orderValue: "desc")
+        def ratingDescSortDirection = new SortDirection(field: "rating", orderValue: SortOrder.DESC)
         when(movieService.getAll(ratingDescSortDirection)).thenReturn([movieFirst, movieSecond])
 
         def ratingDescResponse = mockMvc.perform(get("/movie?rating=desc")).andReturn().response
@@ -275,7 +276,7 @@ class MovieControllerTest {
                               ]]
 
 
-        def priceDescSortDirection = new SortDirection(field: "price", orderValue: "desc")
+        def priceDescSortDirection = new SortDirection(field: "price", orderValue: SortOrder.DESC)
         when(movieService.getAll(1L, priceDescSortDirection)).thenReturn([movieFirst])
 
         def priceDescResponse = mockMvc.perform(get("/movie/genre/1?price=desc")).andReturn().response
@@ -285,7 +286,7 @@ class MovieControllerTest {
         assert priceDescActualMovies == expectedMovies
 
 
-        def priceAscSortDirection = new SortDirection(field: "price", orderValue: "asc")
+        def priceAscSortDirection = new SortDirection(field: "price", orderValue: SortOrder.ASC)
         when(movieService.getAll(1L, priceAscSortDirection)).thenReturn([movieFirst])
 
         def priceAscResponse = mockMvc.perform(get("/movie/genre/1?price=asc")).andReturn().response
@@ -295,7 +296,7 @@ class MovieControllerTest {
         assert priceAscActualMovies == expectedMovies
 
 
-        def ratingDescSortDirection = new SortDirection(field: "rating", orderValue: "desc")
+        def ratingDescSortDirection = new SortDirection(field: "rating", orderValue: SortOrder.DESC)
         when(movieService.getAll(1L, ratingDescSortDirection)).thenReturn([movieFirst])
 
         def ratingDescResponse = mockMvc.perform(get("/movie/genre/1?rating=desc")).andReturn().response

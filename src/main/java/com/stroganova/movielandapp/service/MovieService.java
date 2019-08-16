@@ -1,7 +1,7 @@
 package com.stroganova.movielandapp.service;
 
 import com.stroganova.movielandapp.entity.Movie;
-import com.stroganova.movielandapp.web.entity.SortDirection;
+import com.stroganova.movielandapp.request.SortDirection;
 
 import java.util.List;
 

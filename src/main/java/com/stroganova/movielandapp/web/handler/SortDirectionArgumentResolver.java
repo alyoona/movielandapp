@@ -1,7 +1,7 @@
 package com.stroganova.movielandapp.web.handler;
 
-import com.stroganova.movielandapp.web.entity.SortDirection;
-import com.stroganova.movielandapp.web.entity.SortOrder;
+import com.stroganova.movielandapp.request.SortDirection;
+import com.stroganova.movielandapp.request.SortOrder;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -26,7 +26,7 @@ public class SortDirectionArgumentResolver implements HandlerMethodArgumentResol
 
         if (orderValue != null) {
             SortOrder sortOrder = SortOrder.getByName(orderValue);
-            return getSortDirection(PRICE_SORT_ATTRIBUTE, sortOrder.getName());
+            return getSortDirection(PRICE_SORT_ATTRIBUTE, sortOrder);
         }
 
         orderValue = webRequest.getParameter(RATING_SORT_ATTRIBUTE);
@@ -36,13 +36,13 @@ public class SortDirectionArgumentResolver implements HandlerMethodArgumentResol
             if (SortOrder.ASC.equals(sortOrder)) {
                 throw new IllegalArgumentException("Incorrect sort parameters, expected movies sorting by rating (desc)");
             }
-            return getSortDirection(RATING_SORT_ATTRIBUTE, sortOrder.getName());
+            return getSortDirection(RATING_SORT_ATTRIBUTE, sortOrder);
         }
 
          return null;
     }
 
-    private SortDirection getSortDirection(String sortAttribute, String orderValue) {
+    private SortDirection getSortDirection(String sortAttribute, SortOrder orderValue) {
         SortDirection sortDirection = new SortDirection();
         sortDirection.setField(sortAttribute);
         sortDirection.setOrderValue(orderValue);

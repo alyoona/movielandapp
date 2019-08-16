@@ -1,4 +1,4 @@
-package com.stroganova.movielandapp.web.entity;
+package com.stroganova.movielandapp.request;
 
 public enum SortOrder {
     DESC("desc"), ASC("asc");

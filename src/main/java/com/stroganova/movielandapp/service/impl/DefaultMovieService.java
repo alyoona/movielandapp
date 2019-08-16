@@ -3,7 +3,7 @@ package com.stroganova.movielandapp.service.impl;
 import com.stroganova.movielandapp.dao.MovieDao;
 import com.stroganova.movielandapp.entity.Movie;
 import com.stroganova.movielandapp.service.MovieService;
-import com.stroganova.movielandapp.web.entity.SortDirection;
+import com.stroganova.movielandapp.request.SortDirection;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

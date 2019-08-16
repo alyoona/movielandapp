@@ -3,7 +3,7 @@ package com.stroganova.movielandapp.dao.jdbc;
 import com.stroganova.movielandapp.dao.MovieDao;
 import com.stroganova.movielandapp.dao.jdbc.mapper.MovieRowMapper;
 import com.stroganova.movielandapp.entity.Movie;
-import com.stroganova.movielandapp.web.entity.SortDirection;
+import com.stroganova.movielandapp.request.SortDirection;
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import lombok.AccessLevel;

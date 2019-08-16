@@ -1,7 +1,8 @@
 package com.stroganova.movielandapp.dao.jdbc
 
 import com.stroganova.movielandapp.entity.Movie
-import com.stroganova.movielandapp.web.entity.SortDirection
+import com.stroganova.movielandapp.request.SortDirection
+import com.stroganova.movielandapp.request.SortOrder
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -152,7 +153,7 @@ class JdbcMovieDaoITest {
                         rating: 9D,
                         price: 150.15D)]
 
-        def priceDescSortDirection = new SortDirection(field: "price", orderValue: "desc")
+        def priceDescSortDirection = new SortDirection(field: "price", orderValue: SortOrder.DESC)
         assert expectedMoviesPriceDesc == movieDao.getAll(priceDescSortDirection)
 
         def expectedMoviesPriceAsc = [
@@ -168,7 +169,7 @@ class JdbcMovieDaoITest {
                         yearOfRelease: LocalDate.of(1994, 1, 1),
                         rating: 8.99D,
                         price: 150.16D)]
-        def priceAscSortDirection = new SortDirection(field: "price", orderValue: "asc")
+        def priceAscSortDirection = new SortDirection(field: "price", orderValue: SortOrder.ASC)
         assert expectedMoviesPriceAsc == movieDao.getAll(priceAscSortDirection)
 
         def expectedMoviesRatingDesc = [
@@ -184,7 +185,7 @@ class JdbcMovieDaoITest {
                         yearOfRelease: LocalDate.of(1994, 1, 1),
                         rating: 8.99D,
                         price: 150.16D)]
-        def ratingDescSortDirection = new SortDirection(field: "price", orderValue: "asc")
+        def ratingDescSortDirection = new SortDirection(field: "price", orderValue: SortOrder.ASC)
         assert expectedMoviesRatingDesc == movieDao.getAll(ratingDescSortDirection)
 
     }
@@ -355,7 +356,9 @@ class JdbcMovieDaoITest {
                         rating: 20D,
                         price: 300D)]
 
-        def priceDescSortDirection = new SortDirection(field: "price", orderValue: "desc")
+
+
+        def priceDescSortDirection = new SortDirection(field: "price", orderValue: SortOrder.DESC)
         assert expectedMoviesPriceDesc == movieDao.getAll(1L, priceDescSortDirection)
 
         def expectedMoviesPriceAsc = [
@@ -371,7 +374,7 @@ class JdbcMovieDaoITest {
                         yearOfRelease: LocalDate.of(1994, 1, 1),
                         rating: 10D,
                         price: 500D)]
-        def priceAscSortDirection = new SortDirection(field: "price", orderValue: "asc")
+        def priceAscSortDirection = new SortDirection(field: "price", orderValue: SortOrder.ASC)
         assert expectedMoviesPriceAsc == movieDao.getAll(1L, priceAscSortDirection)
 
         def expectedMoviesRatingDesc = [
@@ -387,7 +390,7 @@ class JdbcMovieDaoITest {
                         yearOfRelease: LocalDate.of(1994, 1, 1),
                         rating: 10D,
                         price: 500D)]
-        def ratingDescSortDirection = new SortDirection(field: "price", orderValue: "asc")
+        def ratingDescSortDirection = new SortDirection(field: "price", orderValue: SortOrder.ASC)
         assert expectedMoviesRatingDesc == movieDao.getAll(1L, ratingDescSortDirection)
     }
 
