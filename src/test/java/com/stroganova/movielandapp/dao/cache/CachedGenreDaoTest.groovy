@@ -19,7 +19,7 @@ class CachedGenreDaoTest {
         when(genreDao.getAll()).thenReturn(expectedGenres)
 
         def cachedJdbcGenreDao = new CachedGenreDao(genreDao)
-        cachedJdbcGenreDao.updateGenres()
+        cachedJdbcGenreDao.invalidate()
         def actualGenres = cachedJdbcGenreDao.getAll()
 
         assert expectedGenres == actualGenres

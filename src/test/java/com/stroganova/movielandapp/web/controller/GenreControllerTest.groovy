@@ -33,8 +33,8 @@ class GenreControllerTest {
 
     @Test
     void testGetAll() {
-        def expectedGenres = [new Genre(id: 1L, name: "genreFirstName"),
-                              new Genre(id: 1L, name: "genreFirstName")]
+        def expectedGenres = [new Genre(1L, "genreFirstName"),
+                              new Genre(1L, "genreFirstName")]
 
         when(genreService.getAll()).thenReturn(expectedGenres)
 

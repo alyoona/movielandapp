@@ -13,8 +13,11 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Repository
 @Slf4j
@@ -29,18 +32,31 @@ public class CachedGenreDao implements GenreDao {
 
     List<Genre> genres;
 
+    ReadWriteLock lock = new ReentrantReadWriteLock();
+
     @Override
-    synchronized public List<Genre> getAll() {
-        log.info("Get all genres from cache");
+    public List<Genre> getAll() {
+        lock.readLock().lock();
+        try {
+            log.info("Get all genres from cache");
             return new ArrayList<>(genres);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
-    @Scheduled(fixedRateString = "${genresCache.refreshRate}")
-    synchronized public void updateGenres(){
-        log.info("Update genres cache from DB");
+    @Scheduled(fixedRateString = "${genresCache.refreshRate}", initialDelayString = "${genresCache.refreshRate}")
+    @PostConstruct
+    public void invalidate(){
+        lock.writeLock().lock();
+        try {
+            log.info("Update genres cache from DB");
             genres = genreDao.getAll();
-        if(genres.size() == 0) {
-            log.warn("Genres cache is empty, there are not genres in DB");
+            if(genres.size() == 0) {
+                log.warn("Genres cache is empty, there are not genres in DB");
+            }
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 }

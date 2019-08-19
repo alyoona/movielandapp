@@ -12,8 +12,8 @@ class DefaultGenreServiceTest {
 
     @Test
     void testGetAll() {
-        def expectedGenres = [new Genre(id: 1L, name: "genreFirstName"),
-                              new Genre(id: 1L, name: "genreFirstName")]
+        def expectedGenres = [new Genre(1L, "genreFirstName"),
+                              new Genre(1L, "genreFirstName")]
 
         def genreDao = mock(GenreDao.class)
         when(genreDao.getAll()).thenReturn(expectedGenres)
