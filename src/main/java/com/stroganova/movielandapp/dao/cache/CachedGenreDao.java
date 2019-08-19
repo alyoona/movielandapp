@@ -1,4 +1,4 @@
-package com.stroganova.movielandapp.dao.jdbc;
+package com.stroganova.movielandapp.dao.cache;
 
 import com.stroganova.movielandapp.dao.GenreDao;
 import com.stroganova.movielandapp.entity.Genre;
@@ -9,6 +9,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 
@@ -19,7 +20,8 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level= AccessLevel.PRIVATE)
-public class CachedJdbcGenreDao implements GenreDao {
+@Primary
+public class CachedGenreDao implements GenreDao {
 
     @NonNull
     @Qualifier("jdbcGenreDao")

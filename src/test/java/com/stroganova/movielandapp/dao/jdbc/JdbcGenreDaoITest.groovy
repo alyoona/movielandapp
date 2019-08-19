@@ -30,13 +30,14 @@ class JdbcGenreDaoITest {
 
     @Test
     void testGetAll() {
+
         Map<String, ?>[] genreBatchValues = [[id: 1L, name: "genreFirst"],
                                              [id: 2L, name: "genreSecond"]]
 
         namedJdbcTemplate.batchUpdate(genreInsertSql, genreBatchValues)
 
-        def expectedGenres = [new Genre(id: 1L, name: "genreFirst"),
-                              new Genre(id: 2L, name: "genreSecond")]
+        def expectedGenres = [new Genre(1L, "genreFirst"),
+                              new Genre(2L, "genreSecond")]
 
         def actualGenres = genreDao.getAll()
 
