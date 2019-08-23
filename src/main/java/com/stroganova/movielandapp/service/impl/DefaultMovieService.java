@@ -23,13 +23,13 @@ public class DefaultMovieService implements MovieService {
 
     @Override
     public List<Movie> getAll() {
-        log.info("Get all movies ");
+        log.info("Get all movies");
         return movieDao.getAll();
     }
 
     @Override
     public List<Movie> getAll(long genreId) {
-        log.info("Get all movies by genre id ");
+        log.info("Get all movies by genre id");
         return movieDao.getAll(genreId);
     }
 
@@ -46,7 +46,7 @@ public class DefaultMovieService implements MovieService {
 
     @Override
     public List<Movie> getAll(long genreId, RequestParameter requestParameter) {
-        log.info("Get all movies by genre id ");
+        log.info("Get all movies by genre id");
         return movieDao.getAll(genreId, requestParameter);
     }
 }

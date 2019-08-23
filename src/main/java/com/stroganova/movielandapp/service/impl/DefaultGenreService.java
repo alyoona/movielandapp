@@ -23,7 +23,7 @@ public class DefaultGenreService implements GenreService {
 
     @Override
     public List<Genre> getAll() {
-        log.info("Get all genres ");
+        log.info("Get all genres");
         return genreDao.getAll();
     }
 }

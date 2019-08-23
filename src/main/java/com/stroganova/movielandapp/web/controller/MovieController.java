@@ -26,7 +26,7 @@ public class MovieController {
 
     @GetMapping
     public List<Movie> getAll(RequestParameter requestParameter) {
-        log.info("Get all movies ");
+        log.info("Get all movies");
         return requestParameter != null ? movieService.getAll(requestParameter) : movieService.getAll();
     }
 

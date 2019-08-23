@@ -25,7 +25,6 @@ import java.util.List;
 public class CachedGenreDao implements GenreDao {
 
     @NonNull
-    @Qualifier("jdbcGenreDao")
     final GenreDao genreDao;
 
     volatile List<Genre> genres;
