@@ -26,7 +26,11 @@ public class JdbcGenreDao implements GenreDao{
     @Override
     public List<Genre> getAll() {
         log.info("Get all genres from DB");
-        return namedParameterJdbcTemplate.query(getAllGenresSql, genreRowMapper);
+        List<Genre> genres = namedParameterJdbcTemplate.query(getAllGenresSql, genreRowMapper);
+        if (genres.size() == 0) {
+            log.warn("Genres cache is empty, there are not genres in DB");
+        }
+        return genres;
     }
 
 }

@@ -1,9 +1,8 @@
 package com.stroganova.movielandapp.entity;
 
+import lombok.Value;
 
-import lombok.Data;
-
-@Data
+@Value
 public class Genre {
 
     private long id;
