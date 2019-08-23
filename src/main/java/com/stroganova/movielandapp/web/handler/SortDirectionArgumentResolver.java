@@ -1,5 +1,6 @@
 package com.stroganova.movielandapp.web.handler;
 
+import com.stroganova.movielandapp.request.RequestParameter;
 import com.stroganova.movielandapp.request.SortDirection;
 import com.stroganova.movielandapp.request.SortOrder;
 import org.springframework.core.MethodParameter;
@@ -16,36 +17,34 @@ public class SortDirectionArgumentResolver implements HandlerMethodArgumentResol
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(SortDirection.class);
+        return parameter.getParameterType().equals(RequestParameter.class);
     }
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 
-        String orderValue = webRequest.getParameter(PRICE_SORT_ATTRIBUTE);
+        String priceOrderValue = webRequest.getParameter(PRICE_SORT_ATTRIBUTE);
 
-        if (orderValue != null) {
-            SortOrder sortOrder = SortOrder.getByName(orderValue);
-            return getSortDirection(PRICE_SORT_ATTRIBUTE, sortOrder);
+        if (priceOrderValue != null) {
+            SortOrder sortOrder = SortOrder.getByName(priceOrderValue);
+            return getRequestParameter(PRICE_SORT_ATTRIBUTE, sortOrder);
         }
 
-        orderValue = webRequest.getParameter(RATING_SORT_ATTRIBUTE);
+        String ratingOrderValue = webRequest.getParameter(RATING_SORT_ATTRIBUTE);
 
-        if (orderValue != null) {
-            SortOrder sortOrder = SortOrder.getByName(orderValue);
+        if (ratingOrderValue != null) {
+            SortOrder sortOrder = SortOrder.getByName(ratingOrderValue);
             if (SortOrder.ASC.equals(sortOrder)) {
                 throw new IllegalArgumentException("Incorrect sort parameters, expected movies sorting by rating (desc)");
             }
-            return getSortDirection(RATING_SORT_ATTRIBUTE, sortOrder);
+            return getRequestParameter(RATING_SORT_ATTRIBUTE, sortOrder);
         }
 
          return null;
     }
 
-    private SortDirection getSortDirection(String sortAttribute, SortOrder orderValue) {
-        SortDirection sortDirection = new SortDirection();
-        sortDirection.setField(sortAttribute);
-        sortDirection.setOrderValue(orderValue);
-        return sortDirection;
+    private RequestParameter getRequestParameter(String sortAttribute, SortOrder orderValue) {
+        SortDirection sortDirection = new SortDirection(sortAttribute, orderValue);
+        return new RequestParameter(sortDirection);
     }
 }

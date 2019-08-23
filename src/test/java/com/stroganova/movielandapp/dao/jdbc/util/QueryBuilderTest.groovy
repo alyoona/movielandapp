@@ -9,7 +9,7 @@ class QueryBuilderTest {
 
     @Test
     void testGetOrderBySql() {
-        def sortDirection = new SortDirection(field: "fieldName", orderValue: SortOrder.ASC)
+        def sortDirection = new SortDirection("fieldName", SortOrder.ASC)
         def query = "select id from table"
         def expectedSql = query + " ORDER BY " + sortDirection.getFieldAndValue()
         def actualSql = QueryBuilder.getOrderBySql(query, sortDirection)

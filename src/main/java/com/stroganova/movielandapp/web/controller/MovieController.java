@@ -2,6 +2,7 @@ package com.stroganova.movielandapp.web.controller;
 
 
 import com.stroganova.movielandapp.entity.Movie;
+import com.stroganova.movielandapp.request.RequestParameter;
 import com.stroganova.movielandapp.service.MovieService;
 import com.stroganova.movielandapp.request.SortDirection;
 import lombok.extern.slf4j.Slf4j;
@@ -24,15 +25,15 @@ public class MovieController {
     @NonNull MovieService movieService;
 
     @GetMapping
-    public List<Movie> getAll(SortDirection sortDirection) {
+    public List<Movie> getAll(RequestParameter requestParameter) {
         log.info("Get all movies ");
-        return sortDirection != null ? movieService.getAll(sortDirection) : movieService.getAll();
+        return requestParameter != null ? movieService.getAll(requestParameter) : movieService.getAll();
     }
 
     @GetMapping("/genre/{genreId}")
-    public List<Movie> getAll(@PathVariable long genreId, SortDirection sortDirection) {
+    public List<Movie> getAll(@PathVariable long genreId, RequestParameter requestParameter) {
         log.info("Get all movies by genre id");
-        return sortDirection != null ? movieService.getAll(genreId, sortDirection) : movieService.getAll(genreId);
+        return requestParameter != null ? movieService.getAll(genreId, requestParameter) : movieService.getAll(genreId);
     }
 
     @GetMapping("/random")

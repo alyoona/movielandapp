@@ -1,9 +1,13 @@
 package com.stroganova.movielandapp.request;
 
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
-@Data
+@AllArgsConstructor
+@Getter
+@EqualsAndHashCode
 public class SortDirection {
 
     private String field;
@@ -12,5 +16,7 @@ public class SortDirection {
     public String getFieldAndValue() {
         return getField() + " " + orderValue.getName();
     }
+
+
 }
 
