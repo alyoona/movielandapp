@@ -1,7 +1,7 @@
 package com.stroganova.movielandapp.service;
 
 import com.stroganova.movielandapp.entity.Movie;
-import com.stroganova.movielandapp.request.SortDirection;
+import com.stroganova.movielandapp.request.RequestParameter;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ public interface MovieService {
 
     List<Movie> getThreeRandomMovies();
 
-    List<Movie> getAll(SortDirection sortDirection);
+    List<Movie> getAll(RequestParameter requestParameter);
 
-    List<Movie> getAll(long genreId, SortDirection sortDirection);
+    List<Movie> getAll(long genreId, RequestParameter requestParameter);
 }

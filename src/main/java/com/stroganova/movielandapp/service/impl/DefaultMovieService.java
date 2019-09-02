@@ -2,8 +2,8 @@ package com.stroganova.movielandapp.service.impl;
 
 import com.stroganova.movielandapp.dao.MovieDao;
 import com.stroganova.movielandapp.entity.Movie;
+import com.stroganova.movielandapp.request.RequestParameter;
 import com.stroganova.movielandapp.service.MovieService;
-import com.stroganova.movielandapp.request.SortDirection;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -23,13 +23,13 @@ public class DefaultMovieService implements MovieService {
 
     @Override
     public List<Movie> getAll() {
-        log.info("Get all movies ");
+        log.info("Get all movies");
         return movieDao.getAll();
     }
 
     @Override
     public List<Movie> getAll(long genreId) {
-        log.info("Get all movies by genre id ");
+        log.info("Get all movies by genre id");
         return movieDao.getAll(genreId);
     }
 
@@ -40,13 +40,13 @@ public class DefaultMovieService implements MovieService {
     }
 
     @Override
-    public List<Movie> getAll(SortDirection sortDirection) {
-        return movieDao.getAll(sortDirection);
+    public List<Movie> getAll(RequestParameter requestParameter) {
+        return movieDao.getAll(requestParameter);
     }
 
     @Override
-    public List<Movie> getAll(long genreId, SortDirection sortDirection) {
-        log.info("Get all movies by genre id ");
-        return movieDao.getAll(genreId, sortDirection);
+    public List<Movie> getAll(long genreId, RequestParameter requestParameter) {
+        log.info("Get all movies by genre id");
+        return movieDao.getAll(genreId, requestParameter);
     }
 }

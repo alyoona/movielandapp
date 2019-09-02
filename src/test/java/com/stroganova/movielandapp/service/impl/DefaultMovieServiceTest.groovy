@@ -2,7 +2,9 @@ package com.stroganova.movielandapp.service.impl
 
 import com.stroganova.movielandapp.dao.MovieDao
 import com.stroganova.movielandapp.entity.Movie
+import com.stroganova.movielandapp.request.RequestParameter
 import com.stroganova.movielandapp.request.SortDirection
+import com.stroganova.movielandapp.request.SortOrder
 import org.junit.Test
 
 import java.time.LocalDate
@@ -139,13 +141,14 @@ class DefaultMovieServiceTest {
 
         def movieDao = mock(MovieDao.class)
 
-        def sortDirection = new SortDirection()
+        def sortDirection = new SortDirection("test", SortOrder.ASC)
+        def requestParameter = new RequestParameter(sortDirection)
 
-        when(movieDao.getAll(sortDirection)).thenReturn(expectedMovies)
+        when(movieDao.getAll(requestParameter)).thenReturn(expectedMovies)
 
         def movieService = new DefaultMovieService(movieDao)
 
-        def actualMovies = movieService.getAll(sortDirection)
+        def actualMovies = movieService.getAll(requestParameter)
 
         assert expectedMovies == actualMovies
     }
@@ -175,12 +178,14 @@ class DefaultMovieServiceTest {
         def expectedMovies = [movieFirst, movieSecond]
 
         def movieDao = mock(MovieDao.class)
-        def sortDirection = new SortDirection()
-        when(movieDao.getAll(1L, sortDirection)).thenReturn(expectedMovies)
+        def sortDirection = new SortDirection("test", SortOrder.ASC)
+        def requestParameter = new RequestParameter(sortDirection)
+
+        when(movieDao.getAll(1L, requestParameter)).thenReturn(expectedMovies)
 
         def movieService = new DefaultMovieService(movieDao)
 
-        def actualMovies = movieService.getAll(1L, sortDirection)
+        def actualMovies = movieService.getAll(1L, requestParameter)
 
         assert expectedMovies == actualMovies
     }
