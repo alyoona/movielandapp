@@ -19,5 +19,8 @@
         </mvc:argument-resolvers>
     </mvc:annotation-driven>
 
+    <mvc:interceptors>
+        <bean class="com.stroganova.movielandapp.web.interceptor.LoggingRequestInterceptor" />
+    </mvc:interceptors>
 
 </beans>
