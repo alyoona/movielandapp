@@ -2,11 +2,12 @@ package com.stroganova.movielandapp.entity;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stroganova.movielandapp.view.View;
-import lombok.Value;
+import lombok.Data;
 
-@Value
+@Data
 @JsonView(View.Summary.class)
-public class Genre {
+public class Review {
     private long id;
-    private String name;
+    private String text;
+    private User user;
 }

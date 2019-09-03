@@ -8,6 +8,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -22,6 +23,7 @@ public class JdbcGenreDao implements GenreDao{
     private final GenreRowMapper genreRowMapper = new GenreRowMapper();
     @NonNull NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     @NonNull String getAllGenresSql;
+    @NonNull String getAllGenresByMovieIdSql;
 
     @Override
     public List<Genre> getAll() {
@@ -31,6 +33,12 @@ public class JdbcGenreDao implements GenreDao{
             log.warn("Genres cache is empty, there are not genres in DB");
         }
         return genres;
+    }
+
+    @Override
+    public List<Genre> getAll(long movieId) {
+        MapSqlParameterSource sqlParameterSource = new MapSqlParameterSource("id", movieId);
+        return namedParameterJdbcTemplate.query(getAllGenresByMovieIdSql, sqlParameterSource, genreRowMapper);
     }
 
 }

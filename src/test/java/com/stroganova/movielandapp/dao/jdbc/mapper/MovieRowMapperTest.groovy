@@ -20,7 +20,8 @@ class MovieRowMapperTest {
                 yearOfRelease: LocalDate.of(1995, 1, 1),
                 rating: 8.99D,
                 price: 150.15D,
-                picturePath: "https://picture_path.png")
+                picturePath: "https://picture_path.png",
+                description: "movie description")
 
         def resultSet = mock(ResultSet.class)
         when(resultSet.getLong("id")).thenReturn(expectedMovie.getId())
@@ -30,6 +31,7 @@ class MovieRowMapperTest {
         when(resultSet.getDouble("rating")).thenReturn(expectedMovie.getRating())
         when(resultSet.getDouble("price")).thenReturn(expectedMovie.getPrice())
         when(resultSet.getString("picture_path")).thenReturn(expectedMovie.getPicturePath())
+        when(resultSet.getString("description")).thenReturn(expectedMovie.getDescription())
 
         def movieRowMapper = new MovieRowMapper()
         def actualMovie = movieRowMapper.mapRow(resultSet, 0)

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="getAllReviewsByMovieIdSql" class="java.lang.String">
+        <constructor-arg value="SELECT r.id, r.description, r.user_id, u.first_name, u.last_name
+                                FROM movieland.movie m
+                                LEFT JOIN movieland.review r ON m.id = r.movie_id
+                                JOIN movieland.users u ON r.user_id = u.id
+                                WHERE m.id = :id;"/>
+    </bean>
+
+</beans>

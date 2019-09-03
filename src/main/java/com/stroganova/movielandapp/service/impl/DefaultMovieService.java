@@ -49,4 +49,9 @@ public class DefaultMovieService implements MovieService {
         log.info("Get all movies by genre id");
         return movieDao.getAll(genreId, requestParameter);
     }
+
+    @Override
+    public Movie getById(long movieId) {
+        return movieDao.getById(movieId);
+    }
 }

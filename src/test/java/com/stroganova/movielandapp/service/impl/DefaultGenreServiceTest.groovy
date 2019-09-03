@@ -1,6 +1,6 @@
 package com.stroganova.movielandapp.service.impl
 
-import com.stroganova.movielandapp.dao.GenreDao
+import com.stroganova.movielandapp.dao.cache.CachedGenreDao
 import com.stroganova.movielandapp.entity.Genre
 import org.junit.Test
 
@@ -15,10 +15,10 @@ class DefaultGenreServiceTest {
         def expectedGenres = [new Genre(1L, "genreFirstName"),
                               new Genre(1L, "genreFirstName")]
 
-        def genreDao = mock(GenreDao.class)
-        when(genreDao.getAll()).thenReturn(expectedGenres)
+        def cachedGenreDao = mock(CachedGenreDao.class)
+        when(cachedGenreDao.getAll()).thenReturn(expectedGenres)
 
-        def genreService = new DefaultGenreService(genreDao)
+        def genreService = new DefaultGenreService(cachedGenreDao)
 
         def actualGenres = genreService.getAll()
 

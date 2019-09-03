@@ -14,5 +14,8 @@ public interface MovieDao {
     List<Movie> getAll(long genreId);
 
     List<Movie> getAll(RequestParameter requestParameter);
+
     List<Movie> getAll(long genreId, RequestParameter requestParameter);
+
+    Movie getById(long movieId);
 }

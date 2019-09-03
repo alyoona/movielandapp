@@ -1,6 +1,6 @@
 package com.stroganova.movielandapp.service.impl;
 
-import com.stroganova.movielandapp.dao.GenreDao;
+import com.stroganova.movielandapp.dao.cache.CachedGenreDao;
 import com.stroganova.movielandapp.entity.Genre;
 import com.stroganova.movielandapp.service.GenreService;
 import lombok.AccessLevel;
@@ -19,11 +19,11 @@ import java.util.List;
 public class DefaultGenreService implements GenreService {
 
     @NonNull
-    GenreDao genreDao;
+    CachedGenreDao cachedGenreDao;
 
     @Override
     public List<Genre> getAll() {
         log.info("Get all genres");
-        return genreDao.getAll();
+        return cachedGenreDao.getAll();
     }
 }

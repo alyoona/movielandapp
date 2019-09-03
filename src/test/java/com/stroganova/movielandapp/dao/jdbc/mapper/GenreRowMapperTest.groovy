@@ -16,7 +16,6 @@ class GenreRowMapperTest {
     void testMapRow() {
         def expectedGenre = new Genre(1L, "genreName")
 
-
         def resultSet = mock(ResultSet.class)
         when(resultSet.getLong("id")).thenReturn(expectedGenre.getId())
         when(resultSet.getString("name")).thenReturn(expectedGenre.getName())

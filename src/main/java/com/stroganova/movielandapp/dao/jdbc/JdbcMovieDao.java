@@ -1,6 +1,9 @@
 package com.stroganova.movielandapp.dao.jdbc;
 
+import com.stroganova.movielandapp.dao.CountryDao;
+import com.stroganova.movielandapp.dao.GenreDao;
 import com.stroganova.movielandapp.dao.MovieDao;
+import com.stroganova.movielandapp.dao.ReviewDao;
 import com.stroganova.movielandapp.dao.jdbc.mapper.MovieRowMapper;
 import com.stroganova.movielandapp.dao.jdbc.util.QueryBuilder;
 import com.stroganova.movielandapp.entity.Movie;
@@ -14,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,10 +28,15 @@ public class JdbcMovieDao implements MovieDao {
 
     private final static MovieRowMapper MOVIE_ROW_MAPPER = new MovieRowMapper();
 
+    @NonNull CountryDao countryDao;
+    @NonNull GenreDao genreDao;
+    @NonNull ReviewDao reviewDao;
+
     @NonNull NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     @NonNull String getAllMoviesSql;
     @NonNull String getThreeRandomMoviesSql;
     @NonNull String getMoviesByGenreIdSql;
+    @NonNull String getMovieByIdSql;
 
     @Override
     public List<Movie> getAll() {
@@ -59,6 +68,18 @@ public class JdbcMovieDao implements MovieDao {
     @Override
     public List<Movie> getThreeRandomMovies() {
         return namedParameterJdbcTemplate.query(getThreeRandomMoviesSql, MOVIE_ROW_MAPPER);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Movie getById(long movieId) {
+        MapSqlParameterSource sqlParameterSource = new MapSqlParameterSource();
+        sqlParameterSource.addValue("id", movieId);
+        Movie movie = namedParameterJdbcTemplate.queryForObject(getMovieByIdSql, sqlParameterSource, MOVIE_ROW_MAPPER);
+        movie.setCountries(countryDao.getAll(movieId));
+        movie.setGenres(genreDao.getAll(movieId));
+        movie.setReviews(reviewDao.getAll(movieId));
+        return movie;
     }
 
 }

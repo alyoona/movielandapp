@@ -8,4 +8,5 @@ public interface GenreDao {
 
     List<Genre> getAll();
 
+    List<Genre> getAll(long movieId);
 }
