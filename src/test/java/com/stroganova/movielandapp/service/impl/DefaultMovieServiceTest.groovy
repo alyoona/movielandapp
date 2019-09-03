@@ -1,7 +1,11 @@
 package com.stroganova.movielandapp.service.impl
 
 import com.stroganova.movielandapp.dao.MovieDao
+import com.stroganova.movielandapp.entity.Country
+import com.stroganova.movielandapp.entity.Genre
 import com.stroganova.movielandapp.entity.Movie
+import com.stroganova.movielandapp.entity.Review
+import com.stroganova.movielandapp.entity.User
 import com.stroganova.movielandapp.request.RequestParameter
 import com.stroganova.movielandapp.request.SortDirection
 import com.stroganova.movielandapp.request.SortOrder
@@ -13,6 +17,32 @@ import static org.mockito.Mockito.mock
 import static org.mockito.Mockito.when
 
 class DefaultMovieServiceTest {
+
+    @Test
+    void testGetById() {
+        def movie = new Movie(
+                id: 1L,
+                nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                picturePath: "https://picture_path.png",
+                description: "empty",
+                countries: [new Country(id: 10L, name: "USA"), new Country(id: 20, name: "GB")],
+                genres: [new Genre(100L, "FirstGenre")],
+                reviews: [new Review(id: 1000, text: "Great!", user: new User(id: 50, nickname: "Big Ben"))]
+        )
+
+        def movieDao = mock(MovieDao.class)
+        when(movieDao.getById(1L)).thenReturn(movie)
+
+        def movieService = new DefaultMovieService(movieDao)
+
+        def actualMovie = movieService.getById(1L)
+
+        assert movie == actualMovie
+    }
 
     @Test
     void testGetAll() {

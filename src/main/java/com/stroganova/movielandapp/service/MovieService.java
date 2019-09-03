@@ -16,4 +16,6 @@ public interface MovieService {
     List<Movie> getAll(RequestParameter requestParameter);
 
     List<Movie> getAll(long genreId, RequestParameter requestParameter);
+
+    Movie getById(long movieId);
 }

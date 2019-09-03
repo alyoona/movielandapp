@@ -1,11 +1,16 @@
 package com.stroganova.movielandapp.web.controller
 
-
+import com.stroganova.movielandapp.entity.Country
+import com.stroganova.movielandapp.entity.Genre
 import com.stroganova.movielandapp.entity.Movie
+
+import com.stroganova.movielandapp.entity.Review
+import com.stroganova.movielandapp.entity.User
 import com.stroganova.movielandapp.request.RequestParameter
 import com.stroganova.movielandapp.service.MovieService
 import com.stroganova.movielandapp.request.SortDirection
 import com.stroganova.movielandapp.request.SortOrder
+
 import com.stroganova.movielandapp.web.handler.SortDirectionArgumentResolver
 import groovy.json.JsonSlurper
 import org.junit.Before
@@ -43,6 +48,53 @@ class MovieControllerTest {
         MockitoAnnotations.initMocks(this)
         mockMvc = MockMvcBuilders.standaloneSetup(movieController)
                 .setCustomArgumentResolvers(new SortDirectionArgumentResolver()).build()
+    }
+
+
+    @Test
+    void testGetById() {
+
+        def countries = [new Country(id: 1, name: "USA"), new Country(id: 2, name: "GB")]
+        def genres = [new Genre(1, "comedy"), new Genre(2, "family")]
+        def reviews = [new Review(id: 1, text: "Excellent!!!",
+                user: new User(id: 1, nickname: "fName lName"))]
+
+        def movie = new Movie(id: 1L,
+                nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                picturePath: "https://picture_path.png",
+                description: "MovieDescription!!!",
+                countries: countries, genres: genres, reviews: reviews
+        )
+
+        when(movieService.getById(1)).thenReturn(movie)
+        def response = mockMvc.perform(get("/movie/1")).andReturn().response
+        response.status == HttpStatus.OK.value()
+        response.contentType.contains('application/json')
+        response.contentType == 'application/json;charset=UTF-8'
+
+        def actualMovie = new JsonSlurper().parseText(response.contentAsString)
+
+
+        def expectedMovie = [id           : 1,
+                             nameRussian  : "NameRussian",
+                             nameNative   : "NameNative",
+                             yearOfRelease: "1994",
+                             rating       : "8.99",
+                             price        : "150.15",
+                             picturePath  : "https://picture_path.png",
+                             description  : "MovieDescription!!!",
+                             countries    : [[id: 1, name: "USA"], [id: 2, name: "GB"]],
+                             genres       : [[id: 1, name: "comedy"], [id: 2, name: "family"]],
+                             reviews      : [[id: 1, text: "Excellent!!!", user: [id: 1, nickname: "fName lName"]]]
+        ]
+
+
+        assert expectedMovie == actualMovie
+
     }
 
     @Test
@@ -333,8 +385,6 @@ class MovieControllerTest {
         assert ex.getCause().class == IllegalArgumentException.class
         assert ex.getCause().getMessage() == "No sorting order for value: IncorrectRequestParam"
     }
-
-
 
 
     def static expectThrown(Class expectedThrowable = Throwable, Closure closure) {

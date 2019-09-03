@@ -1,5 +1,6 @@
 package com.stroganova.movielandapp.dao.cache
 
+import com.stroganova.movielandapp.dao.cache.impl.DefaultCachedGenreDao
 import com.stroganova.movielandapp.dao.jdbc.JdbcGenreDao
 import com.stroganova.movielandapp.entity.Genre
 import org.junit.Test
@@ -7,7 +8,7 @@ import org.junit.Test
 import static org.mockito.Mockito.mock
 import static org.mockito.Mockito.when
 
-class CachedGenreDaoTest {
+class DefaultCachedGenreDaoTest {
 
     @Test
     void testGetAll() {
@@ -18,7 +19,7 @@ class CachedGenreDaoTest {
         def genreDao = mock(JdbcGenreDao.class)
         when(genreDao.getAll()).thenReturn(expectedGenres)
 
-        def cachedJdbcGenreDao = new CachedGenreDao(genreDao)
+        def cachedJdbcGenreDao = new DefaultCachedGenreDao(genreDao)
         cachedJdbcGenreDao.invalidate()
         def actualGenres = cachedJdbcGenreDao.getAll()
 
