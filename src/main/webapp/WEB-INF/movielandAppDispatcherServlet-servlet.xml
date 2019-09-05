@@ -15,7 +15,7 @@
 
     <mvc:annotation-driven>
         <mvc:argument-resolvers>
-            <bean class="com.stroganova.movielandapp.web.handler.SortDirectionArgumentResolver"/>
+            <bean class="com.stroganova.movielandapp.web.handler.RequestParameterArgumentResolver"/>
         </mvc:argument-resolvers>
     </mvc:annotation-driven>
 
