@@ -48,9 +48,9 @@ public class MovieController {
 
     @JsonView(View.MovieDetail.class)
     @GetMapping("/{movieId}")
-    public Movie getById(@PathVariable long movieId) {
+    public Movie getById(@PathVariable long movieId, RequestParameter requestParameter) {
         log.info("Get movie details");
-        return movieService.getById(movieId);
+        return requestParameter != null ? movieService.getById(movieId, requestParameter) : movieService.getById(movieId);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.stroganova.movielandapp.web.handler;
 
+import com.stroganova.movielandapp.request.Currency;
 import com.stroganova.movielandapp.request.RequestParameter;
 import com.stroganova.movielandapp.request.SortDirection;
 import com.stroganova.movielandapp.request.SortOrder;
@@ -10,10 +11,11 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 
-public class SortDirectionArgumentResolver implements HandlerMethodArgumentResolver {
+public class RequestParameterArgumentResolver implements HandlerMethodArgumentResolver {
 
     private static final String PRICE_SORT_ATTRIBUTE = "price";
     private static final String RATING_SORT_ATTRIBUTE = "rating";
+    private static final String CURRENCY_SORT_ATTRIBUTE = "currency";
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -27,7 +29,7 @@ public class SortDirectionArgumentResolver implements HandlerMethodArgumentResol
 
         if (priceOrderValue != null) {
             SortOrder sortOrder = SortOrder.getByName(priceOrderValue);
-            return getRequestParameter(PRICE_SORT_ATTRIBUTE, sortOrder);
+            return getSortDirectionRequestParameter(PRICE_SORT_ATTRIBUTE, sortOrder);
         }
 
         String ratingOrderValue = webRequest.getParameter(RATING_SORT_ATTRIBUTE);
@@ -37,14 +39,19 @@ public class SortDirectionArgumentResolver implements HandlerMethodArgumentResol
             if (SortOrder.ASC.equals(sortOrder)) {
                 throw new IllegalArgumentException("Incorrect sort parameters, expected movies sorting by rating (desc)");
             }
-            return getRequestParameter(RATING_SORT_ATTRIBUTE, sortOrder);
+            return getSortDirectionRequestParameter(RATING_SORT_ATTRIBUTE, sortOrder);
         }
 
+        String currencyValue = webRequest.getParameter(CURRENCY_SORT_ATTRIBUTE);
+        if (currencyValue != null) {
+            Currency currency = Currency.getByName(currencyValue);
+            return new RequestParameter(null, currency);
+        }
          return null;
     }
 
-    private RequestParameter getRequestParameter(String sortAttribute, SortOrder orderValue) {
+    private RequestParameter getSortDirectionRequestParameter(String sortAttribute, SortOrder orderValue) {
         SortDirection sortDirection = new SortDirection(sortAttribute, orderValue);
-        return new RequestParameter(sortDirection);
+        return new RequestParameter(sortDirection, null);
     }
 }

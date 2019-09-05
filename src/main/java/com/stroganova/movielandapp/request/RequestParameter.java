@@ -9,4 +9,5 @@ import lombok.Getter;
 @EqualsAndHashCode
 public class RequestParameter {
     SortDirection sortDirection;
+    Currency currency;
 }

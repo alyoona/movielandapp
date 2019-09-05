@@ -243,7 +243,7 @@ class JdbcMovieDaoITest {
                         description : "empty")]
 
         def priceDescSortDirection = new SortDirection("price", SortOrder.DESC)
-        assert expectedMoviesPriceDesc == movieDao.getAll(new RequestParameter(priceDescSortDirection))
+        assert expectedMoviesPriceDesc == movieDao.getAll(new RequestParameter(priceDescSortDirection, null))
 
         def expectedMoviesPriceAsc = [
                 new Movie(id: 1L,
@@ -261,7 +261,7 @@ class JdbcMovieDaoITest {
                         price: 150.16D,
                         description : "empty")]
         def priceAscSortDirection = new SortDirection("price", SortOrder.ASC)
-        assert expectedMoviesPriceAsc == movieDao.getAll(new RequestParameter(priceAscSortDirection))
+        assert expectedMoviesPriceAsc == movieDao.getAll(new RequestParameter(priceAscSortDirection, null))
 
         def expectedMoviesRatingDesc = [
                 new Movie(id: 1L,
@@ -279,7 +279,7 @@ class JdbcMovieDaoITest {
                         price: 150.16D,
                         description : "empty")]
         def ratingDescSortDirection = new SortDirection("price", SortOrder.ASC)
-        assert expectedMoviesRatingDesc == movieDao.getAll(new RequestParameter(ratingDescSortDirection))
+        assert expectedMoviesRatingDesc == movieDao.getAll(new RequestParameter(ratingDescSortDirection, null))
 
     }
 
@@ -456,7 +456,7 @@ class JdbcMovieDaoITest {
 
 
         def priceDescSortDirection = new SortDirection("price", SortOrder.DESC)
-        assert expectedMoviesPriceDesc == movieDao.getAll(1L, new RequestParameter(priceDescSortDirection))
+        assert expectedMoviesPriceDesc == movieDao.getAll(1L, new RequestParameter(priceDescSortDirection, null))
 
         def expectedMoviesPriceAsc = [
                 new Movie(id: 1L,
@@ -474,7 +474,7 @@ class JdbcMovieDaoITest {
                         price: 500D,
                         description : "empty")]
         def priceAscSortDirection = new SortDirection("price", SortOrder.ASC)
-        assert expectedMoviesPriceAsc == movieDao.getAll(1L, new RequestParameter(priceAscSortDirection))
+        assert expectedMoviesPriceAsc == movieDao.getAll(1L, new RequestParameter(priceAscSortDirection, null))
 
         def expectedMoviesRatingDesc = [
                 new Movie(id: 1L,
@@ -492,7 +492,7 @@ class JdbcMovieDaoITest {
                         price: 500D,
                         description : "empty")]
         def ratingDescSortDirection = new SortDirection("price", SortOrder.ASC)
-        assert expectedMoviesRatingDesc == movieDao.getAll(1L, new RequestParameter(ratingDescSortDirection))
+        assert expectedMoviesRatingDesc == movieDao.getAll(1L, new RequestParameter(ratingDescSortDirection, null))
     }
 
 

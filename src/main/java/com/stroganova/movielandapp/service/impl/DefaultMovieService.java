@@ -2,7 +2,9 @@ package com.stroganova.movielandapp.service.impl;
 
 import com.stroganova.movielandapp.dao.MovieDao;
 import com.stroganova.movielandapp.entity.Movie;
+import com.stroganova.movielandapp.request.Currency;
 import com.stroganova.movielandapp.request.RequestParameter;
+import com.stroganova.movielandapp.service.CurrencyService;
 import com.stroganova.movielandapp.service.MovieService;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -20,6 +22,7 @@ import java.util.List;
 public class DefaultMovieService implements MovieService {
 
     @NonNull MovieDao movieDao;
+    @NonNull CurrencyService currencyService;
 
     @Override
     public List<Movie> getAll() {
@@ -53,5 +56,17 @@ public class DefaultMovieService implements MovieService {
     @Override
     public Movie getById(long movieId) {
         return movieDao.getById(movieId);
+    }
+
+
+    @Override
+    public Movie getById(long movieId, RequestParameter requestParameter) {
+        Movie movie = getById(movieId);
+        Currency currency = requestParameter.getCurrency();
+        if(currency != null) {
+            double convertedPrice = currencyService.convert(movie.getPrice(), currency);
+            movie.setPrice(convertedPrice);
+        }
+        return movie;
     }
 }

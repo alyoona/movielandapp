@@ -6,9 +6,11 @@ import com.stroganova.movielandapp.entity.Genre
 import com.stroganova.movielandapp.entity.Movie
 import com.stroganova.movielandapp.entity.Review
 import com.stroganova.movielandapp.entity.User
+import com.stroganova.movielandapp.request.Currency
 import com.stroganova.movielandapp.request.RequestParameter
 import com.stroganova.movielandapp.request.SortDirection
 import com.stroganova.movielandapp.request.SortOrder
+import com.stroganova.movielandapp.service.CurrencyService
 import org.junit.Test
 
 import java.time.LocalDate
@@ -17,6 +19,32 @@ import static org.mockito.Mockito.mock
 import static org.mockito.Mockito.when
 
 class DefaultMovieServiceTest {
+
+    @Test
+    void testGetByIdAndConvert() {
+
+        def movie = new Movie(
+                id: 1L,
+                nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                picturePath: "https://picture_path.png",
+                description: "empty"
+        )
+
+        def movieDao = mock(MovieDao.class)
+        when(movieDao.getById(1L)).thenReturn(movie)
+
+        def currencyService = mock(CurrencyService.class)
+        def movieService = new DefaultMovieService(movieDao, currencyService)
+        when(currencyService.convert(movie.getPrice(), Currency.USD)).thenReturn(Double.valueOf(8.99/25))
+        def actualMovie = movieService.getById(1L, new RequestParameter(null, Currency.USD))
+
+        assert movie == actualMovie
+        assert Double.valueOf(8.99/25) == actualMovie.getPrice()
+    }
 
     @Test
     void testGetById() {
@@ -37,7 +65,8 @@ class DefaultMovieServiceTest {
         def movieDao = mock(MovieDao.class)
         when(movieDao.getById(1L)).thenReturn(movie)
 
-        def movieService = new DefaultMovieService(movieDao)
+        def currencyService = mock(CurrencyService.class)
+        def movieService = new DefaultMovieService(movieDao, currencyService)
 
         def actualMovie = movieService.getById(1L)
 
@@ -71,7 +100,8 @@ class DefaultMovieServiceTest {
         def movieDao = mock(MovieDao.class)
         when(movieDao.getAll()).thenReturn(expectedMovies)
 
-        def movieService = new DefaultMovieService(movieDao)
+        def currencyService = mock(CurrencyService.class)
+        def movieService = new DefaultMovieService(movieDao, currencyService)
 
         def actualMovies = movieService.getAll()
 
@@ -105,7 +135,8 @@ class DefaultMovieServiceTest {
         def movieDao = mock(MovieDao.class)
         when(movieDao.getAll(1L)).thenReturn(expectedMovies)
 
-        def movieService = new DefaultMovieService(movieDao)
+        def currencyService = mock(CurrencyService.class)
+        def movieService = new DefaultMovieService(movieDao, currencyService)
 
         def actualMovies = movieService.getAll(1L)
 
@@ -138,7 +169,8 @@ class DefaultMovieServiceTest {
         def movieDao = mock(MovieDao.class)
         when(movieDao.getThreeRandomMovies()).thenReturn(expectedMovies)
 
-        def movieService = new DefaultMovieService(movieDao)
+        def currencyService = mock(CurrencyService.class)
+        def movieService = new DefaultMovieService(movieDao, currencyService)
 
         def actualMovies = movieService.getThreeRandomMovies()
 
@@ -171,12 +203,13 @@ class DefaultMovieServiceTest {
 
         def movieDao = mock(MovieDao.class)
 
+
         def sortDirection = new SortDirection("test", SortOrder.ASC)
-        def requestParameter = new RequestParameter(sortDirection)
+        def requestParameter = new RequestParameter(sortDirection, null)
 
         when(movieDao.getAll(requestParameter)).thenReturn(expectedMovies)
-
-        def movieService = new DefaultMovieService(movieDao)
+        def currencyService = mock(CurrencyService.class)
+        def movieService = new DefaultMovieService(movieDao, currencyService)
 
         def actualMovies = movieService.getAll(requestParameter)
 
@@ -209,11 +242,12 @@ class DefaultMovieServiceTest {
 
         def movieDao = mock(MovieDao.class)
         def sortDirection = new SortDirection("test", SortOrder.ASC)
-        def requestParameter = new RequestParameter(sortDirection)
+        def requestParameter = new RequestParameter(sortDirection, null)
 
         when(movieDao.getAll(1L, requestParameter)).thenReturn(expectedMovies)
 
-        def movieService = new DefaultMovieService(movieDao)
+        def currencyService = mock(CurrencyService.class)
+        def movieService = new DefaultMovieService(movieDao, currencyService)
 
         def actualMovies = movieService.getAll(1L, requestParameter)
 
