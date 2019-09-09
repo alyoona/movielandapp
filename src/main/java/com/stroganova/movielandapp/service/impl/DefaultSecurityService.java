@@ -9,23 +9,22 @@ import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class DefaultSecurityService implements SecurityService {
 
-    private Map<String, Token> tokenCache = new ConcurrentHashMap<>();
+    private volatile Map<String, Token> tokenCache = new ConcurrentHashMap<>();
+    private Map<String, Boolean> tokenInvalidIdentifierMap = new ConcurrentHashMap<>();
     private final UserService userService;
-    @Value("${tokenLifeTime}")
+    @Value("${securityService.tokenLifeTime}")
     private long tokenLifeTime;
 
     @Override
@@ -41,7 +40,7 @@ public class DefaultSecurityService implements SecurityService {
 
     @Override
     public void logout(String uuid) {
-        if(getCachedToken(uuid).isPresent()) {
+        if (getCachedToken(uuid).isPresent()) {
             tokenCache.remove(uuid);
         }
     }
@@ -60,15 +59,27 @@ public class DefaultSecurityService implements SecurityService {
 
     private Optional<Token> getCachedToken(String uuid) {
         Optional<Token> tokenOptional = Optional.ofNullable(tokenCache.get(uuid));
-        if(tokenOptional.isPresent()){
-            if(tokenOptional.get().getExpirationDate().isBefore(LocalDateTime.now())){
-            tokenCache.remove(uuid);
-            return Optional.empty();
+        if (tokenOptional.isPresent()) {
+            if (tokenOptional.get().getExpirationDate().isBefore(LocalDateTime.now())) {
+                tokenInvalidIdentifierMap.putIfAbsent(uuid, true);
+                return Optional.empty();
             } else {
                 return tokenOptional;
             }
         }
         return tokenOptional;
+    }
+
+    @Scheduled(fixedRateString = "${securityService.tokenCacheClearRate}")
+    private void clearTokenCache() {
+        if (!tokenInvalidIdentifierMap.isEmpty()) {
+            Map<String, Token> tokenCacheCopy = new HashMap<>(tokenCache);
+            for (String uuid : tokenInvalidIdentifierMap.keySet()) {
+                tokenCacheCopy.remove(uuid);
+            }
+            tokenInvalidIdentifierMap.clear();
+            tokenCache = new ConcurrentHashMap<>(tokenCacheCopy);
+        }
     }
 
 
