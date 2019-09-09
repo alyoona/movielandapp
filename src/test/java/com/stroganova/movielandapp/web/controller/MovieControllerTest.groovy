@@ -93,7 +93,7 @@ class MovieControllerTest {
         def countries = [new Country(id: 1, name: "USA"), new Country(id: 2, name: "GB")]
         def genres = [new Genre(1, "comedy"), new Genre(2, "family")]
         def reviews = [new Review(id: 1, text: "Excellent!!!",
-                user: new User(id: 1, nickname: "fName lName"))]
+                user: new User(id: 1, nickname: "fName lName", email: null, password: null))]
 
         def movie = new Movie(id: 1L,
                 nameRussian: "NameRussian",
@@ -127,7 +127,6 @@ class MovieControllerTest {
                              genres       : [[id: 1, name: "comedy"], [id: 2, name: "family"]],
                              reviews      : [[id: 1, text: "Excellent!!!", user: [id: 1, nickname: "fName lName"]]]
         ]
-
 
         assert expectedMovie == actualMovie
 
