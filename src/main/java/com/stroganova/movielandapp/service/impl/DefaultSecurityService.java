@@ -12,9 +12,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 @Service
@@ -22,7 +23,7 @@ import java.util.UUID;
 @Slf4j
 public class DefaultSecurityService implements SecurityService {
 
-    private volatile HashMap<String, Token> tokenCache = new HashMap<>();
+    private Map<String, Token> tokenCache = new ConcurrentHashMap<>();
     private final UserService userService;
     @Value("${tokenLifeTime}")
     private long tokenLifeTime;
