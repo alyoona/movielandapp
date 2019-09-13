@@ -6,11 +6,7 @@ public class View {
     public interface MovieDetail extends Summary {
     }
 
-    public interface Token {
+    public interface Session {
     }
-
-    public interface UserToken  extends Token{
-    }
-
 
 }

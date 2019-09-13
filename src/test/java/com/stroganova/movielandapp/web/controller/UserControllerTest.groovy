@@ -1,8 +1,9 @@
 package com.stroganova.movielandapp.web.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.stroganova.movielandapp.entity.Token
+import com.stroganova.movielandapp.entity.Session
 import com.stroganova.movielandapp.entity.User
+import com.stroganova.movielandapp.entity.UserCredentials
 import com.stroganova.movielandapp.exception.NotAuthenticatedException
 import com.stroganova.movielandapp.service.SecurityService
 import groovy.json.JsonSlurper
@@ -24,6 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 class UserControllerTest {
 
+    private final ObjectMapper MAPPER = new ObjectMapper()
 
     @Mock
     private SecurityService securityService
@@ -40,11 +42,11 @@ class UserControllerTest {
     @Test
     void testLogin() {
 
-        ObjectMapper mapper = new ObjectMapper()
-        def user = new User(email: "ronald.reynolds66@example.com", password: "paco")
-        String requestBodyJson = mapper.writeValueAsString(user)
+
+        def user = new UserCredentials(email: "ronald.reynolds66@example.com", password: "paco")
+        String requestBodyJson = MAPPER.writeValueAsString(user)
         def loggedIdUser = new User(nickname: "Big Ben")
-        when(securityService.login(user)).thenReturn(new Token("uuid123456789", loggedIdUser, LocalDateTime.now()))
+        when(securityService.login(user)).thenReturn(new Session("uuid123456789", loggedIdUser, LocalDateTime.now()))
 
         def response = mockMvc.perform(post("/login").content(requestBodyJson).contentType('application/json'))
                 .andReturn().response
@@ -62,17 +64,16 @@ class UserControllerTest {
 
     @Test
     void testLogout() {
-        def uuid = UUID.randomUUID().toString()
-        when(securityService.logout(uuid)).then(new DoesNothing())
-        def response = mockMvc.perform(delete("/logout").header("Uuid", uuid)).andReturn().response
+        def token = UUID.randomUUID().toString()
+        when(securityService.logout(token)).then(new DoesNothing())
+        def response = mockMvc.perform(delete("/logout").header("Token", token)).andReturn().response
         assert response.status == HttpStatus.OK.value()
     }
 
     @Test
     void testLoginBadRequest(){
-        ObjectMapper mapper = new ObjectMapper()
-        def user = new User(email: "ronald.reynolds66@example.com", password: "paco")
-        String requestBodyJson = mapper.writeValueAsString(user)
+        def user = new UserCredentials(email: "ronald.reynolds66@example.com", password: "paco")
+        String requestBodyJson = MAPPER.writeValueAsString(user)
         when(securityService.login(user)).thenThrow(NotAuthenticatedException.class)
         def response = mockMvc.perform(post("/login").content(requestBodyJson).contentType('application/json'))
                 .andReturn().response

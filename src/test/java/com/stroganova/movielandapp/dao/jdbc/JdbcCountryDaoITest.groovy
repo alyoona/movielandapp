@@ -2,6 +2,7 @@ package com.stroganova.movielandapp.dao.jdbc
 
 import com.stroganova.movielandapp.dao.CountryDao
 import com.stroganova.movielandapp.entity.Country
+import com.stroganova.movielandapp.entity.Movie
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -55,7 +56,7 @@ class JdbcCountryDaoITest {
 
         def countries = [new Country(id: 10L, name: "countryFirst"), new Country(id: 20L, name: "countrySecond") ]
 
-        def actualCountries = countryDao.getAll(1L)
+        def actualCountries = countryDao.getAll(new Movie(id: 1L))
         assert countries == actualCountries
     }
 }

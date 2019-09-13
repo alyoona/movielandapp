@@ -1,7 +1,7 @@
 package com.stroganova.movielandapp.service;
 
-import com.stroganova.movielandapp.entity.Token;
-import com.stroganova.movielandapp.entity.User;
+import com.stroganova.movielandapp.entity.Session;
+import com.stroganova.movielandapp.entity.UserCredentials;
 
 import java.util.Optional;
 
@@ -9,7 +9,7 @@ public interface SecurityService {
 
     void logout(String uuid);
 
-    Optional<Token> getAuthorization(String uuid);
+    Optional<Session> getAuthorization(String uuid);
 
-    Token login(User user);
+    Session login(UserCredentials user);
 }

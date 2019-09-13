@@ -2,6 +2,7 @@ package com.stroganova.movielandapp.dao.jdbc;
 
 import com.stroganova.movielandapp.dao.ReviewDao;
 import com.stroganova.movielandapp.dao.jdbc.mapper.ReviewRowMapper;
+import com.stroganova.movielandapp.entity.Movie;
 import com.stroganova.movielandapp.entity.Review;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -24,8 +25,8 @@ public class JdbcReviewDao implements ReviewDao {
     @NonNull String getAllReviewsByMovieIdSql;
 
     @Override
-    public List<Review> getAll(long movieId) {
-        MapSqlParameterSource sqlParameterSource = new MapSqlParameterSource("id", movieId);
+    public List<Review> getAll(Movie movie) {
+        MapSqlParameterSource sqlParameterSource = new MapSqlParameterSource("id", movie.getId());
         return namedParameterJdbcTemplate.query(getAllReviewsByMovieIdSql, sqlParameterSource, REVIEW_ROW_MAPPER);
     }
 

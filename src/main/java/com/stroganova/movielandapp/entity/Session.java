@@ -10,10 +10,10 @@ import lombok.Value;
 import java.time.LocalDateTime;
 
 @Value
-public class Token {
-    @JsonView(View.Token.class)
+public class Session {
+    @JsonView(View.Session.class)
     String uuid;
-    @JsonView(View.Token.class)
+    @JsonView(View.Session.class)
     @JsonSerialize(using = NicknameUserSerializer.class)
     @JsonProperty("nickname")
     User user;

@@ -1,7 +1,7 @@
 package com.stroganova.movielandapp.dao.jdbc
 
 import com.stroganova.movielandapp.dao.ReviewDao
-
+import com.stroganova.movielandapp.entity.Movie
 import com.stroganova.movielandapp.entity.Review
 import com.stroganova.movielandapp.entity.User
 import org.junit.Before
@@ -60,7 +60,7 @@ class JdbcReviewDaoITest {
         def user = new User(id: 1000L, nickname: "Big Ben")
         def reviews = [new Review(id:1L, text: "Excellent!!!", user: user), new Review(id:2L, text: "Great!!!", user: user)]
 
-        def actualReviews = reviewDao.getAll(1L)
+        def actualReviews = reviewDao.getAll(new Movie(id: 1L))
         assert reviews == actualReviews
     }
 }

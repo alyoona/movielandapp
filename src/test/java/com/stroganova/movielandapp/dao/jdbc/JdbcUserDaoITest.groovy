@@ -2,6 +2,7 @@ package com.stroganova.movielandapp.dao.jdbc
 
 import com.stroganova.movielandapp.dao.UserDao
 import com.stroganova.movielandapp.entity.User
+import com.stroganova.movielandapp.entity.UserCredentials
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -39,7 +40,7 @@ class JdbcUserDaoITest {
                                                   first_name: "Big",
                                                   last_name: "Ben"])
         def user = new User(id: 22L, email: "testUser@example.com", nickname: "Big Ben")
-        def actualUser = userDao.get(new User(email: "testUser@example.com", password: "jfhkjsdfhksfhksh" ))
+        def actualUser = userDao.get(new UserCredentials(email: "testUser@example.com", password: "jfhkjsdfhksfhksh" ))
         assert user == actualUser
     }
 }

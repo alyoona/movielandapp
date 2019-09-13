@@ -1,7 +1,8 @@
 package com.stroganova.movielandapp.service.impl;
 
-import com.stroganova.movielandapp.entity.Token;
+import com.stroganova.movielandapp.entity.Session;
 import com.stroganova.movielandapp.entity.User;
+import com.stroganova.movielandapp.entity.UserCredentials;
 import com.stroganova.movielandapp.exception.NotAuthenticatedException;
 import com.stroganova.movielandapp.service.SecurityService;
 import com.stroganova.movielandapp.service.UserService;
@@ -21,64 +22,63 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class DefaultSecurityService implements SecurityService {
 
-    private volatile Map<String, Token> tokenCache = new ConcurrentHashMap<>();
-    private Map<String, Boolean> tokenInvalidIdentifierMap = new ConcurrentHashMap<>();
+    private Map<String, Session> tokenCache = new ConcurrentHashMap<>();
     private final UserService userService;
     @Value("${securityService.tokenLifeTime}")
     private long tokenLifeTime;
 
     @Override
-    public Token login(User user) {
-        Optional<User> userOptional = Optional.ofNullable(userService.get(user));
+    public Session login(UserCredentials userCredentials) {
+        Optional<User> userOptional = Optional.ofNullable(userService.get(userCredentials));
         if (!userOptional.isPresent()) {
             throw new NotAuthenticatedException("Wrong combination of login or password");
         }
-        log.info("Successful signing up for user {}", user.getEmail());
-        return getToken(userOptional.get());
-    }
-
-
-    @Override
-    public void logout(String uuid) {
-        if (getCachedToken(uuid).isPresent()) {
-            tokenCache.remove(uuid);
-        }
+        log.info("Successful signing up for user {}", userCredentials.getEmail());
+        return createAndCacheSession(userOptional.get());
     }
 
     @Override
-    public Optional<Token> getAuthorization(String uuid) {
-        return getCachedToken(uuid);
+    public void logout(String token) {
+        tokenCache.remove(token);
     }
 
-    private Token getToken(User user) {
-        String uuid = UUID.randomUUID().toString();
-        Token token = new Token(uuid, user, LocalDateTime.now().plusHours(tokenLifeTime));
-        tokenCache.put(uuid, token);
-        return token;
+    @Override
+    public Optional<Session> getAuthorization(String token) {
+        return getCachedToken(token);
     }
 
-    private Optional<Token> getCachedToken(String uuid) {
-        Optional<Token> tokenOptional = Optional.ofNullable(tokenCache.get(uuid));
-        if (tokenOptional.isPresent()) {
-            if (tokenOptional.get().getExpirationDate().isBefore(LocalDateTime.now())) {
-                tokenInvalidIdentifierMap.putIfAbsent(uuid, true);
-                return Optional.empty();
-            } else {
-                return tokenOptional;
+    private Session createAndCacheSession(User user) {
+        String token = UUID.randomUUID().toString();
+        Session session = new Session(token, user, LocalDateTime.now().plusHours(tokenLifeTime));
+        tokenCache.put(token, session);
+        return session;
+    }
+
+    private Optional<Session> getCachedToken(String token) {
+        if (token != null) {
+            Optional<Session> tokenOptional = Optional.ofNullable(tokenCache.get(token));
+            if (tokenOptional.isPresent()) {
+
+                return removeIfTokenExpired(tokenOptional.get()) ? Optional.empty() : tokenOptional;
             }
+            return tokenOptional;
         }
-        return tokenOptional;
+        return Optional.empty();
+    }
+
+    private boolean removeIfTokenExpired(Session session) {
+        if (session.getExpirationDate().isBefore(LocalDateTime.now())) {
+            tokenCache.remove(session.getUuid());
+            return true;
+        }
+        return false;
     }
 
     @Scheduled(fixedRateString = "${securityService.tokenCacheClearRate}")
     private void clearTokenCache() {
-        if (!tokenInvalidIdentifierMap.isEmpty()) {
-            Map<String, Token> tokenCacheCopy = new HashMap<>(tokenCache);
-            for (String uuid : tokenInvalidIdentifierMap.keySet()) {
-                tokenCacheCopy.remove(uuid);
-            }
-            tokenInvalidIdentifierMap.clear();
-            tokenCache = new ConcurrentHashMap<>(tokenCacheCopy);
+        for (String token : tokenCache.keySet()) {
+            Session session = tokenCache.get(token);
+            removeIfTokenExpired(session);
         }
     }
 

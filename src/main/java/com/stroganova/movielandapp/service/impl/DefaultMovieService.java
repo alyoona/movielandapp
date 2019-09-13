@@ -1,17 +1,22 @@
 package com.stroganova.movielandapp.service.impl;
 
+import com.stroganova.movielandapp.dao.GenreService;
 import com.stroganova.movielandapp.dao.MovieDao;
 import com.stroganova.movielandapp.entity.Movie;
+import com.stroganova.movielandapp.exception.EntityNotFoundException;
 import com.stroganova.movielandapp.request.Currency;
 import com.stroganova.movielandapp.request.RequestParameter;
+import com.stroganova.movielandapp.service.CountryService;
 import com.stroganova.movielandapp.service.CurrencyService;
 import com.stroganova.movielandapp.service.MovieService;
+import com.stroganova.movielandapp.service.ReviewService;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,6 +27,9 @@ import java.util.List;
 public class DefaultMovieService implements MovieService {
 
     @NonNull MovieDao movieDao;
+    @NonNull CountryService countryService;
+    @NonNull GenreService genreService;
+    @NonNull ReviewService reviewService;
     @NonNull CurrencyService currencyService;
 
     @Override
@@ -54,10 +62,21 @@ public class DefaultMovieService implements MovieService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Movie getById(long movieId) {
-        return movieDao.getById(movieId);
+        Movie movie = movieDao.getById(movieId);
+        if(movie == null) {
+            throw new EntityNotFoundException("No such movie");
+        }
+        return enrich(movie);
     }
 
+    private Movie enrich(Movie movie) {
+        movie.setCountries(countryService.getAll(movie));
+        movie.setGenres(genreService.getAll(movie));
+        movie.setReviews(reviewService.getAll(movie));
+        return movie;
+    }
 
     @Override
     public Movie getById(long movieId, RequestParameter requestParameter) {

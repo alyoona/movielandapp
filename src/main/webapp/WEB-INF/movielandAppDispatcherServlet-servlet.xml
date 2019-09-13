@@ -20,7 +20,7 @@
     </mvc:annotation-driven>
 
     <mvc:interceptors>
-        <bean class="com.stroganova.movielandapp.web.interceptor.LoggingRequestInterceptor" />
+        <bean class="com.stroganova.movielandapp.web.interceptor.LoggingHandlerInterceptor" />
     </mvc:interceptors>
 
 </beans>

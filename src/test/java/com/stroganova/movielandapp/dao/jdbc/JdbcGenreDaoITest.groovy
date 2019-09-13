@@ -1,7 +1,8 @@
 package com.stroganova.movielandapp.dao.jdbc
 
-import com.stroganova.movielandapp.dao.GenreDao
+import com.stroganova.movielandapp.dao.GenreService
 import com.stroganova.movielandapp.entity.Genre
+import com.stroganova.movielandapp.entity.Movie
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,7 +20,7 @@ class JdbcGenreDaoITest {
     NamedParameterJdbcTemplate namedJdbcTemplate
 
     @Autowired
-    GenreDao genreDao
+    GenreService genreDao
 
     def genreInsertSql = "INSERT INTO movieland.genre (id, name) VALUES (:id, :name);"
     def movieInsertSql = "INSERT INTO movieland.movie (id, name_russian, name_native, year, description, rating, price)" +
@@ -72,7 +73,7 @@ class JdbcGenreDaoITest {
 
         def genres = [new Genre(100L, "genreFirst"), new Genre(200L, "genreSecond")]
 
-        def actualGenres = genreDao.getAll(3L)
+        def actualGenres = genreDao.getAll(new Movie(id: 3L))
         assert genres == actualGenres
     }
 

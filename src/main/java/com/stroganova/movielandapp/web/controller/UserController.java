@@ -2,8 +2,7 @@ package com.stroganova.movielandapp.web.controller;
 
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.stroganova.movielandapp.entity.Token;
-import com.stroganova.movielandapp.entity.User;
+import com.stroganova.movielandapp.entity.UserCredentials;
 import com.stroganova.movielandapp.exception.NotAuthenticatedException;
 import com.stroganova.movielandapp.service.SecurityService;
 import com.stroganova.movielandapp.view.View;
@@ -25,21 +24,21 @@ public class UserController {
 
     @NonNull SecurityService securityService;
 
-    @JsonView(View.Token.class)
+    @JsonView(View.Session.class)
     @PostMapping("/login")
-    public Token login(@RequestBody User user) {
+    public com.stroganova.movielandapp.entity.Session login(@RequestBody UserCredentials userCredentials) {
         try {
-            return securityService.login(user);
+            return securityService.login(userCredentials);
         } catch (NotAuthenticatedException ex) {
             throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+                    HttpStatus.UNAUTHORIZED, ex.getMessage(), ex);
         }
 
     }
 
     @DeleteMapping("/logout")
-    public void logout(@RequestHeader("Uuid") String uuid) {
-        securityService.logout(uuid);
+    public void logout(@RequestHeader("Token") String token) {
+        securityService.logout(token);
 
     }
 
