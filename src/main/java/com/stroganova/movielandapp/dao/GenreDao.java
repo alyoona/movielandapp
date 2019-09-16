@@ -5,7 +5,7 @@ import com.stroganova.movielandapp.entity.Movie;
 
 import java.util.List;
 
-public interface GenreService {
+public interface GenreDao {
 
     List<Genre> getAll();
 

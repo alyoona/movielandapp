@@ -1,15 +1,12 @@
 package com.stroganova.movielandapp.service.impl;
 
-import com.stroganova.movielandapp.dao.GenreService;
+
 import com.stroganova.movielandapp.dao.MovieDao;
 import com.stroganova.movielandapp.entity.Movie;
 import com.stroganova.movielandapp.exception.EntityNotFoundException;
 import com.stroganova.movielandapp.request.Currency;
 import com.stroganova.movielandapp.request.RequestParameter;
-import com.stroganova.movielandapp.service.CountryService;
-import com.stroganova.movielandapp.service.CurrencyService;
-import com.stroganova.movielandapp.service.MovieService;
-import com.stroganova.movielandapp.service.ReviewService;
+import com.stroganova.movielandapp.service.*;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

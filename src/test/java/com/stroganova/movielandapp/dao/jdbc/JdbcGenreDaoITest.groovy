@@ -1,6 +1,6 @@
 package com.stroganova.movielandapp.dao.jdbc
 
-import com.stroganova.movielandapp.dao.GenreService
+import com.stroganova.movielandapp.dao.GenreDao
 import com.stroganova.movielandapp.entity.Genre
 import com.stroganova.movielandapp.entity.Movie
 import org.junit.Before
@@ -20,7 +20,7 @@ class JdbcGenreDaoITest {
     NamedParameterJdbcTemplate namedJdbcTemplate
 
     @Autowired
-    GenreService genreDao
+    GenreDao genreDao
 
     def genreInsertSql = "INSERT INTO movieland.genre (id, name) VALUES (:id, :name);"
     def movieInsertSql = "INSERT INTO movieland.movie (id, name_russian, name_native, year, description, rating, price)" +

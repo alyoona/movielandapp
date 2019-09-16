@@ -78,7 +78,7 @@ class UserControllerTest {
         def response = mockMvc.perform(post("/login").content(requestBodyJson).contentType('application/json'))
                 .andReturn().response
 
-        assert response.status == HttpStatus.BAD_REQUEST.value()
+        assert response.status == HttpStatus.UNAUTHORIZED.value()
 
     }
 

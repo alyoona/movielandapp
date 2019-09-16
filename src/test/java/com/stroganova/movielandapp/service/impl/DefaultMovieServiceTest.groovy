@@ -1,6 +1,5 @@
 package com.stroganova.movielandapp.service.impl
 
-import com.stroganova.movielandapp.dao.GenreService
 import com.stroganova.movielandapp.dao.MovieDao
 import com.stroganova.movielandapp.entity.Country
 import com.stroganova.movielandapp.entity.Genre
@@ -13,6 +12,7 @@ import com.stroganova.movielandapp.request.SortDirection
 import com.stroganova.movielandapp.request.SortOrder
 import com.stroganova.movielandapp.service.CountryService
 import com.stroganova.movielandapp.service.CurrencyService
+import com.stroganova.movielandapp.service.GenreService
 import com.stroganova.movielandapp.service.MovieService
 import com.stroganova.movielandapp.service.ReviewService
 import org.junit.Before

@@ -1,6 +1,6 @@
 package com.stroganova.movielandapp.dao.cache.impl;
 
-import com.stroganova.movielandapp.dao.GenreService;
+import com.stroganova.movielandapp.dao.GenreDao;
 import com.stroganova.movielandapp.dao.cache.GenreCache;
 import com.stroganova.movielandapp.entity.Genre;
 import lombok.AccessLevel;
@@ -22,7 +22,7 @@ import java.util.List;
 public class DefaultGenreCache implements GenreCache {
 
     @NonNull
-    final GenreService genreDao;
+    final GenreDao genreDao;
 
     volatile List<Genre> genres;
 

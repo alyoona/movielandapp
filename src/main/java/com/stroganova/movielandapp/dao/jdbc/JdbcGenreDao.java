@@ -1,6 +1,6 @@
 package com.stroganova.movielandapp.dao.jdbc;
 
-import com.stroganova.movielandapp.dao.GenreService;
+import com.stroganova.movielandapp.dao.GenreDao;
 import com.stroganova.movielandapp.dao.jdbc.mapper.GenreRowMapper;
 import com.stroganova.movielandapp.entity.Genre;
 import com.stroganova.movielandapp.entity.Movie;
@@ -19,7 +19,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal=true, level= AccessLevel.PRIVATE)
-public class JdbcGenreDao implements GenreService {
+public class JdbcGenreDao implements GenreDao {
 
     private final GenreRowMapper genreRowMapper = new GenreRowMapper();
     @NonNull NamedParameterJdbcTemplate namedParameterJdbcTemplate;
