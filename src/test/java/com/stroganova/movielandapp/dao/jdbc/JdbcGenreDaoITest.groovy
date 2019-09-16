@@ -2,6 +2,7 @@ package com.stroganova.movielandapp.dao.jdbc
 
 import com.stroganova.movielandapp.dao.GenreDao
 import com.stroganova.movielandapp.entity.Genre
+import com.stroganova.movielandapp.entity.Movie
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -72,7 +73,7 @@ class JdbcGenreDaoITest {
 
         def genres = [new Genre(100L, "genreFirst"), new Genre(200L, "genreSecond")]
 
-        def actualGenres = genreDao.getAll(3L)
+        def actualGenres = genreDao.getAll(new Movie(id: 3L))
         assert genres == actualGenres
     }
 

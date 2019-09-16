@@ -3,6 +3,7 @@ package com.stroganova.movielandapp.dao.jdbc;
 import com.stroganova.movielandapp.dao.GenreDao;
 import com.stroganova.movielandapp.dao.jdbc.mapper.GenreRowMapper;
 import com.stroganova.movielandapp.entity.Genre;
+import com.stroganova.movielandapp.entity.Movie;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal=true, level= AccessLevel.PRIVATE)
-public class JdbcGenreDao implements GenreDao{
+public class JdbcGenreDao implements GenreDao {
 
     private final GenreRowMapper genreRowMapper = new GenreRowMapper();
     @NonNull NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -36,8 +37,8 @@ public class JdbcGenreDao implements GenreDao{
     }
 
     @Override
-    public List<Genre> getAll(long movieId) {
-        MapSqlParameterSource sqlParameterSource = new MapSqlParameterSource("id", movieId);
+    public List<Genre> getAll(Movie movie) {
+        MapSqlParameterSource sqlParameterSource = new MapSqlParameterSource("id", movie.getId());
         return namedParameterJdbcTemplate.query(getAllGenresByMovieIdSql, sqlParameterSource, genreRowMapper);
     }
 

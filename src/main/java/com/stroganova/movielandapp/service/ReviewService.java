@@ -1,11 +1,11 @@
-package com.stroganova.movielandapp.dao;
+package com.stroganova.movielandapp.service;
 
 import com.stroganova.movielandapp.entity.Movie;
 import com.stroganova.movielandapp.entity.Review;
 
 import java.util.List;
 
-public interface ReviewDao {
+public interface ReviewService {
 
     List<Review> getAll(Movie movie);
 }

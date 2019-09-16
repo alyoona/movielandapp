@@ -5,4 +5,8 @@ public class View {
     }
     public interface MovieDetail extends Summary {
     }
+
+    public interface Session {
+    }
+
 }

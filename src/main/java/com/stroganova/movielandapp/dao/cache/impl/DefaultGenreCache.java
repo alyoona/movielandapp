@@ -1,7 +1,7 @@
 package com.stroganova.movielandapp.dao.cache.impl;
 
 import com.stroganova.movielandapp.dao.GenreDao;
-import com.stroganova.movielandapp.dao.cache.CachedGenreDao;
+import com.stroganova.movielandapp.dao.cache.GenreCache;
 import com.stroganova.movielandapp.entity.Genre;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -19,7 +19,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DefaultCachedGenreDao implements CachedGenreDao {
+public class DefaultGenreCache implements GenreCache {
 
     @NonNull
     final GenreDao genreDao;

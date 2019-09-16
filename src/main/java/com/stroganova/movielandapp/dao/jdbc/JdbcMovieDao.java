@@ -1,9 +1,7 @@
 package com.stroganova.movielandapp.dao.jdbc;
 
-import com.stroganova.movielandapp.dao.CountryDao;
-import com.stroganova.movielandapp.dao.GenreDao;
 import com.stroganova.movielandapp.dao.MovieDao;
-import com.stroganova.movielandapp.dao.ReviewDao;
+import com.stroganova.movielandapp.dao.jdbc.mapper.MovieDetailsResultSetExtractor;
 import com.stroganova.movielandapp.dao.jdbc.mapper.MovieRowMapper;
 import com.stroganova.movielandapp.dao.jdbc.util.QueryBuilder;
 import com.stroganova.movielandapp.entity.Movie;
@@ -17,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,10 +24,8 @@ import java.util.List;
 public class JdbcMovieDao implements MovieDao {
 
     private final static MovieRowMapper MOVIE_ROW_MAPPER = new MovieRowMapper();
-
-    @NonNull CountryDao countryDao;
-    @NonNull GenreDao genreDao;
-    @NonNull ReviewDao reviewDao;
+    private final static MovieDetailsResultSetExtractor MOVIE_DETAILS_RESULT_SET_EXTRACTOR =
+            new MovieDetailsResultSetExtractor(MOVIE_ROW_MAPPER);
 
     @NonNull NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     @NonNull String getAllMoviesSql;
@@ -71,15 +66,10 @@ public class JdbcMovieDao implements MovieDao {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Movie getById(long movieId) {
         MapSqlParameterSource sqlParameterSource = new MapSqlParameterSource();
         sqlParameterSource.addValue("id", movieId);
-        Movie movie = namedParameterJdbcTemplate.queryForObject(getMovieByIdSql, sqlParameterSource, MOVIE_ROW_MAPPER);
-        movie.setCountries(countryDao.getAll(movieId));
-        movie.setGenres(genreDao.getAll(movieId));
-        movie.setReviews(reviewDao.getAll(movieId));
-        return movie;
+        return namedParameterJdbcTemplate.query(getMovieByIdSql, sqlParameterSource, MOVIE_DETAILS_RESULT_SET_EXTRACTOR);
     }
 
 }
