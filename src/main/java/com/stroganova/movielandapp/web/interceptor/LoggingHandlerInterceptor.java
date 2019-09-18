@@ -41,7 +41,7 @@ public class LoggingHandlerInterceptor implements HandlerInterceptor {
         log.info("requestId put into MDC: {}", requestIdValue);
         MDC.put(REQUEST_ID_KEY, requestIdValue);
 
-        Optional<Session> authorizationToken = securityService.getAuthorization(request.getHeader("Uuid"));
+        Optional<Session> authorizationToken = securityService.getAuthorization(request.getHeader("Token"));
         if (authorizationToken.isPresent()) {
 
             User user = authorizationToken.get().getUser();

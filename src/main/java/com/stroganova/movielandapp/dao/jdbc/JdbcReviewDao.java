@@ -16,13 +16,14 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-@FieldDefaults(makeFinal=true, level= AccessLevel.PRIVATE)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class JdbcReviewDao implements ReviewDao {
 
     private final static ReviewRowMapper REVIEW_ROW_MAPPER = new ReviewRowMapper();
 
     @NonNull NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     @NonNull String getAllReviewsByMovieIdSql;
+    @NonNull String addReviewSql;
 
     @Override
     public List<Review> getAll(Movie movie) {
@@ -30,4 +31,12 @@ public class JdbcReviewDao implements ReviewDao {
         return namedParameterJdbcTemplate.query(getAllReviewsByMovieIdSql, sqlParameterSource, REVIEW_ROW_MAPPER);
     }
 
+    @Override
+    public void add(Review review) {
+        MapSqlParameterSource sqlParameterSource = new MapSqlParameterSource();
+        sqlParameterSource.addValue("user_id", review.getUser().getId());
+        sqlParameterSource.addValue("movie_id", review.getMovie().getId());
+        sqlParameterSource.addValue("description", review.getText());
+        namedParameterJdbcTemplate.update(addReviewSql, sqlParameterSource);
+    }
 }

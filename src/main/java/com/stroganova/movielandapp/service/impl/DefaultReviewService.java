@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(makeFinal=true, level= AccessLevel.PRIVATE)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class DefaultReviewService implements ReviewService {
 
     @NonNull ReviewDao reviewDao;
@@ -22,5 +22,10 @@ public class DefaultReviewService implements ReviewService {
     @Override
     public List<Review> getAll(Movie movie) {
         return reviewDao.getAll(movie);
+    }
+
+    @Override
+    public void add(Review review) {
+        reviewDao.add(review);
     }
 }

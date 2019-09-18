@@ -8,4 +8,6 @@ import java.util.List;
 public interface ReviewDao {
 
     List<Review> getAll(Movie movie);
+
+    void add(Review review);
 }

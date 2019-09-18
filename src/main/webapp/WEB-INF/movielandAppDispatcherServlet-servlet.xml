@@ -16,11 +16,13 @@
     <mvc:annotation-driven>
         <mvc:argument-resolvers>
             <bean class="com.stroganova.movielandapp.web.handler.RequestParameterArgumentResolver"/>
+            <bean class="com.stroganova.movielandapp.web.handler.UserRequestAttributeArgumentResolver"/>
         </mvc:argument-resolvers>
     </mvc:annotation-driven>
 
     <mvc:interceptors>
         <bean class="com.stroganova.movielandapp.web.interceptor.LoggingHandlerInterceptor" />
+        <bean class="com.stroganova.movielandapp.web.interceptor.SecurityHandlerInterceptor" />
     </mvc:interceptors>
 
 </beans>
