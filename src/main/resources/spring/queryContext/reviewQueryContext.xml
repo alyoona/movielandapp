@@ -12,4 +12,9 @@
                                 WHERE m.id = :id;"/>
     </bean>
 
+    <bean id="addReviewSql" class="java.lang.String">
+        <constructor-arg value="INSERT INTO movieland.review (user_id, movie_id, description)
+                                VALUES (:user_id, :movie_id, :description);"/>
+    </bean>
+
 </beans>

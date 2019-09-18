@@ -1,6 +1,7 @@
 package com.stroganova.movielandapp.dao.jdbc
 
 import com.stroganova.movielandapp.dao.UserDao
+import com.stroganova.movielandapp.entity.Role
 import com.stroganova.movielandapp.entity.User
 import com.stroganova.movielandapp.entity.UserCredentials
 import org.junit.Before
@@ -24,6 +25,9 @@ class JdbcUserDaoITest {
 
     def usersInsertSql = "INSERT INTO movieland.users (id, email, password, first_name, last_name) " +
             "VALUES (:id, :email, :password, :first_name, :last_name);"
+    def rolesInsertSql = "INSERT INTO movieland.roles (id, name) VALUES (:id, :name);"
+    def userRolesInsertSql = "INSERT INTO movieland.user_roles (id, user_id, role_id) VALUES (:id, :user_id, :role_id);"
+
     @Before
     void clear() {
         def reviewDeleteSql = "DELETE FROM movieland.review;"
@@ -33,14 +37,17 @@ class JdbcUserDaoITest {
     }
 
     @Test
-    void testGet(){
-        namedJdbcTemplate.update(usersInsertSql, [id: 22L,
-                                                  email: "testUser@example.com",
-                                                  password: "jfhkjsdfhksfhksh",
+    void testGet() {
+        namedJdbcTemplate.update(usersInsertSql, [id        : 22L,
+                                                  email     : "testUser@example.com",
+                                                  password  : "jfhkjsdfhksfhksh",
                                                   first_name: "Big",
-                                                  last_name: "Ben"])
-        def user = new User(id: 22L, email: "testUser@example.com", nickname: "Big Ben")
-        def actualUser = userDao.get(new UserCredentials(email: "testUser@example.com", password: "jfhkjsdfhksfhksh" ))
+                                                  last_name : "Ben"])
+        namedJdbcTemplate.update(rolesInsertSql, [id: 5, name: "USER_ROLE"])
+        namedJdbcTemplate.update(userRolesInsertSql, [id: 77, user_id: 22, role_id: 5])
+
+        def user = new User(id: 22L, email: "testUser@example.com", nickname: "Big Ben", role: Role.USER_ROLE)
+        def actualUser = userDao.get(new UserCredentials(email: "testUser@example.com", password: "jfhkjsdfhksfhksh"))
         assert user == actualUser
     }
 }
