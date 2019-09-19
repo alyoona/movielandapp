@@ -8,6 +8,8 @@ import java.util.List;
 public enum SecurityMapping {
 
     ADD_MOVIE_REVIEW("/review", "POST", new Role[]{Role.USER_ROLE, Role.ADMIN_ROLE}),
+    ADD_MOVIE("/movie", "POST", new Role[]{Role.ADMIN_ROLE}),
+    UPDATE_MOVIE("/movie/{id}", "PUT", new Role[]{Role.ADMIN_ROLE}),
     ALLOWED("*", "default", new Role[0]);
 
     private String mappingName;

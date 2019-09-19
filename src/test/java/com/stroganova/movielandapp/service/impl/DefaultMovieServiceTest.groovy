@@ -14,6 +14,7 @@ import com.stroganova.movielandapp.service.CountryService
 import com.stroganova.movielandapp.service.CurrencyService
 import com.stroganova.movielandapp.service.GenreService
 import com.stroganova.movielandapp.service.MovieService
+import com.stroganova.movielandapp.service.PosterService
 import com.stroganova.movielandapp.service.ReviewService
 import org.junit.Before
 import org.junit.Test
@@ -21,6 +22,7 @@ import org.junit.Test
 import java.time.LocalDate
 
 import static org.mockito.Mockito.mock
+import static org.mockito.Mockito.verify
 import static org.mockito.Mockito.when
 
 class DefaultMovieServiceTest {
@@ -31,6 +33,7 @@ class DefaultMovieServiceTest {
     private GenreService genreService
     private ReviewService reviewService
     private CurrencyService currencyService
+    private PosterService posterService
 
     @Before
     void before() {
@@ -39,7 +42,38 @@ class DefaultMovieServiceTest {
         genreService = mock(GenreService.class)
         reviewService = mock(ReviewService.class)
         currencyService = mock(CurrencyService.class)
-        movieService = new DefaultMovieService(movieDao, countryService, genreService, reviewService, currencyService)
+        posterService = mock(PosterService.class)
+        movieService = new DefaultMovieService(movieDao, countryService, genreService, reviewService, currencyService, posterService)
+    }
+
+    @Test
+    void teatAdd() {
+        def countries = [new Country(id: 10L, name: "USA"), new Country(id: 20, name: "GB")]
+        def genres = [new Genre(100L, "FirstGenre")]
+        def reviews = [new Review(id: 1000, text: "Great!", user: new User(id: 50, nickname: "Big Ben"))]
+        def movie = new Movie(
+                nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                picturePath: "https://picture_path.png",
+                description: "empty",
+                countries: countries,
+                genres: genres,
+                reviews: reviews
+        )
+
+        long movieId = 11L
+        when(movieDao.getNewestMovieId()).thenReturn(movieId)
+
+        movieService.add(movie)
+        verify(movieDao).add(movie)
+        verify(movieDao).getNewestMovieId()
+        verify(posterService).add(movieId, movie.getPicturePath())
+        verify(countryService).add(movieId, countries)
+        verify(genreService).add(movieId, genres)
+
     }
 
     @Test

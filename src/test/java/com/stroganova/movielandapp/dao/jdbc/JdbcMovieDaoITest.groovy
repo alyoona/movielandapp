@@ -52,11 +52,31 @@ class JdbcMovieDaoITest {
         namedJdbcTemplate.update(usersDeleteSql, EmptySqlParameterSource.INSTANCE)
         namedJdbcTemplate.update(posterDeleteSql, EmptySqlParameterSource.INSTANCE)
         namedJdbcTemplate.update(movieDeleteSql, EmptySqlParameterSource.INSTANCE)
+    }
+
+    @Test
+
+    void testAdd() {
+        def movie = new Movie(nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                description: "empty",
+                rating: 8.99D,
+                price: 150.15D)
+
+        movieDao.add(movie)
+        def addedMovie = movieDao.getById(movieDao.getNewestMovieId())
+        assert movie.getNameRussian() == addedMovie.getNameRussian()
+        assert movie.getNameNative() == addedMovie.getNameNative()
+        assert movie.getYearOfRelease() == addedMovie.getYearOfRelease()
+        assert movie.getPrice() == addedMovie.getPrice()
+        assert movie.getRating() == addedMovie.getRating()
+        assert movie.getDescription() == addedMovie.getDescription()
 
     }
 
     @Test
-    void testGetById(){
+    void testGetById() {
         //movie
         namedJdbcTemplate.update(movieInsertSql, [id          : 1L,
                                                   name_russian: "NameRussian",
@@ -77,7 +97,7 @@ class JdbcMovieDaoITest {
                 rating: 8.99D,
                 price: 150.15D,
                 picturePath: "https://picture_path.png",
-                description : "empty")
+                description: "empty")
         def actualMovie = movieDao.getById(1L)
 
         assert expectedMovie == actualMovie

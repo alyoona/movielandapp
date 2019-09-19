@@ -53,4 +53,14 @@ public class MovieController {
         return requestParameter != null ? movieService.getById(movieId, requestParameter) : movieService.getById(movieId);
     }
 
+    @PostMapping
+    public void add(@RequestBody Movie movie) {
+        movieService.add(movie);
+    }
+
+    @PutMapping("/{id}")
+    public void update(@RequestBody Movie newMovieData, @PathVariable long id) {
+        movieService.update(id, newMovieData);
+    }
+
 }

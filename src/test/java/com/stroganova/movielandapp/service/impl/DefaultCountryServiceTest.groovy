@@ -8,6 +8,7 @@ import org.junit.Before
 import org.junit.Test
 
 import static org.mockito.Mockito.mock
+import static org.mockito.Mockito.verify
 import static org.mockito.Mockito.when
 
 class DefaultCountryServiceTest {
@@ -16,9 +17,17 @@ class DefaultCountryServiceTest {
     private CountryDao countryDao
 
     @Before
-    void before(){
+    void before() {
         countryDao = mock(CountryDao.class)
         countryService = new DefaultCountryService(countryDao)
+    }
+
+    @Test
+    void testAdd() {
+        long movieId = 22L
+        def countries = [new Country(id: 10L, name: "USA"), new Country(id: 20, name: "GB")]
+        countryService.add(movieId, countries)
+        verify(countryDao).add(movieId, countries)
     }
 
     @Test

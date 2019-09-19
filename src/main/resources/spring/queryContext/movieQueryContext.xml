@@ -34,4 +34,13 @@
                                 WHERE m.id = :id;"/>
     </bean>
 
+    <bean id="movieInsertSql" class="java.lang.String">
+        <constructor-arg value="INSERT INTO movieland.movie (name_russian, name_native, year, description, rating, price)
+                                VALUES (:name_russian, :name_native, :year, :description, :rating, :price);"/>
+    </bean>
+
+    <bean id="getNewestMovieIdSql" class="java.lang.String">
+        <constructor-arg value="SELECT max(m.id) as id FROM movieland.movie m;"/>
+    </bean>
+
 </beans>

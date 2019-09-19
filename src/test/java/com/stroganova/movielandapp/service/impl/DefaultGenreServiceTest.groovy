@@ -9,6 +9,7 @@ import org.junit.Before
 import org.junit.Test
 
 import static org.mockito.Mockito.mock
+import static org.mockito.Mockito.verify
 import static org.mockito.Mockito.when
 
 
@@ -24,6 +25,15 @@ class DefaultGenreServiceTest {
         genreDao = mock(GenreDao.class)
         genreService = new DefaultGenreService(genreCache, genreDao)
 
+    }
+
+    @Test
+    void testAdd() {
+        long movieId = 22L
+        def genres = [new Genre(1L, "genreFirstName"),
+                      new Genre(1L, "genreFirstName")]
+        genreService.add(movieId, genres)
+        verify(genreDao).add(movieId, genres)
     }
 
 

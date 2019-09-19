@@ -10,4 +10,6 @@ public interface GenreDao {
     List<Genre> getAll();
 
     List<Genre> getAll(Movie movie);
+
+    void add(long movieId, List<Genre> genres);
 }

@@ -20,4 +20,8 @@ public interface MovieService {
     Movie getById(long movieId);
 
     Movie getById(long movieId, RequestParameter requestParameter);
+
+    void add(Movie movie);
+
+    void update(long id, Movie newMovieData);
 }

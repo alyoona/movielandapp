@@ -8,4 +8,6 @@ import java.util.List;
 public interface CountryService {
 
     List<Country> getAll(Movie movie);
+
+    void add(long movieId, List<Country> countries);
 }

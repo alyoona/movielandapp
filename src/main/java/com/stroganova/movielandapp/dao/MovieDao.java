@@ -18,4 +18,10 @@ public interface MovieDao {
     List<Movie> getAll(long genreId, RequestParameter requestParameter);
 
     Movie getById(long movieId);
+
+    void add(Movie movie);
+
+    void update(long id, Movie newMovieData);
+
+    long getNewestMovieId();
 }

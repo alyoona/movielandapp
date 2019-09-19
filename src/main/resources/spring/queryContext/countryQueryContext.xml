@@ -12,4 +12,14 @@
                                 WHERE m.id = :id;"/>
     </bean>
 
+    <bean id="countryInsertSql" class="java.lang.String">
+        <constructor-arg value="INSERT INTO movieland.country (name) VALUES (:name);"/>
+    </bean>
+
+    <bean id="movieCountryInsertSql" class="java.lang.String">
+        <constructor-arg value="INSERT INTO movieland.movie_country (movie_id, country_id)
+                                VALUES (:movie_id, :country_id);"/>
+    </bean>
+
+
 </beans>

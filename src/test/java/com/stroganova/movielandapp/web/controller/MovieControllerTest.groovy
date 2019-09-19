@@ -1,21 +1,26 @@
 package com.stroganova.movielandapp.web.controller
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.stroganova.movielandapp.entity.Country
 import com.stroganova.movielandapp.entity.Genre
 import com.stroganova.movielandapp.entity.Movie
 
 import com.stroganova.movielandapp.entity.Review
+import com.stroganova.movielandapp.entity.Role
+import com.stroganova.movielandapp.entity.Session
 import com.stroganova.movielandapp.entity.User
 import com.stroganova.movielandapp.request.Currency
 import com.stroganova.movielandapp.request.RequestParameter
 import com.stroganova.movielandapp.service.MovieService
 import com.stroganova.movielandapp.request.SortDirection
 import com.stroganova.movielandapp.request.SortOrder
-
+import com.stroganova.movielandapp.service.SecurityService
 import com.stroganova.movielandapp.web.handler.RequestParameterArgumentResolver
+import com.stroganova.movielandapp.web.interceptor.SecurityHandlerInterceptor
 import groovy.json.JsonSlurper
 import org.junit.Before
 import org.junit.Test
+import org.springframework.http.MediaType
 import org.springframework.web.util.NestedServletException
 
 
@@ -27,28 +32,78 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
+import java.time.LocalDateTime
+
 import static org.mockito.Matchers.anyLong
 import static org.mockito.Matchers.eq
+import static org.mockito.Mockito.mock
+import static org.mockito.Mockito.verify
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.mockito.Mockito.when
 
 
 import java.time.LocalDate
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+
 
 class MovieControllerTest {
-
+    private final ObjectMapper MAPPER = new ObjectMapper()
     @Mock
     private MovieService movieService
     @InjectMocks
     private MovieController movieController
     private MockMvc mockMvc
+    private SecurityService securityService
 
     @Before
     void setup() {
+        securityService = mock(SecurityService.class)
+        SecurityHandlerInterceptor interceptor = new SecurityHandlerInterceptor()
+        interceptor.setSecurityService(securityService)
         MockitoAnnotations.initMocks(this)
         mockMvc = MockMvcBuilders.standaloneSetup(movieController)
-                .setCustomArgumentResolvers(new RequestParameterArgumentResolver()).build()
+                .setCustomArgumentResolvers(new RequestParameterArgumentResolver())
+                .addInterceptors(interceptor).build()
+    }
+
+    @Test
+    void teatAdd() {
+
+        String token = UUID.randomUUID().toString()
+        def user = new User(id: 55L, role: Role.ADMIN_ROLE)
+        Optional<Session> sessionOptional = Optional.of(new Session(token, user, LocalDateTime.now()))
+        when(securityService.getAuthorization(token)).thenReturn(sessionOptional)
+
+        String requestBodyJson = MAPPER.writeValueAsString([nameRussian  : "NameRussian",
+                                                            nameNative   : "NameNative",
+                                                            yearOfRelease: "1994",
+                                                            rating       : 8.99D,
+                                                            price        : 150.15D,
+                                                            picturePath  : "https://picture_path.png",
+                                                            description  : "MovieDescription!!!",
+                                                            countries    : [1, 2, 3], genres: [1, 2]])
+
+        def response = mockMvc.perform(post("/movie")
+                .header("Token", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBodyJson)
+        ).andReturn().response
+
+        assert response.status == HttpStatus.OK.value()
+
+        def movie = new Movie(nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                picturePath: "https://picture_path.png",
+                description: "MovieDescription!!!",
+                countries: [new Country(id: 1), new Country(id: 2), new Country(id: 3)],
+                genres: [new Genre(1, null), new Genre(2, null)])
+
+        verify(movieService).add(movie)
+
     }
 
 
@@ -63,7 +118,7 @@ class MovieControllerTest {
                 price: 150.15D,
                 picturePath: "https://picture_path.png",
                 description: "MovieDescription!!!",
-                countries:null, genres:null, reviews:null
+                countries: null, genres: null, reviews: null
         )
 
         when(movieService.getById(1L, new RequestParameter(null, Currency.USD))).thenReturn(movie)
@@ -82,7 +137,7 @@ class MovieControllerTest {
                              price        : "150.15",
                              picturePath  : "https://picture_path.png",
                              description  : "MovieDescription!!!",
-                             countries:null, genres:null, reviews:null
+                             countries    : null, genres: null, reviews: null
         ]
         assert expectedMovie == actualMovie
     }

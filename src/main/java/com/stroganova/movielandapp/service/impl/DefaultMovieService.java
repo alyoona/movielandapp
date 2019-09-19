@@ -1,6 +1,5 @@
 package com.stroganova.movielandapp.service.impl;
 
-
 import com.stroganova.movielandapp.dao.MovieDao;
 import com.stroganova.movielandapp.entity.Movie;
 import com.stroganova.movielandapp.exception.EntityNotFoundException;
@@ -28,6 +27,7 @@ public class DefaultMovieService implements MovieService {
     @NonNull GenreService genreService;
     @NonNull ReviewService reviewService;
     @NonNull CurrencyService currencyService;
+    @NonNull PosterService posterService;
 
     @Override
     public List<Movie> getAll() {
@@ -62,7 +62,7 @@ public class DefaultMovieService implements MovieService {
     @Transactional(readOnly = true)
     public Movie getById(long movieId) {
         Movie movie = movieDao.getById(movieId);
-        if(movie == null) {
+        if (movie == null) {
             throw new EntityNotFoundException("No such movie");
         }
         return enrich(movie);
@@ -79,10 +79,25 @@ public class DefaultMovieService implements MovieService {
     public Movie getById(long movieId, RequestParameter requestParameter) {
         Movie movie = getById(movieId);
         Currency currency = requestParameter.getCurrency();
-        if(currency != null) {
+        if (currency != null) {
             double convertedPrice = currencyService.convert(movie.getPrice(), currency);
             movie.setPrice(convertedPrice);
         }
         return movie;
+    }
+
+    @Override
+    @Transactional
+    public void add(Movie movie) {
+        movieDao.add(movie);
+        long movieId = movieDao.getNewestMovieId();
+        posterService.add(movieId, movie.getPicturePath());
+        countryService.add(movieId, movie.getCountries());
+        genreService.add(movieId, movie.getGenres());
+    }
+
+    @Override
+    public void update(long id, Movie newMovieData) {
+        movieDao.update(id, newMovieData);
     }
 }

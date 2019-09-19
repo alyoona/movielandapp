@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(makeFinal=true, level= AccessLevel.PRIVATE)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class DefaultCountryService implements CountryService {
 
     @NonNull CountryDao countryDao;
@@ -22,5 +22,10 @@ public class DefaultCountryService implements CountryService {
     @Override
     public List<Country> getAll(Movie movie) {
         return countryDao.getAll(movie);
+    }
+
+    @Override
+    public void add(long movieId, List<Country> countries) {
+        countryDao.add(movieId, countries);
     }
 }

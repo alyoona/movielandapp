@@ -17,4 +17,10 @@
                                 WHERE m.id = :id;"/>
     </bean>
 
+    <bean id="movieGenreInsertSql" class="java.lang.String">
+        <constructor-arg value="INSERT INTO movieland.movie_genre (movie_id, genre_id)
+                                VALUES (:movie_id, :genre_id);"/>
+    </bean>
+
+
 </beans>

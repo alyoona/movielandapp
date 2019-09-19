@@ -20,7 +20,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-@FieldDefaults(makeFinal=true, level= AccessLevel.PRIVATE)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class JdbcMovieDao implements MovieDao {
 
     private final static MovieRowMapper MOVIE_ROW_MAPPER = new MovieRowMapper();
@@ -32,6 +32,8 @@ public class JdbcMovieDao implements MovieDao {
     @NonNull String getThreeRandomMoviesSql;
     @NonNull String getMoviesByGenreIdSql;
     @NonNull String getMovieByIdSql;
+    @NonNull String getNewestMovieIdSql;
+    @NonNull String movieInsertSql;
 
     @Override
     public List<Movie> getAll() {
@@ -71,5 +73,29 @@ public class JdbcMovieDao implements MovieDao {
         sqlParameterSource.addValue("id", movieId);
         return namedParameterJdbcTemplate.query(getMovieByIdSql, sqlParameterSource, MOVIE_DETAILS_RESULT_SET_EXTRACTOR);
     }
+
+    @Override
+    public void add(Movie movie) {
+        MapSqlParameterSource sqlParameterSource = new MapSqlParameterSource();
+        sqlParameterSource.addValue("name_russian", movie.getNameRussian());
+        sqlParameterSource.addValue("name_native", movie.getNameNative());
+        sqlParameterSource.addValue("year", movie.getYearOfRelease());
+        sqlParameterSource.addValue("description", movie.getDescription());
+        sqlParameterSource.addValue("rating", movie.getRating());
+        sqlParameterSource.addValue("price", movie.getPrice());
+        namedParameterJdbcTemplate.update(movieInsertSql, sqlParameterSource);
+    }
+
+    @Override
+    public long getNewestMovieId() {
+        return namedParameterJdbcTemplate.queryForObject(getNewestMovieIdSql, EmptySqlParameterSource.INSTANCE, long.class);
+    }
+
+
+    @Override
+    public void update(long id, Movie newMovieData) {
+
+    }
+
 
 }

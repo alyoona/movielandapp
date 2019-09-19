@@ -17,7 +17,7 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@FieldDefaults(makeFinal=true, level= AccessLevel.PRIVATE)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class DefaultGenreService implements GenreService {
 
     @NonNull
@@ -34,5 +34,10 @@ public class DefaultGenreService implements GenreService {
     @Override
     public List<Genre> getAll(Movie movie) {
         return genreDao.getAll(movie);
+    }
+
+    @Override
+    public void add(long movieId, List<Genre> genres) {
+        genreDao.add(movieId, genres);
     }
 }
