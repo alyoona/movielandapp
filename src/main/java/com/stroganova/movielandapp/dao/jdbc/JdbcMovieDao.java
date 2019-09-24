@@ -5,6 +5,7 @@ import com.stroganova.movielandapp.dao.jdbc.mapper.MovieDetailsResultSetExtracto
 import com.stroganova.movielandapp.dao.jdbc.mapper.MovieRowMapper;
 import com.stroganova.movielandapp.dao.jdbc.util.QueryBuilder;
 import com.stroganova.movielandapp.entity.Movie;
+import com.stroganova.movielandapp.request.MovieFieldUpdate;
 import com.stroganova.movielandapp.request.RequestParameter;
 import com.stroganova.movielandapp.request.SortDirection;
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
@@ -17,6 +18,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
@@ -91,10 +93,15 @@ public class JdbcMovieDao implements MovieDao {
         return namedParameterJdbcTemplate.queryForObject(getNewestMovieIdSql, EmptySqlParameterSource.INSTANCE, long.class);
     }
 
-
     @Override
-    public void update(long id, Movie newMovieData) {
-
+    public void partialUpdate(long movieId, Map<MovieFieldUpdate, Object> updates) {
+        MapSqlParameterSource sqlParameterSource = new MapSqlParameterSource();
+        sqlParameterSource.addValue("id", movieId);
+        for (Map.Entry<MovieFieldUpdate, Object> field : updates.entrySet()) {
+            MovieFieldUpdate movieFieldUpdate = field.getKey();
+            sqlParameterSource.addValue(movieFieldUpdate.getDbName(), field.getValue());
+        }
+        namedParameterJdbcTemplate.update(QueryBuilder.getUpdateSql(updates.keySet()), sqlParameterSource);
     }
 
 

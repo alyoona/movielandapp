@@ -3,9 +3,11 @@ package com.stroganova.movielandapp.web.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stroganova.movielandapp.entity.Movie;
+import com.stroganova.movielandapp.request.MovieUpdateDirections;
 import com.stroganova.movielandapp.request.RequestParameter;
 import com.stroganova.movielandapp.service.MovieService;
 import com.stroganova.movielandapp.view.View;
+
 import lombok.extern.slf4j.Slf4j;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -58,9 +60,9 @@ public class MovieController {
         movieService.add(movie);
     }
 
-    @PutMapping("/{id}")
-    public void update(@RequestBody Movie newMovieData, @PathVariable long id) {
-        movieService.update(id, newMovieData);
+    @PatchMapping("/{id}")
+    public void update(@PathVariable long id, @RequestBody MovieUpdateDirections updates) {
+        movieService.partialUpdate(id, updates);
     }
 
 }

@@ -37,6 +37,32 @@ class JdbcCountryDaoITest {
     }
 
     @Test
+    void testDeleteAllByMovieId() {
+        //movie
+        long movieId = 26L
+        namedJdbcTemplate.update(movieInsertSql, [id          : movieId,
+                                                  name_russian: "",
+                                                  name_native : "",
+                                                  year        : "1995-01-01",
+                                                  description : "",
+                                                  rating      : 0D,
+                                                  price       : 0D])
+        //countries
+        Map<String, ?>[] countryBatchValues = [[id: 10L, name: "countryFirst"],
+                                               [id: 20L, name: "countrySecond"]]
+        namedJdbcTemplate.batchUpdate(countryInsertSql, countryBatchValues)
+
+        def countries = [new Country(id: 10L, name: "countryFirst"), new Country(id: 20L, name: "countrySecond")]
+        countryDao.add(movieId, countries)
+        def addedCountries = countryDao.getAll(new Movie(id: movieId))
+        assert countries == addedCountries
+
+        countryDao.deleteAll(movieId)
+        def allCountriesByMovieId = countryDao.getAll(new Movie(id: movieId))
+        assert allCountriesByMovieId.isEmpty()
+    }
+
+    @Test
     void testAdd() {
         //movie
         namedJdbcTemplate.update(movieInsertSql, [id          : 44L,

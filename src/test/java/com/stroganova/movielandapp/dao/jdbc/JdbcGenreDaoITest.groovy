@@ -37,6 +37,33 @@ class JdbcGenreDaoITest {
 
     }
 
+    @Test
+    void testDeleteAllByMovieId() {
+        //movie
+        long movieId = 26L
+        namedJdbcTemplate.update(movieInsertSql, [id          : movieId,
+                                                  name_russian: "NameRussian",
+                                                  name_native : "NameNative",
+                                                  year        : "1995-01-01",
+                                                  description : "empty",
+                                                  rating      : 8.99D,
+                                                  price       : 150.15D])
+        //genres
+        Map<String, ?>[] genreBatchValues = [[id: 100L, name: "genreFirst"],
+                                             [id: 200L, name: "genreSecond"]]
+        namedJdbcTemplate.batchUpdate(genreInsertSql, genreBatchValues)
+
+        def genres = [new Genre(100L, "genreFirst"),
+                      new Genre(200L, "genreSecond")]
+        genreDao.add(movieId, genres)
+        def addedGenres = genreDao.getAll(new Movie(id: movieId))
+        assert genres == addedGenres
+
+        genreDao.deleteAll(movieId)
+        def allGenresByMovieId = genreDao.getAll(new Movie(id: movieId))
+        assert allGenresByMovieId.isEmpty()
+
+    }
 
     @Test
     void testAdd() {

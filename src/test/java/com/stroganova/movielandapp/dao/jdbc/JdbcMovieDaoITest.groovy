@@ -2,6 +2,8 @@ package com.stroganova.movielandapp.dao.jdbc
 
 import com.stroganova.movielandapp.dao.MovieDao
 import com.stroganova.movielandapp.entity.Movie
+import com.stroganova.movielandapp.request.MovieFieldUpdate
+import com.stroganova.movielandapp.request.MovieUpdateDirections
 import com.stroganova.movielandapp.request.RequestParameter
 import com.stroganova.movielandapp.request.SortDirection
 import com.stroganova.movielandapp.request.SortOrder
@@ -54,8 +56,52 @@ class JdbcMovieDaoITest {
         namedJdbcTemplate.update(movieDeleteSql, EmptySqlParameterSource.INSTANCE)
     }
 
-    @Test
 
+    @Test
+    void testPartialUpdate() {
+        //movie
+        long movieId = 26L
+        namedJdbcTemplate.update(movieInsertSql, [id          : movieId,
+                                                  name_russian: "",
+                                                  name_native : "",
+                                                  year        : "1970-01-01",
+                                                  description : "",
+                                                  rating      : 0D,
+                                                  price       : 0D])
+
+        def movie = new Movie(
+                nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                description: "MovieDescription!!!")
+
+        Map<MovieFieldUpdate, Object> mapUpdates = new HashMap<>()
+        for (MovieFieldUpdate fieldUpdate : MovieFieldUpdate.values()) {
+            mapUpdates.put(fieldUpdate, fieldUpdate.getValue(movie))
+        }
+
+        def updates = new MovieUpdateDirections(mapUpdates)
+        movieDao.partialUpdate(movieId, updates.getMovieUpdates())
+
+        def expectedMovie = new Movie(id: movieId,
+                nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                description: "MovieDescription!!!")
+
+
+        def actualMovie = movieDao.getById(movieId)
+
+        assert expectedMovie == actualMovie
+
+    }
+
+
+    @Test
     void testAdd() {
         def movie = new Movie(nameRussian: "NameRussian",
                 nameNative: "NameNative",

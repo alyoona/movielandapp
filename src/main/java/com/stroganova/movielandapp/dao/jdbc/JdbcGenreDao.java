@@ -30,6 +30,7 @@ public class JdbcGenreDao implements GenreDao {
     @NonNull String getAllGenresSql;
     @NonNull String getAllGenresByMovieIdSql;
     @NonNull String movieGenreInsertSql;
+    @NonNull String movieGenreDeleteSql;
 
     @Override
     public List<Genre> getAll() {
@@ -57,6 +58,11 @@ public class JdbcGenreDao implements GenreDao {
             valueMaps.add(valueMap);
         }
         namedParameterJdbcTemplate.batchUpdate(movieGenreInsertSql, SqlParameterSourceUtils.createBatch(valueMaps));
+    }
+
+    @Override
+    public void deleteAll(long movieId) {
+        namedParameterJdbcTemplate.update(movieGenreDeleteSql, new MapSqlParameterSource("movie_id", movieId));
     }
 
 }

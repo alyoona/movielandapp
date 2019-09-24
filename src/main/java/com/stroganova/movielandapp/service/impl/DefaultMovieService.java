@@ -4,6 +4,7 @@ import com.stroganova.movielandapp.dao.MovieDao;
 import com.stroganova.movielandapp.entity.Movie;
 import com.stroganova.movielandapp.exception.EntityNotFoundException;
 import com.stroganova.movielandapp.request.Currency;
+import com.stroganova.movielandapp.request.MovieUpdateDirections;
 import com.stroganova.movielandapp.request.RequestParameter;
 import com.stroganova.movielandapp.service.*;
 import lombok.AccessLevel;
@@ -96,8 +97,14 @@ public class DefaultMovieService implements MovieService {
         genreService.add(movieId, movie.getGenres());
     }
 
+
     @Override
-    public void update(long id, Movie newMovieData) {
-        movieDao.update(id, newMovieData);
+    @Transactional
+    public void partialUpdate(long movieId, MovieUpdateDirections updates) {
+        movieDao.partialUpdate(movieId, updates.getMovieUpdates());
+        posterService.update(movieId, updates);
+        countryService.update(movieId, updates);
+        genreService.update(movieId, updates);
     }
+
 }

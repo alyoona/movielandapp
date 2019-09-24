@@ -16,16 +16,16 @@ import java.util.Optional;
 @Slf4j
 public class SecurityHandlerInterceptor implements HandlerInterceptor {
 
-
     private SecurityService securityService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         log.info("SecurityHandlerInterceptor preHandle start");
-        String url = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 
-        SecurityMapping securityMapping = SecurityMapping.get(url, request.getMethod());
+        String requestMappingName = (String) request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+
+        SecurityMapping securityMapping = SecurityMapping.get(requestMappingName, request.getMethod());
 
         if (SecurityMapping.ALLOWED.equals(securityMapping)) {
             return true;

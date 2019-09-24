@@ -22,5 +22,10 @@
                                 VALUES (:movie_id, :genre_id);"/>
     </bean>
 
+    <bean id="movieGenreDeleteSql" class="java.lang.String">
+        <constructor-arg value="DELETE FROM movieland.movie_genre
+                                WHERE movie_id = :movie_id;"/>
+    </bean>
+
 
 </beans>

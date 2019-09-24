@@ -10,5 +10,11 @@
                                 VALUES (:movie_id, :picture_path)"/>
     </bean>
 
+    <bean id="posterUpdateSql" class="java.lang.String">
+        <constructor-arg value="UPDATE movieland.poster
+                                SET picture_path = :picture_path
+                                WHERE movie_id = :movie_id;"/>
+    </bean>
+
 
 </beans>

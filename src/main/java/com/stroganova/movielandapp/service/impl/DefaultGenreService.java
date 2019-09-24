@@ -4,6 +4,7 @@ import com.stroganova.movielandapp.dao.GenreDao;
 import com.stroganova.movielandapp.dao.cache.GenreCache;
 import com.stroganova.movielandapp.entity.Genre;
 import com.stroganova.movielandapp.entity.Movie;
+import com.stroganova.movielandapp.request.MovieUpdateDirections;
 import com.stroganova.movielandapp.service.GenreService;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -39,5 +40,16 @@ public class DefaultGenreService implements GenreService {
     @Override
     public void add(long movieId, List<Genre> genres) {
         genreDao.add(movieId, genres);
+    }
+
+    @Override
+    public void update(long movieId, MovieUpdateDirections updates) {
+        List<Genre> genres = updates.getGenres();
+        if (genres != null) {
+            genreDao.deleteAll(movieId);
+            if (!genres.isEmpty()) {
+                genreDao.add(movieId, genres);
+            }
+        }
     }
 }

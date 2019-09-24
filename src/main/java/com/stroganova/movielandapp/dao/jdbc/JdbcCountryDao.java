@@ -28,6 +28,7 @@ public class JdbcCountryDao implements CountryDao {
     @NonNull NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     @NonNull String getAllCountriesByMovieIdSql;
     @NonNull String movieCountryInsertSql;
+    @NonNull String movieCountryDeleteSql;
 
     @Override
     public List<Country> getAll(Movie movie) {
@@ -45,5 +46,10 @@ public class JdbcCountryDao implements CountryDao {
             valueMaps.add(valueMap);
         }
         namedParameterJdbcTemplate.batchUpdate(movieCountryInsertSql, SqlParameterSourceUtils.createBatch(valueMaps));
+    }
+
+    @Override
+    public void deleteAll(long movieId) {
+        namedParameterJdbcTemplate.update(movieCountryDeleteSql, new MapSqlParameterSource("movie_id", movieId));
     }
 }

@@ -4,12 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.stroganova.movielandapp.entity.Country
 import com.stroganova.movielandapp.entity.Genre
 import com.stroganova.movielandapp.entity.Movie
-
 import com.stroganova.movielandapp.entity.Review
 import com.stroganova.movielandapp.entity.Role
 import com.stroganova.movielandapp.entity.Session
 import com.stroganova.movielandapp.entity.User
 import com.stroganova.movielandapp.request.Currency
+import com.stroganova.movielandapp.request.MovieFieldUpdate
+import com.stroganova.movielandapp.request.MovieUpdateDirections
 import com.stroganova.movielandapp.request.RequestParameter
 import com.stroganova.movielandapp.service.MovieService
 import com.stroganova.movielandapp.request.SortDirection
@@ -44,8 +45,8 @@ import static org.mockito.Mockito.when
 
 import java.time.LocalDate
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-
 
 class MovieControllerTest {
     private final ObjectMapper MAPPER = new ObjectMapper()
@@ -65,6 +66,48 @@ class MovieControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(movieController)
                 .setCustomArgumentResolvers(new RequestParameterArgumentResolver())
                 .addInterceptors(interceptor).build()
+    }
+
+    @Test
+    void testUpdate() {
+        String token = UUID.randomUUID().toString()
+        def user = new User(id: 55L, role: Role.ADMIN_ROLE)
+        Optional<Session> sessionOptional = Optional.of(new Session(token, user, LocalDateTime.now()))
+        when(securityService.getAuthorization(token)).thenReturn(sessionOptional)
+
+        String requestBodyJson = MAPPER.writeValueAsString([nameRussian  : "NameRussian",
+                                                            nameNative   : "NameNative",
+                                                            yearOfRelease: "1994",
+                                                            rating       : 8.99D,
+                                                            price        : 150.15D,
+                                                            picturePath  : "https://picture_path.png",
+                                                            description  : "MovieDescription!!!",
+                                                            countries    : [1, 2, 3], genres: [1, 2]])
+
+        def response = mockMvc.perform(patch("/movie/26")
+                .header("Token", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBodyJson)
+        ).andReturn().response
+
+        assert response.status == HttpStatus.OK.value()
+
+
+        def movie = new Movie(nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                picturePath: "https://picture_path.png",
+                description: "MovieDescription!!!",
+                countries: [new Country(id: 1), new Country(id: 2), new Country(id: 3)],
+                genres: [new Genre(1, null), new Genre(2, null)])
+        Map<MovieFieldUpdate, Object> map = new HashMap<>()
+        for (MovieFieldUpdate fieldUpdate : MovieFieldUpdate.values()) {
+            map.put(fieldUpdate, fieldUpdate.getValue(movie))
+        }
+
+        verify(movieService).partialUpdate(26L, new MovieUpdateDirections(map))
     }
 
     @Test

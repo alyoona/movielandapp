@@ -21,5 +21,10 @@
                                 VALUES (:movie_id, :country_id);"/>
     </bean>
 
+    <bean id="movieCountryDeleteSql" class="java.lang.String">
+        <constructor-arg value="DELETE FROM movieland.movie_country
+                                WHERE movie_id = :movie_id;"/>
+    </bean>
+
 
 </beans>

@@ -4,6 +4,8 @@ import com.stroganova.movielandapp.dao.GenreDao
 import com.stroganova.movielandapp.dao.cache.GenreCache
 import com.stroganova.movielandapp.entity.Genre
 import com.stroganova.movielandapp.entity.Movie
+import com.stroganova.movielandapp.request.MovieFieldUpdate
+import com.stroganova.movielandapp.request.MovieUpdateDirections
 import com.stroganova.movielandapp.service.GenreService
 import org.junit.Before
 import org.junit.Test
@@ -25,6 +27,18 @@ class DefaultGenreServiceTest {
         genreDao = mock(GenreDao.class)
         genreService = new DefaultGenreService(genreCache, genreDao)
 
+    }
+
+    @Test
+    void testUpdate() {
+        def movie = new Movie(genres: [new Genre(1, null), new Genre(2, null)])
+        Map<MovieFieldUpdate, Object> map = new HashMap<>()
+        map.put(MovieFieldUpdate.GENRES, MovieFieldUpdate.GENRES.getValue(movie))
+        long movieId = 26L
+        def updates = new MovieUpdateDirections(map)
+        genreService.update(movieId, updates)
+        verify(genreDao).deleteAll(movieId)
+        verify(genreDao).add(movieId, [new Genre(1, null), new Genre(2, null)])
     }
 
     @Test

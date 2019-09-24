@@ -29,8 +29,32 @@ class JdbcPosterDaoITest {
     void clear() {
         def movieDeleteSql = "DELETE FROM movieland.movie;"
         def posterDeleteSql = "DELETE FROM movieland.poster;"
-        namedJdbcTemplate.update(movieDeleteSql, EmptySqlParameterSource.INSTANCE)
+
         namedJdbcTemplate.update(posterDeleteSql, EmptySqlParameterSource.INSTANCE)
+        namedJdbcTemplate.update(movieDeleteSql, EmptySqlParameterSource.INSTANCE)
+    }
+
+    @Test
+    void testUpdate() {
+        //movie
+        long movieId = 26L
+        namedJdbcTemplate.update(movieInsertSql, [id          : movieId,
+                                                  name_russian: "",
+                                                  name_native : "",
+                                                  year        : "1995-01-01",
+                                                  description : "",
+                                                  rating      : 0D,
+                                                  price       : 0D])
+
+        String picturePath = "picturePath"
+        posterDao.add(movieId, picturePath)
+        String newPicturePath = "newPicturePath"
+        posterDao.update(movieId, newPicturePath)
+
+        String updatedPicturePath = namedJdbcTemplate.queryForObject(selectPicturePathPosterSql,
+                new MapSqlParameterSource("movieId", movieId), String.class)
+
+        assert newPicturePath == updatedPicturePath.toString()
     }
 
     @Test

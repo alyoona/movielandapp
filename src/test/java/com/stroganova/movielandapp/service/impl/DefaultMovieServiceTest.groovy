@@ -7,6 +7,8 @@ import com.stroganova.movielandapp.entity.Movie
 import com.stroganova.movielandapp.entity.Review
 import com.stroganova.movielandapp.entity.User
 import com.stroganova.movielandapp.request.Currency
+import com.stroganova.movielandapp.request.MovieFieldUpdate
+import com.stroganova.movielandapp.request.MovieUpdateDirections
 import com.stroganova.movielandapp.request.RequestParameter
 import com.stroganova.movielandapp.request.SortDirection
 import com.stroganova.movielandapp.request.SortOrder
@@ -47,7 +49,33 @@ class DefaultMovieServiceTest {
     }
 
     @Test
-    void teatAdd() {
+    void testPartialUpdate() {
+        def movie = new Movie(nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                picturePath: "https://picture_path.png",
+                description: "MovieDescription!!!",
+                countries: [new Country(id: 1), new Country(id: 2), new Country(id: 3)],
+                genres: [new Genre(1, null), new Genre(2, null)])
+        Map<MovieFieldUpdate, Object> map = new HashMap<>()
+        for (MovieFieldUpdate fieldUpdate : MovieFieldUpdate.values()) {
+            map.put(fieldUpdate, fieldUpdate.getValue(movie))
+        }
+
+        long movieId = 26L
+        def updates = new MovieUpdateDirections(map)
+        movieService.partialUpdate(movieId, updates)
+
+        verify(movieDao).partialUpdate(movieId, updates.getMovieUpdates())
+        verify(posterService).update(movieId, updates)
+        verify(countryService).update(movieId, updates)
+        verify(genreService).update(movieId, updates)
+    }
+
+    @Test
+    void testAdd() {
         def countries = [new Country(id: 10L, name: "USA"), new Country(id: 20, name: "GB")]
         def genres = [new Genre(100L, "FirstGenre")]
         def reviews = [new Review(id: 1000, text: "Great!", user: new User(id: 50, nickname: "Big Ben"))]

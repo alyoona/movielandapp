@@ -10,4 +10,6 @@ public interface CountryDao {
     List<Country> getAll(Movie movie);
 
     void add(long movieId, List<Country> countries);
+
+    void deleteAll(long movieId);
 }
