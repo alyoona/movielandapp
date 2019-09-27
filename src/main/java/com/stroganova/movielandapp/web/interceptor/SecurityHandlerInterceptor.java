@@ -4,7 +4,6 @@ import com.stroganova.movielandapp.entity.Session;
 import com.stroganova.movielandapp.entity.User;
 import com.stroganova.movielandapp.service.SecurityService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 
@@ -16,7 +15,11 @@ import java.util.Optional;
 @Slf4j
 public class SecurityHandlerInterceptor implements HandlerInterceptor {
 
-    private SecurityService securityService;
+    private final SecurityService securityService;
+
+    public SecurityHandlerInterceptor(SecurityService securityService) {
+        this.securityService = securityService;
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -47,8 +50,4 @@ public class SecurityHandlerInterceptor implements HandlerInterceptor {
         }
     }
 
-    @Autowired
-    public void setSecurityService(SecurityService securityService) {
-        this.securityService = securityService;
-    }
 }

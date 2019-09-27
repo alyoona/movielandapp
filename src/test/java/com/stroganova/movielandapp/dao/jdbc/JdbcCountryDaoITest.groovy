@@ -1,5 +1,6 @@
 package com.stroganova.movielandapp.dao.jdbc
 
+import com.stroganova.movielandapp.config.TestJdbcDaoConfig
 import com.stroganova.movielandapp.dao.CountryDao
 import com.stroganova.movielandapp.entity.Country
 import com.stroganova.movielandapp.entity.Movie
@@ -12,9 +13,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringRunner
 
+@ContextConfiguration(classes = TestJdbcDaoConfig.class)
 @RunWith(SpringRunner.class)
-@ContextConfiguration(locations = "classpath:spring/rootContextTest.xml")
-
 class JdbcCountryDaoITest {
     @Autowired
     NamedParameterJdbcTemplate namedJdbcTemplate

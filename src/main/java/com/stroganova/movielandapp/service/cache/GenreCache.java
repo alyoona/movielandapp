@@ -1,4 +1,4 @@
-package com.stroganova.movielandapp.dao.cache;
+package com.stroganova.movielandapp.service.cache;
 
 import com.stroganova.movielandapp.entity.Genre;
 

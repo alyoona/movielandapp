@@ -5,7 +5,6 @@ import com.stroganova.movielandapp.entity.User;
 import com.stroganova.movielandapp.service.SecurityService;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,8 +16,11 @@ import java.util.UUID;
 public class LoggingHandlerInterceptor implements HandlerInterceptor {
 
 
-    @Autowired
-    private SecurityService securityService;
+    private final SecurityService securityService;
+
+    public LoggingHandlerInterceptor(SecurityService securityService) {
+        this.securityService = securityService;
+    }
 
 
     @Override
@@ -52,7 +54,6 @@ public class LoggingHandlerInterceptor implements HandlerInterceptor {
         }
 
         log.info("preHandle end");
-
 
         return true;
     }

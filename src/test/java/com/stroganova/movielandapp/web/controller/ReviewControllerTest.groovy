@@ -43,8 +43,7 @@ class ReviewControllerTest {
     @Before
     void setup() {
         securityService = mock(SecurityService.class)
-        SecurityHandlerInterceptor interceptor = new SecurityHandlerInterceptor()
-        interceptor.setSecurityService(securityService)
+        SecurityHandlerInterceptor interceptor = new SecurityHandlerInterceptor(securityService)
         MockitoAnnotations.initMocks(this)
         mockMvc = MockMvcBuilders.standaloneSetup(reviewController)
                 .setCustomArgumentResolvers(new UserRequestAttributeArgumentResolver())

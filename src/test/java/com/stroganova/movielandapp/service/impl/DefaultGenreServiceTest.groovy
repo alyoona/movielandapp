@@ -1,7 +1,7 @@
 package com.stroganova.movielandapp.service.impl
 
 import com.stroganova.movielandapp.dao.GenreDao
-import com.stroganova.movielandapp.dao.cache.GenreCache
+import com.stroganova.movielandapp.service.cache.GenreCache
 import com.stroganova.movielandapp.entity.Genre
 import com.stroganova.movielandapp.entity.Movie
 import com.stroganova.movielandapp.request.MovieFieldUpdate
