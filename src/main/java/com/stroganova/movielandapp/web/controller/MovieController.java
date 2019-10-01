@@ -3,11 +3,13 @@ package com.stroganova.movielandapp.web.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stroganova.movielandapp.entity.Movie;
+import com.stroganova.movielandapp.entity.Role;
 import com.stroganova.movielandapp.request.MovieUpdateDirections;
 import com.stroganova.movielandapp.request.RequestParameter;
 import com.stroganova.movielandapp.service.MovieService;
 import com.stroganova.movielandapp.view.View;
 
+import com.stroganova.movielandapp.web.annotation.ProtectedBy;
 import lombok.extern.slf4j.Slf4j;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -56,11 +58,13 @@ public class MovieController {
     }
 
     @PostMapping
+    @ProtectedBy(role = Role.ADMIN_ROLE)
     public void add(@RequestBody Movie movie) {
         movieService.add(movie);
     }
 
     @PatchMapping("/{id}")
+    @ProtectedBy(role = Role.ADMIN_ROLE)
     public void update(@PathVariable long id, @RequestBody MovieUpdateDirections updates) {
         movieService.partialUpdate(id, updates);
     }

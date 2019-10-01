@@ -60,11 +60,10 @@ class MovieControllerTest {
     @Before
     void setup() {
         securityService = mock(SecurityService.class)
-        SecurityHandlerInterceptor interceptor = new SecurityHandlerInterceptor(securityService)
         MockitoAnnotations.initMocks(this)
         mockMvc = MockMvcBuilders.standaloneSetup(movieController)
                 .setCustomArgumentResolvers(new RequestParameterArgumentResolver())
-                .addInterceptors(interceptor).build()
+                .addInterceptors(new SecurityHandlerInterceptor(securityService)).build()
     }
 
     @Test

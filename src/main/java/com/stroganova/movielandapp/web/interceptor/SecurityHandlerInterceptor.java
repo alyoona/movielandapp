@@ -1,16 +1,21 @@
 package com.stroganova.movielandapp.web.interceptor;
 
+import com.stroganova.movielandapp.entity.Role;
 import com.stroganova.movielandapp.entity.Session;
 import com.stroganova.movielandapp.entity.User;
 import com.stroganova.movielandapp.service.SecurityService;
+import com.stroganova.movielandapp.web.annotation.ProtectedBy;
+import com.stroganova.movielandapp.web.handler.UserHolder;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.HandlerMapping;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Optional;
 
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 public class SecurityHandlerInterceptor implements HandlerInterceptor {
@@ -26,28 +31,45 @@ public class SecurityHandlerInterceptor implements HandlerInterceptor {
 
         log.info("SecurityHandlerInterceptor preHandle start");
 
-        String requestMappingName = (String) request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+        HandlerMethod handlerMethod = (HandlerMethod) handler;
+        Method method = handlerMethod.getMethod();
+        ProtectedBy protectedBy = method.getDeclaredAnnotation(ProtectedBy.class);
+        if (protectedBy != null) {
 
-        SecurityMapping securityMapping = SecurityMapping.get(requestMappingName, request.getMethod());
+            Optional<Session> authorizationToken = securityService.getAuthorization(request.getHeader("Token"));
+            if (authorizationToken.isPresent()) {
+                User user = authorizationToken.get().getUser();
 
-        if (SecurityMapping.ALLOWED.equals(securityMapping)) {
-            return true;
-        } else {
-            Optional<Session> sessionOptional = securityService.getAuthorization(request.getHeader("Token"));
-            if (sessionOptional.isPresent()) {
-                Session session = sessionOptional.get();
-                User user = session.getUser();
-                if (securityMapping.getRoles().contains(user.getRole())) {
-                    request.setAttribute("user", user);
+                UserHolder.setLoggedUser(user);
+                mdcPut(user);
+
+                List<Role> roles = user.getRole().getIncludedRights();
+                if (roles.contains(protectedBy.role())) {
                     return true;
+                } else {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    return false;
                 }
-                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                return false;
-            } else {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return false;
             }
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return false;
         }
+        return true;
     }
 
+    private void mdcPut(User user){
+            String emailValue = user.getEmail();
+            log.info("user email put into MDC: {}", emailValue);
+            MDC.put("email", emailValue);
+        }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        log.info("SecurityHandlerInterceptor afterCompletion start");
+
+        UserHolder.clear();
+
+        MDC.remove("email");
+
+    }
 }
