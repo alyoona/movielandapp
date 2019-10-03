@@ -21,9 +21,9 @@ public interface MovieDao {
 
     Movie getById(long movieId);
 
-    void add(Movie movie);
-
-    long getNewestMovieId();
+    long add(Movie movie);
 
     void partialUpdate(long movieId, Map<MovieFieldUpdate, Object> updates);
+
+    void update(Movie movie);
 }

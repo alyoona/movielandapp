@@ -49,7 +49,7 @@ public class JdbcGenreDao implements GenreDao {
     }
 
     @Override
-    public void add(long movieId, List<Genre> genres) {
+    public void link(long movieId, List<Genre> genres) {
         List<Map<String, Object>> valueMaps = new ArrayList<>();
         for (Genre genre : genres) {
             Map<String, Object> valueMap = new HashMap<>();
@@ -61,7 +61,7 @@ public class JdbcGenreDao implements GenreDao {
     }
 
     @Override
-    public void deleteAll(long movieId) {
+    public void deleteAllLinks(long movieId) {
         namedParameterJdbcTemplate.update(movieGenreDeleteSql, new MapSqlParameterSource("movie_id", movieId));
     }
 

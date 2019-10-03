@@ -3,13 +3,13 @@ package com.stroganova.movielandapp.service.impl;
 import com.stroganova.movielandapp.dao.CountryDao;
 import com.stroganova.movielandapp.entity.Country;
 import com.stroganova.movielandapp.entity.Movie;
-import com.stroganova.movielandapp.request.MovieUpdateDirections;
 import com.stroganova.movielandapp.service.CountryService;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,17 +26,17 @@ public class DefaultCountryService implements CountryService {
     }
 
     @Override
-    public void add(long movieId, List<Country> countries) {
-        countryDao.add(movieId, countries);
+    public void link(long movieId, List<Country> countries) {
+        countryDao.link(movieId, countries);
     }
 
     @Override
-    public void update(long movieId, MovieUpdateDirections updates) {
-        List<Country> countries = updates.getCountries();
+    @Transactional
+    public void updateLinks(long movieId, List<Country> countries) {
         if (countries != null) {
-            countryDao.deleteAll(movieId);
+            countryDao.deleteAllLinks(movieId);
             if (!countries.isEmpty()) {
-                countryDao.add(movieId, countries);
+                countryDao.link(movieId, countries);
             }
         }
     }

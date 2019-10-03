@@ -53,11 +53,11 @@ class JdbcCountryDaoITest {
         namedJdbcTemplate.batchUpdate(countryInsertSql, countryBatchValues)
 
         def countries = [new Country(id: 10L, name: "countryFirst"), new Country(id: 20L, name: "countrySecond")]
-        countryDao.add(movieId, countries)
+        countryDao.link(movieId, countries)
         def addedCountries = countryDao.getAll(new Movie(id: movieId))
         assert countries == addedCountries
 
-        countryDao.deleteAll(movieId)
+        countryDao.deleteAllLinks(movieId)
         def allCountriesByMovieId = countryDao.getAll(new Movie(id: movieId))
         assert allCountriesByMovieId.isEmpty()
     }
@@ -80,7 +80,7 @@ class JdbcCountryDaoITest {
 
         long movieId = 44L
 
-        countryDao.add(movieId, countries)
+        countryDao.link(movieId, countries)
 
         def addedCountries = countryDao.getAll(new Movie(id: movieId))
 

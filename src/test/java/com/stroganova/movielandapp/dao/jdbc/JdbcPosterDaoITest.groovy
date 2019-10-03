@@ -47,7 +47,7 @@ class JdbcPosterDaoITest {
                                                   price       : 0D])
 
         String picturePath = "picturePath"
-        posterDao.add(movieId, picturePath)
+        posterDao.link(movieId, picturePath)
         String newPicturePath = "newPicturePath"
         posterDao.update(movieId, newPicturePath)
 
@@ -69,7 +69,7 @@ class JdbcPosterDaoITest {
                                                   price       : 150.15D])
         long movieId = 44L
         String picturePath = "picturePath"
-        posterDao.add(movieId, picturePath)
+        posterDao.link(movieId, picturePath)
 
         String addedPicturePath = namedJdbcTemplate.queryForObject(selectPicturePathPosterSql,
                 new MapSqlParameterSource("movieId", movieId), String.class)

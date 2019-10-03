@@ -89,22 +89,33 @@ public class DefaultMovieService implements MovieService {
 
     @Override
     @Transactional
-    public void add(Movie movie) {
-        movieDao.add(movie);
-        long movieId = movieDao.getNewestMovieId();
-        posterService.add(movieId, movie.getPicturePath());
-        countryService.add(movieId, movie.getCountries());
-        genreService.add(movieId, movie.getGenres());
+    public Movie add(Movie movie) {
+        long movieId = movieDao.add(movie);
+        posterService.link(movieId, movie.getPicturePath());
+        countryService.link(movieId, movie.getCountries());
+        genreService.link(movieId, movie.getGenres());
+        return getById(movieId);
     }
 
 
     @Override
     @Transactional
-    public void partialUpdate(long movieId, MovieUpdateDirections updates) {
+    public Movie partialUpdate(long movieId, MovieUpdateDirections updates) {
         movieDao.partialUpdate(movieId, updates.getMovieUpdates());
-        posterService.update(movieId, updates);
-        countryService.update(movieId, updates);
-        genreService.update(movieId, updates);
+        posterService.update(movieId, updates.getPoster());
+        countryService.updateLinks(movieId, updates.getCountries());
+        genreService.updateLinks(movieId, updates.getGenres());
+        return getById(movieId);
+    }
+
+    @Override
+    @Transactional
+    public Movie update(Movie movie) {
+        movieDao.update(movie);
+        posterService.update(movie.getId(), movie.getPicturePath());
+        countryService.updateLinks(movie.getId(), movie.getCountries());
+        genreService.updateLinks(movie.getId(), movie.getGenres());
+        return getById(movie.getId());
     }
 
 }

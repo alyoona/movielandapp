@@ -19,11 +19,19 @@ class QueryBuilderTest {
 
     @Test
     void testGetUpdateMovieSql() {
-        def set = [MovieFieldUpdate.NAME_RUSSIAN, MovieFieldUpdate.NAME_NATIVE,
-                   MovieFieldUpdate.YEAR_OF_RELEASE, MovieFieldUpdate.DESCRIPTION,
-                   MovieFieldUpdate.RATING, MovieFieldUpdate.PRICE] as Set<MovieFieldUpdate>
-        def actualSql = QueryBuilder.getUpdateSql(set)
+        def list = [MovieFieldUpdate.NAME_RUSSIAN, MovieFieldUpdate.NAME_NATIVE,
+                    MovieFieldUpdate.YEAR_OF_RELEASE, MovieFieldUpdate.DESCRIPTION,
+                    MovieFieldUpdate.RATING, MovieFieldUpdate.PRICE]
+        def actualSql = QueryBuilder.getUpdateSql(list)
         assert actualSql == "UPDATE movieland.movie  SET name_russian = :name_russian, name_native = :name_native," +
                 " year = :year, description = :description, rating = :rating, price = :price WHERE  id = :id"
+    }
+
+    @Test
+    void testGetAllMovieFieldsUpdateSql() {
+        def actualSql = QueryBuilder.getAllMovieFieldsUpdateSql()
+        assert actualSql == "UPDATE movieland.movie  SET name_russian = :name_russian, name_native = :name_native," +
+                " year = :year, description = :description, rating = :rating, price = :price WHERE  id = :id"
+
     }
 }

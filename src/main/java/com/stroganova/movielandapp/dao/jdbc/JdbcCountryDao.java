@@ -37,7 +37,7 @@ public class JdbcCountryDao implements CountryDao {
     }
 
     @Override
-    public void add(long movieId, List<Country> countries) {
+    public void link(long movieId, List<Country> countries) {
         List<Map<String, Object>> valueMaps = new ArrayList<>();
         for (Country country : countries) {
             Map<String, Object> valueMap = new HashMap<>();
@@ -49,7 +49,7 @@ public class JdbcCountryDao implements CountryDao {
     }
 
     @Override
-    public void deleteAll(long movieId) {
+    public void deleteAllLinks(long movieId) {
         namedParameterJdbcTemplate.update(movieCountryDeleteSql, new MapSqlParameterSource("movie_id", movieId));
     }
 }

@@ -10,7 +10,7 @@ public interface CountryService {
 
     List<Country> getAll(Movie movie);
 
-    void add(long movieId, List<Country> countries);
+    void link(long movieId, List<Country> countries);
 
-    void update(long movieId, MovieUpdateDirections updates);
+    void updateLinks(long movieId, List<Country> countries);
 }

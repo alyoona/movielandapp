@@ -4,8 +4,6 @@ import com.stroganova.movielandapp.dao.GenreDao
 import com.stroganova.movielandapp.service.cache.GenreCache
 import com.stroganova.movielandapp.entity.Genre
 import com.stroganova.movielandapp.entity.Movie
-import com.stroganova.movielandapp.request.MovieFieldUpdate
-import com.stroganova.movielandapp.request.MovieUpdateDirections
 import com.stroganova.movielandapp.service.GenreService
 import org.junit.Before
 import org.junit.Test
@@ -31,14 +29,11 @@ class DefaultGenreServiceTest {
 
     @Test
     void testUpdate() {
-        def movie = new Movie(genres: [new Genre(1, null), new Genre(2, null)])
-        Map<MovieFieldUpdate, Object> map = new HashMap<>()
-        map.put(MovieFieldUpdate.GENRES, MovieFieldUpdate.GENRES.getValue(movie))
+        def genres = [new Genre(1, null), new Genre(2, null)]
         long movieId = 26L
-        def updates = new MovieUpdateDirections(map)
-        genreService.update(movieId, updates)
-        verify(genreDao).deleteAll(movieId)
-        verify(genreDao).add(movieId, [new Genre(1, null), new Genre(2, null)])
+        genreService.updateLinks(movieId, genres)
+        verify(genreDao).deleteAllLinks(movieId)
+        verify(genreDao).link(movieId, [new Genre(1, null), new Genre(2, null)])
     }
 
     @Test
@@ -46,8 +41,8 @@ class DefaultGenreServiceTest {
         long movieId = 22L
         def genres = [new Genre(1L, "genreFirstName"),
                       new Genre(1L, "genreFirstName")]
-        genreService.add(movieId, genres)
-        verify(genreDao).add(movieId, genres)
+        genreService.link(movieId, genres)
+        verify(genreDao).link(movieId, genres)
     }
 
 

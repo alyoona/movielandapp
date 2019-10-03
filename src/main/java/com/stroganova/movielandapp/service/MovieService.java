@@ -22,7 +22,10 @@ public interface MovieService {
 
     Movie getById(long movieId, RequestParameter requestParameter);
 
-    void add(Movie movie);
+    Movie add(Movie movie);
 
-    void partialUpdate(long id, MovieUpdateDirections updates);
+    Movie partialUpdate(long id, MovieUpdateDirections updates);
+
+    Movie update(Movie movie);
+
 }

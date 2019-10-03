@@ -21,7 +21,7 @@ public class JdbcPosterDao implements PosterDao {
     @NonNull String posterUpdateSql;
 
     @Override
-    public void add(long movieId, String picturePath) {
+    public void link(long movieId, String picturePath) {
         namedParameterJdbcTemplate.update(posterInsertSql, getSqlParameterSource(movieId, picturePath));
     }
 

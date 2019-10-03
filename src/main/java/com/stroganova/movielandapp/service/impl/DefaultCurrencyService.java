@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
@@ -37,7 +38,13 @@ public class DefaultCurrencyService implements CurrencyService {
     @Scheduled(cron = "* 01 17 * * *", zone = "Europe/Kiev")
     private void getRates() {
         String url = getNbuUrl();
-        String responseHtml = restTemplate.getForObject(url, String.class);
+        String responseHtml;
+        try {
+            responseHtml = restTemplate.getForObject(url, String.class);
+        } catch (ResourceAccessException ex) {
+            responseHtml = restTemplate.getForObject(url, String.class);
+        }
+
         String[] lines = responseHtml.split("\n");
         for (String line : lines) {
             if (line.contains("window.exchangeRate")) {

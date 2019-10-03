@@ -1,7 +1,6 @@
 package com.stroganova.movielandapp.service.impl;
 
 import com.stroganova.movielandapp.dao.PosterDao;
-import com.stroganova.movielandapp.request.MovieUpdateDirections;
 import com.stroganova.movielandapp.service.PosterService;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -18,13 +17,12 @@ public class DefaultPosterService implements PosterService {
     PosterDao posterDao;
 
     @Override
-    public void add(long movieId, String picturePath) {
-        posterDao.add(movieId, picturePath);
+    public void link(long movieId, String picturePath) {
+        posterDao.link(movieId, picturePath);
     }
 
     @Override
-    public void update(long movieId, MovieUpdateDirections updates) {
-        String picturePath = updates.getPoster();
+    public void update(long movieId, String picturePath) {
         if (picturePath != null) {
             posterDao.update(movieId, picturePath);
         }

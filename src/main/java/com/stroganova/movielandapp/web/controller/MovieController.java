@@ -59,14 +59,23 @@ public class MovieController {
 
     @PostMapping
     @ProtectedBy(role = Role.ADMIN_ROLE)
-    public void add(@RequestBody Movie movie) {
-        movieService.add(movie);
+    @JsonView(View.MovieDetail.class)
+    public Movie add(@RequestBody Movie movie) {
+        return movieService.add(movie);
     }
 
     @PatchMapping("/{id}")
     @ProtectedBy(role = Role.ADMIN_ROLE)
-    public void update(@PathVariable long id, @RequestBody MovieUpdateDirections updates) {
-        movieService.partialUpdate(id, updates);
+    @JsonView(View.MovieDetail.class)
+    public Movie partialUpdate(@PathVariable long id, @RequestBody MovieUpdateDirections updates) {
+        return movieService.partialUpdate(id, updates);
+    }
+
+    @PutMapping
+    @ProtectedBy(role = Role.ADMIN_ROLE)
+    @JsonView(View.MovieDetail.class)
+    public Movie update(@RequestBody Movie movie) {
+        return movieService.update(movie);
     }
 
 }

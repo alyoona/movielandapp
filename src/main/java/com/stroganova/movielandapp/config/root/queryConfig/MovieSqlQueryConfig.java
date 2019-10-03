@@ -43,10 +43,4 @@ public class MovieSqlQueryConfig {
         return "INSERT INTO movieland.movie (name_russian, name_native, year, description, rating, price)" +
                 "        VALUES (:name_russian, :name_native, :year, :description, :rating, :price);";
     }
-
-    @Bean
-    public String getNewestMovieIdSql() {
-        return "SELECT max(m.id) as id FROM movieland.movie m;";
-    }
-
 }

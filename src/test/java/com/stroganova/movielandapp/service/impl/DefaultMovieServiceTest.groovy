@@ -49,6 +49,33 @@ class DefaultMovieServiceTest {
     }
 
     @Test
+    void testUpdate() {
+        def movie = new Movie(id: 25L,
+                nameRussian: "NEWNameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(2000, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                picturePath: "https://picture_path.png",
+                description: "MovieDescription!!!",
+                countries: [new Country(id: 3)],
+                genres: [new Genre(3, null)])
+
+        when(movieDao.getById(25L)).thenReturn(movie)
+        when(countryService.getAll(movie)).thenReturn([new Country(id: 3)])
+        when(genreService.getAll(movie)).thenReturn([new Genre(3, null)])
+        when(reviewService.getAll(movie)).thenReturn(null)
+
+        assert movie == movieService.update(movie)
+        verify(movieDao).update(movie)
+        verify(posterService).update(movie.id, movie.picturePath)
+        verify(countryService).updateLinks(movie.id, movie.countries)
+        verify(genreService).updateLinks(movie.id, movie.genres)
+
+    }
+
+
+    @Test
     void testPartialUpdate() {
         def movie = new Movie(nameRussian: "NameRussian",
                 nameNative: "NameNative",
@@ -66,12 +93,26 @@ class DefaultMovieServiceTest {
 
         long movieId = 26L
         def updates = new MovieUpdateDirections(map)
-        movieService.partialUpdate(movieId, updates)
 
+        def updatedMovie = new Movie(id: movieId,
+                nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                picturePath: "https://picture_path.png",
+                description: "empty",
+                countries: [new Country(id: 1), new Country(id: 2), new Country(id: 3)],
+                genres: [new Genre(1, null), new Genre(2, null)],
+                reviews: null
+        )
+        when(movieDao.getById(movieId)).thenReturn(updatedMovie)
+
+        assert updatedMovie == movieService.partialUpdate(movieId, updates)
         verify(movieDao).partialUpdate(movieId, updates.getMovieUpdates())
-        verify(posterService).update(movieId, updates)
-        verify(countryService).update(movieId, updates)
-        verify(genreService).update(movieId, updates)
+        verify(posterService).update(movieId, updates.poster)
+        verify(countryService).updateLinks(movieId, updates.countries)
+        verify(genreService).updateLinks(movieId, updates.genres)
     }
 
     @Test
@@ -93,14 +134,28 @@ class DefaultMovieServiceTest {
         )
 
         long movieId = 11L
-        when(movieDao.getNewestMovieId()).thenReturn(movieId)
 
-        movieService.add(movie)
+        def addedMovie = new Movie(id: movieId,
+                nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                picturePath: "https://picture_path.png",
+                description: "empty",
+                countries: countries,
+                genres: genres,
+                reviews: reviews
+        )
+
+        when(movieDao.add(movie)).thenReturn(movieId)
+        when(movieDao.getById(movieId)).thenReturn(addedMovie)
+
+        assert addedMovie == movieService.add(movie)
         verify(movieDao).add(movie)
-        verify(movieDao).getNewestMovieId()
-        verify(posterService).add(movieId, movie.getPicturePath())
-        verify(countryService).add(movieId, countries)
-        verify(genreService).add(movieId, genres)
+        verify(posterService).link(movieId, movie.getPicturePath())
+        verify(countryService).link(movieId, countries)
+        verify(genreService).link(movieId, genres)
 
     }
 
@@ -139,9 +194,9 @@ class DefaultMovieServiceTest {
                 price: 150.15D,
                 picturePath: "https://picture_path.png",
                 description: "empty",
-                countries: countries,
-                genres: genres,
-                reviews: reviews
+                countries: null,
+                genres: null,
+                reviews: null
         )
 
         when(movieDao.getById(1L)).thenReturn(movie)
@@ -149,9 +204,21 @@ class DefaultMovieServiceTest {
         when(genreService.getAll(movie)).thenReturn(genres)
         when(reviewService.getAll(movie)).thenReturn(reviews)
 
-        def actualMovie = movieService.getById(1L)
+        def enrichedMovie = new Movie(
+                id: 1L,
+                nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                picturePath: "https://picture_path.png",
+                description: "empty",
+                countries: countries,
+                genres: genres,
+                reviews: reviews
+        )
 
-        assert movie == actualMovie
+        assert enrichedMovie == movieService.getById(1L)
     }
 
     @Test

@@ -4,7 +4,6 @@ import com.stroganova.movielandapp.dao.GenreDao;
 import com.stroganova.movielandapp.service.cache.GenreCache;
 import com.stroganova.movielandapp.entity.Genre;
 import com.stroganova.movielandapp.entity.Movie;
-import com.stroganova.movielandapp.request.MovieUpdateDirections;
 import com.stroganova.movielandapp.service.GenreService;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -12,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -38,17 +38,17 @@ public class DefaultGenreService implements GenreService {
     }
 
     @Override
-    public void add(long movieId, List<Genre> genres) {
-        genreDao.add(movieId, genres);
+    public void link(long movieId, List<Genre> genres) {
+        genreDao.link(movieId, genres);
     }
 
     @Override
-    public void update(long movieId, MovieUpdateDirections updates) {
-        List<Genre> genres = updates.getGenres();
+    @Transactional
+    public void updateLinks(long movieId, List<Genre> genres) {
         if (genres != null) {
-            genreDao.deleteAll(movieId);
+            genreDao.deleteAllLinks(movieId);
             if (!genres.isEmpty()) {
-                genreDao.add(movieId, genres);
+                genreDao.link(movieId, genres);
             }
         }
     }

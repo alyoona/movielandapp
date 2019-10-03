@@ -59,6 +59,33 @@ class JdbcMovieDaoITest {
 
 
     @Test
+    void testUpdate() {
+        //movie
+        long movieId = 25L
+        namedJdbcTemplate.update(movieInsertSql, [id          : movieId,
+                                                  name_russian: "",
+                                                  name_native : "",
+                                                  year        : "1970-01-01",
+                                                  description : "",
+                                                  rating      : 0D,
+                                                  price       : 0D])
+        def newMovie = new Movie(
+                id: movieId,
+                nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                description: "MovieDescription!!!")
+
+        movieDao.update(newMovie)
+
+        def actualMovie = movieDao.getById(movieId)
+
+        assert newMovie == actualMovie
+    }
+
+    @Test
     void testPartialUpdate() {
         //movie
         long movieId = 26L
@@ -111,8 +138,9 @@ class JdbcMovieDaoITest {
                 rating: 8.99D,
                 price: 150.15D)
 
-        movieDao.add(movie)
-        def addedMovie = movieDao.getById(movieDao.getNewestMovieId())
+        def movieId = movieDao.add(movie)
+        assert movieId != 0
+        def addedMovie = movieDao.getById(movieId)
         assert movie.getNameRussian() == addedMovie.getNameRussian()
         assert movie.getNameNative() == addedMovie.getNameNative()
         assert movie.getYearOfRelease() == addedMovie.getYearOfRelease()
