@@ -1,6 +1,7 @@
 package com.stroganova.movielandapp.service;
 
 import com.stroganova.movielandapp.entity.Movie;
+import com.stroganova.movielandapp.request.MovieUpdateDirections;
 import com.stroganova.movielandapp.request.RequestParameter;
 
 import java.util.List;
@@ -20,4 +21,11 @@ public interface MovieService {
     Movie getById(long movieId);
 
     Movie getById(long movieId, RequestParameter requestParameter);
+
+    Movie add(Movie movie);
+
+    Movie partialUpdate(long id, MovieUpdateDirections updates);
+
+    Movie update(Movie movie);
+
 }

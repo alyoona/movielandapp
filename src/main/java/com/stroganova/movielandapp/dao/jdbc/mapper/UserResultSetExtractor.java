@@ -20,7 +20,7 @@ public class UserResultSetExtractor implements ResultSetExtractor<User> {
         user.setId(rs.getLong("id"));
         user.setEmail(rs.getString("email"));
         user.setNickname(rs.getString("first_name") + " " + rs.getString("last_name"));
-        user.setRole(Role.valueOf(rs.getString("role_name")));
+        user.setRole(Role.getByName(rs.getString("role_name")));
         return user;
     }
 }

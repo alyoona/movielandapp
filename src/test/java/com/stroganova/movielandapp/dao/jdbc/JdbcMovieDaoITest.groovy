@@ -1,7 +1,10 @@
 package com.stroganova.movielandapp.dao.jdbc
 
+import com.stroganova.movielandapp.config.TestJdbcDaoConfig
 import com.stroganova.movielandapp.dao.MovieDao
 import com.stroganova.movielandapp.entity.Movie
+import com.stroganova.movielandapp.request.MovieFieldUpdate
+import com.stroganova.movielandapp.request.MovieUpdateDirections
 import com.stroganova.movielandapp.request.RequestParameter
 import com.stroganova.movielandapp.request.SortDirection
 import com.stroganova.movielandapp.request.SortOrder
@@ -17,7 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDate
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(locations = "classpath:spring/rootContextTest.xml")
+@ContextConfiguration(classes = TestJdbcDaoConfig.class)
 
 class JdbcMovieDaoITest {
 
@@ -52,11 +55,103 @@ class JdbcMovieDaoITest {
         namedJdbcTemplate.update(usersDeleteSql, EmptySqlParameterSource.INSTANCE)
         namedJdbcTemplate.update(posterDeleteSql, EmptySqlParameterSource.INSTANCE)
         namedJdbcTemplate.update(movieDeleteSql, EmptySqlParameterSource.INSTANCE)
+    }
+
+
+    @Test
+    void testUpdate() {
+        //movie
+        long movieId = 25L
+        namedJdbcTemplate.update(movieInsertSql, [id          : movieId,
+                                                  name_russian: "",
+                                                  name_native : "",
+                                                  year        : "1970-01-01",
+                                                  description : "",
+                                                  rating      : 0D,
+                                                  price       : 0D])
+        def newMovie = new Movie(
+                id: movieId,
+                nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                description: "MovieDescription!!!")
+
+        movieDao.update(newMovie)
+
+        def actualMovie = movieDao.getById(movieId)
+
+        assert newMovie == actualMovie
+    }
+
+    @Test
+    void testPartialUpdate() {
+        //movie
+        long movieId = 26L
+        namedJdbcTemplate.update(movieInsertSql, [id          : movieId,
+                                                  name_russian: "",
+                                                  name_native : "",
+                                                  year        : "1970-01-01",
+                                                  description : "",
+                                                  rating      : 0D,
+                                                  price       : 0D])
+
+        def movie = new Movie(
+                nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                description: "MovieDescription!!!")
+
+        Map<MovieFieldUpdate, Object> mapUpdates = new HashMap<>()
+        for (MovieFieldUpdate fieldUpdate : MovieFieldUpdate.values()) {
+            mapUpdates.put(fieldUpdate, fieldUpdate.getValue(movie))
+        }
+
+        def updates = new MovieUpdateDirections(mapUpdates)
+        movieDao.partialUpdate(movieId, updates.getMovieUpdates())
+
+        def expectedMovie = new Movie(id: movieId,
+                nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                description: "MovieDescription!!!")
+
+
+        def actualMovie = movieDao.getById(movieId)
+
+        assert expectedMovie == actualMovie
+
+    }
+
+
+    @Test
+    void testAdd() {
+        def movie = new Movie(nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                description: "empty",
+                rating: 8.99D,
+                price: 150.15D)
+
+        def movieId = movieDao.add(movie)
+        assert movieId != 0
+        def addedMovie = movieDao.getById(movieId)
+        assert movie.getNameRussian() == addedMovie.getNameRussian()
+        assert movie.getNameNative() == addedMovie.getNameNative()
+        assert movie.getYearOfRelease() == addedMovie.getYearOfRelease()
+        assert movie.getPrice() == addedMovie.getPrice()
+        assert movie.getRating() == addedMovie.getRating()
+        assert movie.getDescription() == addedMovie.getDescription()
 
     }
 
     @Test
-    void testGetById(){
+    void testGetById() {
         //movie
         namedJdbcTemplate.update(movieInsertSql, [id          : 1L,
                                                   name_russian: "NameRussian",
@@ -77,7 +172,7 @@ class JdbcMovieDaoITest {
                 rating: 8.99D,
                 price: 150.15D,
                 picturePath: "https://picture_path.png",
-                description : "empty")
+                description: "empty")
         def actualMovie = movieDao.getById(1L)
 
         assert expectedMovie == actualMovie

@@ -1,5 +1,6 @@
 package com.stroganova.movielandapp.dao.jdbc
 
+import com.stroganova.movielandapp.config.TestJdbcDaoConfig
 import com.stroganova.movielandapp.dao.ReviewDao
 import com.stroganova.movielandapp.entity.Movie
 import com.stroganova.movielandapp.entity.Review
@@ -15,8 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner
 
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(locations = "classpath:spring/rootContextTest.xml")
-
+@ContextConfiguration(classes = TestJdbcDaoConfig.class)
 class JdbcReviewDaoITest {
     @Autowired
     NamedParameterJdbcTemplate namedJdbcTemplate
@@ -35,7 +35,9 @@ class JdbcReviewDaoITest {
         def usersDeleteSql = "DELETE FROM movieland.users;"
         def movieDeleteSql = "DELETE FROM movieland.movie;"
         def reviewDeleteSql = "DELETE FROM movieland.review;"
+        def posterDeleteSql = "DELETE FROM movieland.poster;"
 
+        namedJdbcTemplate.update(posterDeleteSql, EmptySqlParameterSource.INSTANCE)
         namedJdbcTemplate.update(userRolesDeleterSql, EmptySqlParameterSource.INSTANCE)
         namedJdbcTemplate.update(rolesDeleterSql, EmptySqlParameterSource.INSTANCE)
         namedJdbcTemplate.update(reviewDeleteSql, EmptySqlParameterSource.INSTANCE)

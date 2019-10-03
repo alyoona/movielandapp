@@ -1,6 +1,6 @@
-package com.stroganova.movielandapp.dao.cache
+package com.stroganova.movielandapp.service.cache
 
-import com.stroganova.movielandapp.dao.cache.impl.DefaultGenreCache
+import com.stroganova.movielandapp.service.cache.impl.DefaultGenreCache
 import com.stroganova.movielandapp.dao.jdbc.JdbcGenreDao
 import com.stroganova.movielandapp.entity.Genre
 import org.junit.Test

@@ -1,10 +1,10 @@
 package com.stroganova.movielandapp.service.impl;
 
-
 import com.stroganova.movielandapp.dao.MovieDao;
 import com.stroganova.movielandapp.entity.Movie;
 import com.stroganova.movielandapp.exception.EntityNotFoundException;
 import com.stroganova.movielandapp.request.Currency;
+import com.stroganova.movielandapp.request.MovieUpdateDirections;
 import com.stroganova.movielandapp.request.RequestParameter;
 import com.stroganova.movielandapp.service.*;
 import lombok.AccessLevel;
@@ -28,6 +28,7 @@ public class DefaultMovieService implements MovieService {
     @NonNull GenreService genreService;
     @NonNull ReviewService reviewService;
     @NonNull CurrencyService currencyService;
+    @NonNull PosterService posterService;
 
     @Override
     public List<Movie> getAll() {
@@ -62,7 +63,7 @@ public class DefaultMovieService implements MovieService {
     @Transactional(readOnly = true)
     public Movie getById(long movieId) {
         Movie movie = movieDao.getById(movieId);
-        if(movie == null) {
+        if (movie == null) {
             throw new EntityNotFoundException("No such movie");
         }
         return enrich(movie);
@@ -79,10 +80,42 @@ public class DefaultMovieService implements MovieService {
     public Movie getById(long movieId, RequestParameter requestParameter) {
         Movie movie = getById(movieId);
         Currency currency = requestParameter.getCurrency();
-        if(currency != null) {
+        if (currency != null) {
             double convertedPrice = currencyService.convert(movie.getPrice(), currency);
             movie.setPrice(convertedPrice);
         }
         return movie;
     }
+
+    @Override
+    @Transactional
+    public Movie add(Movie movie) {
+        long movieId = movieDao.add(movie);
+        posterService.link(movieId, movie.getPicturePath());
+        countryService.link(movieId, movie.getCountries());
+        genreService.link(movieId, movie.getGenres());
+        return getById(movieId);
+    }
+
+
+    @Override
+    @Transactional
+    public Movie partialUpdate(long movieId, MovieUpdateDirections updates) {
+        movieDao.partialUpdate(movieId, updates.getMovieUpdates());
+        posterService.update(movieId, updates.getPoster());
+        countryService.updateLinks(movieId, updates.getCountries());
+        genreService.updateLinks(movieId, updates.getGenres());
+        return getById(movieId);
+    }
+
+    @Override
+    @Transactional
+    public Movie update(Movie movie) {
+        movieDao.update(movie);
+        posterService.update(movie.getId(), movie.getPicturePath());
+        countryService.updateLinks(movie.getId(), movie.getCountries());
+        genreService.updateLinks(movie.getId(), movie.getGenres());
+        return getById(movie.getId());
+    }
+
 }

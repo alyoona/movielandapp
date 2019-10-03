@@ -5,6 +5,7 @@ import com.stroganova.movielandapp.dao.jdbc.mapper.MovieDetailsResultSetExtracto
 import com.stroganova.movielandapp.dao.jdbc.mapper.MovieRowMapper;
 import com.stroganova.movielandapp.dao.jdbc.util.QueryBuilder;
 import com.stroganova.movielandapp.entity.Movie;
+import com.stroganova.movielandapp.request.MovieFieldUpdate;
 import com.stroganova.movielandapp.request.RequestParameter;
 import com.stroganova.movielandapp.request.SortDirection;
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
@@ -14,13 +15,17 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
-@FieldDefaults(makeFinal=true, level= AccessLevel.PRIVATE)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class JdbcMovieDao implements MovieDao {
 
     private final static MovieRowMapper MOVIE_ROW_MAPPER = new MovieRowMapper();
@@ -32,6 +37,7 @@ public class JdbcMovieDao implements MovieDao {
     @NonNull String getThreeRandomMoviesSql;
     @NonNull String getMoviesByGenreIdSql;
     @NonNull String getMovieByIdSql;
+    @NonNull String movieInsertSql;
 
     @Override
     public List<Movie> getAll() {
@@ -71,5 +77,45 @@ public class JdbcMovieDao implements MovieDao {
         sqlParameterSource.addValue("id", movieId);
         return namedParameterJdbcTemplate.query(getMovieByIdSql, sqlParameterSource, MOVIE_DETAILS_RESULT_SET_EXTRACTOR);
     }
+
+    @Override
+    public long add(Movie movie) {
+        MapSqlParameterSource sqlParameterSource = new MapSqlParameterSource();
+        sqlParameterSource.addValue("name_russian", movie.getNameRussian());
+        sqlParameterSource.addValue("name_native", movie.getNameNative());
+        sqlParameterSource.addValue("year", movie.getYearOfRelease());
+        sqlParameterSource.addValue("description", movie.getDescription());
+        sqlParameterSource.addValue("rating", movie.getRating());
+        sqlParameterSource.addValue("price", movie.getPrice());
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        namedParameterJdbcTemplate.update(movieInsertSql, sqlParameterSource, keyHolder);
+        return (long) keyHolder.getKeys().get("id");
+    }
+
+    @Override
+    public void partialUpdate(long movieId, Map<MovieFieldUpdate, Object> updates) {
+        MapSqlParameterSource sqlParameterSource = new MapSqlParameterSource();
+        sqlParameterSource.addValue("id", movieId);
+        for (Map.Entry<MovieFieldUpdate, Object> field : updates.entrySet()) {
+            MovieFieldUpdate movieFieldUpdate = field.getKey();
+            sqlParameterSource.addValue(movieFieldUpdate.getDbName(), field.getValue());
+        }
+        namedParameterJdbcTemplate.update(QueryBuilder.getUpdateSql(new ArrayList<>(updates.keySet())), sqlParameterSource);
+    }
+
+    @Override
+    public void update(Movie movie) {
+        MapSqlParameterSource sqlParameterSource = new MapSqlParameterSource();
+        sqlParameterSource.addValue("id", movie.getId());
+        sqlParameterSource.addValue("name_russian", movie.getNameRussian());
+        sqlParameterSource.addValue("name_native", movie.getNameNative());
+        sqlParameterSource.addValue("year", movie.getYearOfRelease());
+        sqlParameterSource.addValue("description", movie.getDescription());
+        sqlParameterSource.addValue("rating", movie.getRating());
+        sqlParameterSource.addValue("price", movie.getPrice());
+        namedParameterJdbcTemplate.update(QueryBuilder.getAllMovieFieldsUpdateSql(), sqlParameterSource);
+    }
+
 
 }

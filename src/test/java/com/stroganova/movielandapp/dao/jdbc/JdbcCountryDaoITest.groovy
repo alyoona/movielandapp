@@ -1,5 +1,6 @@
 package com.stroganova.movielandapp.dao.jdbc
 
+import com.stroganova.movielandapp.config.TestJdbcDaoConfig
 import com.stroganova.movielandapp.dao.CountryDao
 import com.stroganova.movielandapp.entity.Country
 import com.stroganova.movielandapp.entity.Movie
@@ -12,9 +13,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringRunner
 
+@ContextConfiguration(classes = TestJdbcDaoConfig.class)
 @RunWith(SpringRunner.class)
-@ContextConfiguration(locations = "classpath:spring/rootContextTest.xml")
-
 class JdbcCountryDaoITest {
     @Autowired
     NamedParameterJdbcTemplate namedJdbcTemplate
@@ -25,6 +25,7 @@ class JdbcCountryDaoITest {
             " VALUES (:id, :name_russian, :name_native, :year, :description, :rating, :price)"
     def countryInsertSql = "INSERT INTO movieland.country (id, name) VALUES (:id, :name);"
     def movieCountryInsertSql = "INSERT INTO movieland.movie_country (id, movie_id, country_id) VALUES (:id, :movie_id, :country_id);"
+
     @Before
     void clear() {
         def movieDeleteSql = "DELETE FROM movieland.movie;"
@@ -36,7 +37,60 @@ class JdbcCountryDaoITest {
     }
 
     @Test
-    void testGetAllByMovieId(){
+    void testDeleteAllByMovieId() {
+        //movie
+        long movieId = 26L
+        namedJdbcTemplate.update(movieInsertSql, [id          : movieId,
+                                                  name_russian: "",
+                                                  name_native : "",
+                                                  year        : "1995-01-01",
+                                                  description : "",
+                                                  rating      : 0D,
+                                                  price       : 0D])
+        //countries
+        Map<String, ?>[] countryBatchValues = [[id: 10L, name: "countryFirst"],
+                                               [id: 20L, name: "countrySecond"]]
+        namedJdbcTemplate.batchUpdate(countryInsertSql, countryBatchValues)
+
+        def countries = [new Country(id: 10L, name: "countryFirst"), new Country(id: 20L, name: "countrySecond")]
+        countryDao.link(movieId, countries)
+        def addedCountries = countryDao.getAll(new Movie(id: movieId))
+        assert countries == addedCountries
+
+        countryDao.deleteAllLinks(movieId)
+        def allCountriesByMovieId = countryDao.getAll(new Movie(id: movieId))
+        assert allCountriesByMovieId.isEmpty()
+    }
+
+    @Test
+    void testAdd() {
+        //movie
+        namedJdbcTemplate.update(movieInsertSql, [id          : 44L,
+                                                  name_russian: "NameRussian",
+                                                  name_native : "NameNative",
+                                                  year        : "1995-01-01",
+                                                  description : "empty",
+                                                  rating      : 8.99D,
+                                                  price       : 150.15D])
+        //countries
+        Map<String, ?>[] countryBatchValues = [[id: 10L, name: "countryFirst"],
+                                               [id: 20L, name: "countrySecond"]]
+        namedJdbcTemplate.batchUpdate(countryInsertSql, countryBatchValues)
+        def countries = [new Country(id: 10L, name: "countryFirst"), new Country(id: 20L, name: "countrySecond")]
+
+        long movieId = 44L
+
+        countryDao.link(movieId, countries)
+
+        def addedCountries = countryDao.getAll(new Movie(id: movieId))
+
+        assert countries == addedCountries
+
+
+    }
+
+    @Test
+    void testGetAllByMovieId() {
         //movie
         namedJdbcTemplate.update(movieInsertSql, [id          : 1L,
                                                   name_russian: "NameRussian",
@@ -54,7 +108,7 @@ class JdbcCountryDaoITest {
         namedJdbcTemplate.batchUpdate(countryInsertSql, countryBatchValues)
         namedJdbcTemplate.batchUpdate(movieCountryInsertSql, movieCountryBatchValues)
 
-        def countries = [new Country(id: 10L, name: "countryFirst"), new Country(id: 20L, name: "countrySecond") ]
+        def countries = [new Country(id: 10L, name: "countryFirst"), new Country(id: 20L, name: "countrySecond")]
 
         def actualCountries = countryDao.getAll(new Movie(id: 1L))
         assert countries == actualCountries

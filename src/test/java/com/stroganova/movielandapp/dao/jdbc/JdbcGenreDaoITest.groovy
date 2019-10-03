@@ -1,5 +1,6 @@
 package com.stroganova.movielandapp.dao.jdbc
 
+import com.stroganova.movielandapp.config.TestJdbcDaoConfig
 import com.stroganova.movielandapp.dao.GenreDao
 import com.stroganova.movielandapp.entity.Genre
 import com.stroganova.movielandapp.entity.Movie
@@ -13,7 +14,7 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringRunner
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(locations = "classpath:spring/rootContextTest.xml")
+@ContextConfiguration(classes = TestJdbcDaoConfig.class)
 class JdbcGenreDaoITest {
 
     @Autowired
@@ -38,6 +39,60 @@ class JdbcGenreDaoITest {
     }
 
     @Test
+    void testDeleteAllByMovieId() {
+        //movie
+        long movieId = 26L
+        namedJdbcTemplate.update(movieInsertSql, [id          : movieId,
+                                                  name_russian: "NameRussian",
+                                                  name_native : "NameNative",
+                                                  year        : "1995-01-01",
+                                                  description : "empty",
+                                                  rating      : 8.99D,
+                                                  price       : 150.15D])
+        //genres
+        Map<String, ?>[] genreBatchValues = [[id: 100L, name: "genreFirst"],
+                                             [id: 200L, name: "genreSecond"]]
+        namedJdbcTemplate.batchUpdate(genreInsertSql, genreBatchValues)
+
+        def genres = [new Genre(100L, "genreFirst"),
+                      new Genre(200L, "genreSecond")]
+        genreDao.link(movieId, genres)
+        def addedGenres = genreDao.getAll(new Movie(id: movieId))
+        assert genres == addedGenres
+
+        genreDao.deleteAllLinks(movieId)
+        def allGenresByMovieId = genreDao.getAll(new Movie(id: movieId))
+        assert allGenresByMovieId.isEmpty()
+
+    }
+
+    @Test
+    void testAdd() {
+        //movie
+        namedJdbcTemplate.update(movieInsertSql, [id          : 44L,
+                                                  name_russian: "NameRussian",
+                                                  name_native : "NameNative",
+                                                  year        : "1995-01-01",
+                                                  description : "empty",
+                                                  rating      : 8.99D,
+                                                  price       : 150.15D])
+        //genres
+        Map<String, ?>[] genreBatchValues = [[id: 100L, name: "genreFirst"],
+                                             [id: 200L, name: "genreSecond"]]
+        namedJdbcTemplate.batchUpdate(genreInsertSql, genreBatchValues)
+
+
+        def genres = [new Genre(100L, "genreFirst"),
+                      new Genre(200L, "genreSecond")]
+        long movieId = 44L
+        genreDao.link(movieId, genres)
+
+        def addedGenres = genreDao.getAll(new Movie(id: movieId))
+
+        assert genres == addedGenres
+    }
+
+    @Test
     void testGetAll() {
 
         Map<String, ?>[] genreBatchValues = [[id: 1L, name: "genreFirst"],
@@ -54,7 +109,7 @@ class JdbcGenreDaoITest {
     }
 
     @Test
-    void testGetAllByMovieId(){
+    void testGetAllByMovieId() {
         //movie
         namedJdbcTemplate.update(movieInsertSql, [id          : 3L,
                                                   name_russian: "NameRussian",

@@ -8,7 +8,6 @@ import com.stroganova.movielandapp.entity.Session
 import com.stroganova.movielandapp.entity.User
 import com.stroganova.movielandapp.service.ReviewService
 import com.stroganova.movielandapp.service.SecurityService
-import com.stroganova.movielandapp.web.handler.UserRequestAttributeArgumentResolver
 import com.stroganova.movielandapp.web.interceptor.SecurityHandlerInterceptor
 import org.junit.Before
 import org.junit.Test
@@ -43,12 +42,9 @@ class ReviewControllerTest {
     @Before
     void setup() {
         securityService = mock(SecurityService.class)
-        SecurityHandlerInterceptor interceptor = new SecurityHandlerInterceptor()
-        interceptor.setSecurityService(securityService)
         MockitoAnnotations.initMocks(this)
         mockMvc = MockMvcBuilders.standaloneSetup(reviewController)
-                .setCustomArgumentResolvers(new UserRequestAttributeArgumentResolver())
-                .addInterceptors(interceptor).build()
+                .addInterceptors(new SecurityHandlerInterceptor(securityService)).build()
     }
 
 
@@ -56,7 +52,7 @@ class ReviewControllerTest {
     void testAddMovieReview() {
 
         String token = UUID.randomUUID().toString()
-        def user = new User(id: 55L, role: Role.USER_ROLE)
+        def user = new User(id: 55L, email: "name@example.com", role: Role.USER_ROLE)
         Optional<Session> sessionOptional = Optional.of(new Session(token, user, LocalDateTime.now()))
         when(securityService.getAuthorization(token)).thenReturn(sessionOptional)
 

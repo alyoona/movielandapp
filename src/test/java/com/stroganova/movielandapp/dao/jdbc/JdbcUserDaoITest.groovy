@@ -1,5 +1,6 @@
 package com.stroganova.movielandapp.dao.jdbc
 
+import com.stroganova.movielandapp.config.TestJdbcDaoConfig
 import com.stroganova.movielandapp.dao.UserDao
 import com.stroganova.movielandapp.entity.Role
 import com.stroganova.movielandapp.entity.User
@@ -14,8 +15,7 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringRunner
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(locations = "classpath:spring/rootContextTest.xml")
-
+@ContextConfiguration(classes = TestJdbcDaoConfig.class)
 class JdbcUserDaoITest {
 
     @Autowired

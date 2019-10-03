@@ -1,21 +1,27 @@
 package com.stroganova.movielandapp.web.controller
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.stroganova.movielandapp.entity.Country
 import com.stroganova.movielandapp.entity.Genre
 import com.stroganova.movielandapp.entity.Movie
-
 import com.stroganova.movielandapp.entity.Review
+import com.stroganova.movielandapp.entity.Role
+import com.stroganova.movielandapp.entity.Session
 import com.stroganova.movielandapp.entity.User
 import com.stroganova.movielandapp.request.Currency
+import com.stroganova.movielandapp.request.MovieFieldUpdate
+import com.stroganova.movielandapp.request.MovieUpdateDirections
 import com.stroganova.movielandapp.request.RequestParameter
 import com.stroganova.movielandapp.service.MovieService
 import com.stroganova.movielandapp.request.SortDirection
 import com.stroganova.movielandapp.request.SortOrder
-
+import com.stroganova.movielandapp.service.SecurityService
 import com.stroganova.movielandapp.web.handler.RequestParameterArgumentResolver
+import com.stroganova.movielandapp.web.interceptor.SecurityHandlerInterceptor
 import groovy.json.JsonSlurper
 import org.junit.Before
 import org.junit.Test
+import org.springframework.http.MediaType
 import org.springframework.web.util.NestedServletException
 
 
@@ -27,28 +33,230 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
+import java.time.LocalDateTime
+
 import static org.mockito.Matchers.anyLong
 import static org.mockito.Matchers.eq
+import static org.mockito.Mockito.mock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.mockito.Mockito.when
 
 
 import java.time.LocalDate
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 
 class MovieControllerTest {
-
+    private final ObjectMapper MAPPER = new ObjectMapper()
     @Mock
     private MovieService movieService
     @InjectMocks
     private MovieController movieController
     private MockMvc mockMvc
+    private SecurityService securityService
 
     @Before
     void setup() {
+        securityService = mock(SecurityService.class)
         MockitoAnnotations.initMocks(this)
         mockMvc = MockMvcBuilders.standaloneSetup(movieController)
-                .setCustomArgumentResolvers(new RequestParameterArgumentResolver()).build()
+                .setCustomArgumentResolvers(new RequestParameterArgumentResolver())
+                .addInterceptors(new SecurityHandlerInterceptor(securityService)).build()
+    }
+
+
+    @Test
+    void testUpdate() {
+        String token = UUID.randomUUID().toString()
+        def user = new User(id: 55L, role: Role.ADMIN_ROLE)
+        Optional<Session> sessionOptional = Optional.of(new Session(token, user, LocalDateTime.now()))
+        when(securityService.getAuthorization(token)).thenReturn(sessionOptional)
+
+        String requestBodyJson = MAPPER.writeValueAsString([id           : 25L,
+                                                            nameRussian  : "NameRussian",
+                                                            nameNative   : "NameNative",
+                                                            yearOfRelease: "1994",
+                                                            rating       : 8.99D,
+                                                            price        : 150.15D,
+                                                            picturePath  : "https://picture_path.png",
+                                                            description  : "empty",
+                                                            countries    : [1, 2, 3], genres: [1, 2]])
+
+        def movie = new Movie(id: 25L,
+                nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                picturePath: "https://picture_path.png",
+                description: "empty",
+                countries: [new Country(id: 1), new Country(id: 2), new Country(id: 3)],
+                genres: [new Genre(1, null), new Genre(2, null)])
+        when(movieService.update(movie)).thenReturn(movie)
+
+        def response = mockMvc.perform(put("/movie")
+                .header("Token", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBodyJson)
+        ).andReturn().response
+
+        assert response.status == HttpStatus.OK.value()
+
+        def actualMovie = new JsonSlurper().parseText(response.contentAsString)
+
+        def expectedMovie = [id           : 25L,
+                             nameRussian  : "NameRussian",
+                             nameNative   : "NameNative",
+                             yearOfRelease: "1994",
+                             rating       : "8.99",
+                             price        : "150.15",
+                             picturePath  : "https://picture_path.png",
+                             description  : "empty",
+                             countries    : [[id: 1, name: null], [id: 2, name: null], [id: 3, name: null]],
+                             genres       : [[id: 1, name: null], [id: 2, name: null]],
+                             reviews      : null
+        ]
+        assert expectedMovie == actualMovie
+
+    }
+
+    @Test
+    void testPartialUpdate() {
+        String token = UUID.randomUUID().toString()
+        def user = new User(id: 55L, role: Role.ADMIN_ROLE)
+        Optional<Session> sessionOptional = Optional.of(new Session(token, user, LocalDateTime.now()))
+        when(securityService.getAuthorization(token)).thenReturn(sessionOptional)
+
+        String requestBodyJson = MAPPER.writeValueAsString([nameRussian  : "NameRussian",
+                                                            nameNative   : "NameNative",
+                                                            yearOfRelease: "1994",
+                                                            rating       : 8.99D,
+                                                            price        : 150.15D,
+                                                            picturePath  : "https://picture_path.png",
+                                                            description  : "MovieDescription!!!",
+                                                            countries    : [1, 2, 3], genres: [1, 2]])
+
+        def movie = new Movie(nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                picturePath: "https://picture_path.png",
+                description: "MovieDescription!!!",
+                countries: [new Country(id: 1), new Country(id: 2), new Country(id: 3)],
+                genres: [new Genre(1, null), new Genre(2, null)])
+
+        Map<MovieFieldUpdate, Object> map = new HashMap<>()
+        for (MovieFieldUpdate fieldUpdate : MovieFieldUpdate.values()) {
+            map.put(fieldUpdate, fieldUpdate.getValue(movie))
+        }
+
+        def updatedMovie = new Movie(id: 26L,
+                nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                picturePath: "https://picture_path.png",
+                description: "MovieDescription!!!",
+                countries: [new Country(id: 1), new Country(id: 2), new Country(id: 3)],
+                genres: [new Genre(1, null), new Genre(2, null)]
+        )
+        when(movieService.partialUpdate(26L, new MovieUpdateDirections(map))).thenReturn(updatedMovie)
+
+        def response = mockMvc.perform(patch("/movie/26")
+                .header("Token", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBodyJson)
+        ).andReturn().response
+
+        assert response.status == HttpStatus.OK.value()
+
+        def actualMovie = new JsonSlurper().parseText(response.contentAsString)
+
+        def expectedMovie = [id           : 26L,
+                             nameRussian  : "NameRussian",
+                             nameNative   : "NameNative",
+                             yearOfRelease: "1994",
+                             rating       : "8.99",
+                             price        : "150.15",
+                             picturePath  : "https://picture_path.png",
+                             description  : "MovieDescription!!!",
+                             countries    : [[id: 1, name: null], [id: 2, name: null], [id: 3, name: null]],
+                             genres       : [[id: 1, name: null], [id: 2, name: null]],
+                             reviews      : null
+        ]
+        assert expectedMovie == actualMovie
+
+    }
+
+    @Test
+    void teatAdd() {
+
+        String token = UUID.randomUUID().toString()
+        def user = new User(id: 55L, role: Role.ADMIN_ROLE)
+        Optional<Session> sessionOptional = Optional.of(new Session(token, user, LocalDateTime.now()))
+        when(securityService.getAuthorization(token)).thenReturn(sessionOptional)
+
+        String requestBodyJson = MAPPER.writeValueAsString([nameRussian  : "NameRussian",
+                                                            nameNative   : "NameNative",
+                                                            yearOfRelease: "1994",
+                                                            rating       : 8.99D,
+                                                            price        : 150.15D,
+                                                            picturePath  : "https://picture_path.png",
+                                                            description  : "MovieDescription!!!",
+                                                            countries    : [1, 2, 3], genres: [1, 2]])
+
+        def movie = new Movie(nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                picturePath: "https://picture_path.png",
+                description: "MovieDescription!!!",
+                countries: [new Country(id: 1), new Country(id: 2), new Country(id: 3)],
+                genres: [new Genre(1, null), new Genre(2, null)])
+
+
+        def addedMovie = new Movie(id: 1L,
+                nameRussian: "NameRussian",
+                nameNative: "NameNative",
+                yearOfRelease: LocalDate.of(1994, 1, 1),
+                rating: 8.99D,
+                price: 150.15D,
+                picturePath: "https://picture_path.png",
+                description: "empty",
+                countries: [new Country(id: 1), new Country(id: 2), new Country(id: 3)],
+                genres: [new Genre(1, null), new Genre(2, null)]
+        )
+        when(movieService.add(movie)).thenReturn(addedMovie)
+
+        def response = mockMvc.perform(post("/movie")
+                .header("Token", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBodyJson)
+        ).andReturn().response
+
+        assert response.status == HttpStatus.OK.value()
+
+        def actualMovie = new JsonSlurper().parseText(response.contentAsString)
+
+        def expectedMovie = [id           : 1,
+                             nameRussian  : "NameRussian",
+                             nameNative   : "NameNative",
+                             yearOfRelease: "1994",
+                             rating       : "8.99",
+                             price        : "150.15",
+                             picturePath  : "https://picture_path.png",
+                             description  : "empty",
+                             countries    : [[id: 1, name: null], [id: 2, name: null], [id: 3, name: null]],
+                             genres       : [[id: 1, name: null], [id: 2, name: null]],
+                             reviews      : null
+        ]
+        assert expectedMovie == actualMovie
+
     }
 
 
@@ -63,7 +271,7 @@ class MovieControllerTest {
                 price: 150.15D,
                 picturePath: "https://picture_path.png",
                 description: "MovieDescription!!!",
-                countries:null, genres:null, reviews:null
+                countries: null, genres: null, reviews: null
         )
 
         when(movieService.getById(1L, new RequestParameter(null, Currency.USD))).thenReturn(movie)
@@ -82,7 +290,7 @@ class MovieControllerTest {
                              price        : "150.15",
                              picturePath  : "https://picture_path.png",
                              description  : "MovieDescription!!!",
-                             countries:null, genres:null, reviews:null
+                             countries    : null, genres: null, reviews: null
         ]
         assert expectedMovie == actualMovie
     }

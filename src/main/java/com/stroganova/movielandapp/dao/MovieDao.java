@@ -1,9 +1,11 @@
 package com.stroganova.movielandapp.dao;
 
 import com.stroganova.movielandapp.entity.Movie;
+import com.stroganova.movielandapp.request.MovieFieldUpdate;
 import com.stroganova.movielandapp.request.RequestParameter;
 
 import java.util.List;
+import java.util.Map;
 
 public interface MovieDao {
 
@@ -18,4 +20,10 @@ public interface MovieDao {
     List<Movie> getAll(long genreId, RequestParameter requestParameter);
 
     Movie getById(long movieId);
+
+    long add(Movie movie);
+
+    void partialUpdate(long movieId, Map<MovieFieldUpdate, Object> updates);
+
+    void update(Movie movie);
 }

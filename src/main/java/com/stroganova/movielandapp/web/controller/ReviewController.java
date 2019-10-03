@@ -2,8 +2,11 @@ package com.stroganova.movielandapp.web.controller;
 
 
 import com.stroganova.movielandapp.entity.Review;
+import com.stroganova.movielandapp.entity.Role;
 import com.stroganova.movielandapp.entity.User;
 import com.stroganova.movielandapp.service.ReviewService;
+import com.stroganova.movielandapp.web.annotation.ProtectedBy;
+import com.stroganova.movielandapp.web.handler.UserHolder;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -22,8 +25,9 @@ public class ReviewController {
     ReviewService reviewService;
 
     @PostMapping
-    public ResponseEntity<String> addMovieReview(@RequestBody Review review, User user) {
-        review.setUser(user);
+    @ProtectedBy(role = Role.USER_ROLE)
+    public ResponseEntity<String> addMovieReview(@RequestBody Review review) {
+        review.setUser(UserHolder.getLoggedUser());
         reviewService.add(review);
         return new ResponseEntity<>("Added movie review", HttpStatus.CREATED);
     }

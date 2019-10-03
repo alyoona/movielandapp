@@ -3,9 +3,13 @@ package com.stroganova.movielandapp.web.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stroganova.movielandapp.entity.Movie;
+import com.stroganova.movielandapp.entity.Role;
+import com.stroganova.movielandapp.request.MovieUpdateDirections;
 import com.stroganova.movielandapp.request.RequestParameter;
 import com.stroganova.movielandapp.service.MovieService;
 import com.stroganova.movielandapp.view.View;
+
+import com.stroganova.movielandapp.web.annotation.ProtectedBy;
 import lombok.extern.slf4j.Slf4j;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -51,6 +55,27 @@ public class MovieController {
     public Movie getById(@PathVariable long movieId, RequestParameter requestParameter) {
         log.info("Get movie details");
         return requestParameter != null ? movieService.getById(movieId, requestParameter) : movieService.getById(movieId);
+    }
+
+    @PostMapping
+    @ProtectedBy(role = Role.ADMIN_ROLE)
+    @JsonView(View.MovieDetail.class)
+    public Movie add(@RequestBody Movie movie) {
+        return movieService.add(movie);
+    }
+
+    @PatchMapping("/{id}")
+    @ProtectedBy(role = Role.ADMIN_ROLE)
+    @JsonView(View.MovieDetail.class)
+    public Movie partialUpdate(@PathVariable long id, @RequestBody MovieUpdateDirections updates) {
+        return movieService.partialUpdate(id, updates);
+    }
+
+    @PutMapping
+    @ProtectedBy(role = Role.ADMIN_ROLE)
+    @JsonView(View.MovieDetail.class)
+    public Movie update(@RequestBody Movie movie) {
+        return movieService.update(movie);
     }
 
 }
