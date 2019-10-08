@@ -1,7 +1,10 @@
 package com.stroganova.movielandapp.service.impl;
 
 import com.stroganova.movielandapp.dao.MovieDao;
+import com.stroganova.movielandapp.entity.Country;
+import com.stroganova.movielandapp.entity.Genre;
 import com.stroganova.movielandapp.entity.Movie;
+import com.stroganova.movielandapp.entity.Review;
 import com.stroganova.movielandapp.exception.EntityNotFoundException;
 import com.stroganova.movielandapp.request.Currency;
 import com.stroganova.movielandapp.request.MovieUpdateDirections;
@@ -12,10 +15,12 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.*;
 
 @Service
 @Slf4j
@@ -29,6 +34,10 @@ public class DefaultMovieService implements MovieService {
     @NonNull ReviewService reviewService;
     @NonNull CurrencyService currencyService;
     @NonNull PosterService posterService;
+
+    private final ExecutorService executorService = Executors.newCachedThreadPool();
+    @Value("${movieService.enrichmentTimeout}")
+    private long enrichmentTimeout;
 
     @Override
     public List<Movie> getAll() {
@@ -66,13 +75,42 @@ public class DefaultMovieService implements MovieService {
         if (movie == null) {
             throw new EntityNotFoundException("No such movie");
         }
-        return enrich(movie);
+        Movie enrichedMovie = enrich(movie);
+        return enrichedMovie != null ? enrichedMovie : movie;
     }
 
     private Movie enrich(Movie movie) {
-        movie.setCountries(countryService.getAll(movie));
-        movie.setGenres(genreService.getAll(movie));
-        movie.setReviews(reviewService.getAll(movie));
+        Future<List<Country>> futureCountries = executorService.submit(() -> countryService.getAll(movie));
+        Future<List<Genre>> futureGenres = executorService.submit(() -> genreService.getAll(movie));
+        Future<List<Review>> futureReviews = executorService.submit(() -> reviewService.getAll(movie));
+        List<Country> countries;
+        List<Genre> genres;
+        List<Review> reviews;
+        try {
+            try {
+                countries = futureCountries.get(enrichmentTimeout, TimeUnit.SECONDS);
+            } catch (TimeoutException e) {
+                futureCountries.cancel(true);
+                return null;
+            }
+            try {
+                genres = futureGenres.get(enrichmentTimeout, TimeUnit.SECONDS);
+            } catch (TimeoutException e) {
+                futureGenres.cancel(true);
+                return null;
+            }
+            try {
+                reviews = futureReviews.get(enrichmentTimeout, TimeUnit.SECONDS);
+            } catch (TimeoutException e) {
+                futureReviews.cancel(true);
+                return null;
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+        movie.setCountries(countries);
+        movie.setGenres(genres);
+        movie.setReviews(reviews);
         return movie;
     }
 
