@@ -18,6 +18,7 @@ import com.stroganova.movielandapp.service.GenreService
 import com.stroganova.movielandapp.service.MovieService
 import com.stroganova.movielandapp.service.PosterService
 import com.stroganova.movielandapp.service.ReviewService
+import com.stroganova.movielandapp.service.cache.MovieCache
 import org.junit.Before
 import org.junit.Test
 
@@ -36,6 +37,7 @@ class DefaultMovieServiceTest {
     private ReviewService reviewService
     private CurrencyService currencyService
     private PosterService posterService
+    private MovieCache movieCache
 
     @Before
     void before() {
@@ -45,8 +47,9 @@ class DefaultMovieServiceTest {
         reviewService = mock(ReviewService.class)
         currencyService = mock(CurrencyService.class)
         posterService = mock(PosterService.class)
+        movieCache = mock(MovieCache.class)
 
-        movieService = new DefaultMovieService(movieDao, countryService, genreService, reviewService, currencyService, posterService, 5)
+        movieService = new DefaultMovieService(movieDao, countryService, genreService, reviewService, currencyService, posterService,movieCache, 5)
     }
 
     @Test

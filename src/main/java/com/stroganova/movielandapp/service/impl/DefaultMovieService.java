@@ -10,6 +10,7 @@ import com.stroganova.movielandapp.request.Currency;
 import com.stroganova.movielandapp.request.MovieUpdateDirections;
 import com.stroganova.movielandapp.request.RequestParameter;
 import com.stroganova.movielandapp.service.*;
+import com.stroganova.movielandapp.service.cache.MovieCache;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class DefaultMovieService implements MovieService {
     @NonNull ReviewService reviewService;
     @NonNull CurrencyService currencyService;
     @NonNull PosterService posterService;
+    @NonNull MovieCache movieCache;
 
     private final ExecutorService executorService = Executors.newCachedThreadPool();
     @Value("${movieService.enrichmentTimeout}")
@@ -71,12 +73,25 @@ public class DefaultMovieService implements MovieService {
     @Override
     @Transactional(readOnly = true)
     public Movie getById(long movieId) {
+
+        Movie cachedMovie = movieCache.getById(movieId);
+        if (cachedMovie != null) {
+            return cachedMovie;
+        }
+
         Movie movie = movieDao.getById(movieId);
         if (movie == null) {
             throw new EntityNotFoundException("No such movie");
         }
+
         Movie enrichedMovie = enrich(movie);
-        return enrichedMovie != null ? enrichedMovie : movie;
+        if (enrichedMovie != null) {
+            movieCache.cacheMovie(enrichedMovie);
+            return enrichedMovie;
+        }
+
+        movieCache.cacheMovie(movie);
+        return movie;
     }
 
     private Movie enrich(Movie movie) {
@@ -139,6 +154,8 @@ public class DefaultMovieService implements MovieService {
     @Override
     @Transactional
     public Movie partialUpdate(long movieId, MovieUpdateDirections updates) {
+        movieCache.invalidateCachedMovie(movieId);
+
         movieDao.partialUpdate(movieId, updates.getMovieUpdates());
         posterService.update(movieId, updates.getPoster());
         countryService.updateLinks(movieId, updates.getCountries());
@@ -149,6 +166,8 @@ public class DefaultMovieService implements MovieService {
     @Override
     @Transactional
     public Movie update(Movie movie) {
+        movieCache.invalidateCachedMovie(movie.getId());
+
         movieDao.update(movie);
         posterService.update(movie.getId(), movie.getPicturePath());
         countryService.updateLinks(movie.getId(), movie.getCountries());
