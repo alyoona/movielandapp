@@ -45,7 +45,8 @@ class DefaultMovieServiceTest {
         reviewService = mock(ReviewService.class)
         currencyService = mock(CurrencyService.class)
         posterService = mock(PosterService.class)
-        movieService = new DefaultMovieService(movieDao, countryService, genreService, reviewService, currencyService, posterService)
+
+        movieService = new DefaultMovieService(movieDao, countryService, genreService, reviewService, currencyService, posterService, 5)
     }
 
     @Test

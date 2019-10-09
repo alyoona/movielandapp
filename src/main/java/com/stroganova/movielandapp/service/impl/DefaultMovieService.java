@@ -12,10 +12,13 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @Slf4j
@@ -29,6 +32,10 @@ public class DefaultMovieService implements MovieService {
     @NonNull ReviewService reviewService;
     @NonNull CurrencyService currencyService;
     @NonNull PosterService posterService;
+
+    private final ExecutorService executorService = Executors.newCachedThreadPool();
+    @Value("${movieService.enrichmentTimeout}")
+    private long enrichmentTimeout;
 
     @Override
     public List<Movie> getAll() {
@@ -66,14 +73,34 @@ public class DefaultMovieService implements MovieService {
         if (movie == null) {
             throw new EntityNotFoundException("No such movie");
         }
-        return enrich(movie);
+        Movie enrichedMovie = enrich(movie);
+        return enrichedMovie != null ? enrichedMovie : movie;
     }
 
     private Movie enrich(Movie movie) {
-        movie.setCountries(countryService.getAll(movie));
-        movie.setGenres(genreService.getAll(movie));
-        movie.setReviews(reviewService.getAll(movie));
-        return movie;
+        AtomicReference<Movie> movieAtomicReference = new AtomicReference<>(movie);
+        try {
+            executorService.invokeAll(Arrays.asList(
+                    () -> movieAtomicReference.updateAndGet(m -> {
+                        m.setCountries(countryService.getAll(m));
+                        return m;
+                    })
+                    , () -> movieAtomicReference.updateAndGet(m -> {
+                        m.setGenres(genreService.getAll(m));
+                        return m;
+                    })
+                    , () -> movieAtomicReference.updateAndGet(m -> {
+                        m.setReviews(reviewService.getAll(m));
+                        return m;
+                    })
+                    )
+                    , enrichmentTimeout, TimeUnit.SECONDS
+
+            );
+        } catch (InterruptedException e) {
+            throw new RuntimeException("error while enrichment movie", e);
+        }
+        return movieAtomicReference.get();
     }
 
     @Override
