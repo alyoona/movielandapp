@@ -1,10 +1,7 @@
 package com.stroganova.movielandapp.service.impl;
 
 import com.stroganova.movielandapp.dao.MovieDao;
-import com.stroganova.movielandapp.entity.Country;
-import com.stroganova.movielandapp.entity.Genre;
 import com.stroganova.movielandapp.entity.Movie;
-import com.stroganova.movielandapp.entity.Review;
 import com.stroganova.movielandapp.exception.EntityNotFoundException;
 import com.stroganova.movielandapp.request.Currency;
 import com.stroganova.movielandapp.request.MovieUpdateDirections;
@@ -19,8 +16,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @Slf4j
@@ -80,38 +78,29 @@ public class DefaultMovieService implements MovieService {
     }
 
     private Movie enrich(Movie movie) {
-        Future<List<Country>> futureCountries = executorService.submit(() -> countryService.getAll(movie));
-        Future<List<Genre>> futureGenres = executorService.submit(() -> genreService.getAll(movie));
-        Future<List<Review>> futureReviews = executorService.submit(() -> reviewService.getAll(movie));
-        List<Country> countries;
-        List<Genre> genres;
-        List<Review> reviews;
+        AtomicReference<Movie> movieAtomicReference = new AtomicReference<>(movie);
         try {
-            try {
-                countries = futureCountries.get(enrichmentTimeout, TimeUnit.SECONDS);
-            } catch (TimeoutException e) {
-                futureCountries.cancel(true);
-                return null;
-            }
-            try {
-                genres = futureGenres.get(enrichmentTimeout, TimeUnit.SECONDS);
-            } catch (TimeoutException e) {
-                futureGenres.cancel(true);
-                return null;
-            }
-            try {
-                reviews = futureReviews.get(enrichmentTimeout, TimeUnit.SECONDS);
-            } catch (TimeoutException e) {
-                futureReviews.cancel(true);
-                return null;
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
+            executorService.invokeAll(Arrays.asList(
+                    () -> movieAtomicReference.updateAndGet(m -> {
+                        m.setCountries(countryService.getAll(m));
+                        return m;
+                    })
+                    , () -> movieAtomicReference.updateAndGet(m -> {
+                        m.setGenres(genreService.getAll(m));
+                        return m;
+                    })
+                    , () -> movieAtomicReference.updateAndGet(m -> {
+                        m.setReviews(reviewService.getAll(m));
+                        return m;
+                    })
+                    )
+                    , enrichmentTimeout, TimeUnit.SECONDS
+
+            );
+        } catch (InterruptedException e) {
+            throw new RuntimeException("error while enrichment movie", e);
         }
-        movie.setCountries(countries);
-        movie.setGenres(genres);
-        movie.setReviews(reviews);
-        return movie;
+        return movieAtomicReference.get();
     }
 
     @Override
