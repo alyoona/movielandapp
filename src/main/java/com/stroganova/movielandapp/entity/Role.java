@@ -2,27 +2,29 @@ package com.stroganova.movielandapp.entity;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 public enum Role {
-    GUEST_ROLE("GUEST_ROLE") {
+    GUEST("GUEST") {
         @Override
         public List<Role> getIncludedRights() {
-            return Collections.singletonList(GUEST_ROLE);
+            return Collections.singletonList(GUEST);
         }
     },
-    USER_ROLE("USER_ROLE") {
+    USER("USER") {
         @Override
         public List<Role> getIncludedRights() {
-            return Arrays.asList(GUEST_ROLE, USER_ROLE);
+            return Arrays.asList(GUEST, USER);
         }
     },
-    ADMIN_ROLE("ADMIN_ROLE") {
+    ADMIN("ADMIN") {
         @Override
         public List<Role> getIncludedRights() {
-            return Arrays.asList(GUEST_ROLE, USER_ROLE, ADMIN_ROLE);
+            return Arrays.asList(GUEST, USER, ADMIN);
         }
     };
+
 
     private String name;
 

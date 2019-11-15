@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface ProtectedBy {
+public @interface Secured {
 
-    Role role();
+    Role role() default Role.ADMIN;
 }

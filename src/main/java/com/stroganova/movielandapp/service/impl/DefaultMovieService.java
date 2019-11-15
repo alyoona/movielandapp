@@ -8,10 +8,8 @@ import com.stroganova.movielandapp.request.MovieUpdateDirections;
 import com.stroganova.movielandapp.request.RequestParameter;
 import com.stroganova.movielandapp.service.*;
 import com.stroganova.movielandapp.service.cache.MovieCache;
-import lombok.AccessLevel;
-import lombok.NonNull;
+
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -24,18 +22,18 @@ import java.util.concurrent.atomic.AtomicReference;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class DefaultMovieService implements MovieService {
 
-    @NonNull MovieDao movieDao;
-    @NonNull CountryService countryService;
-    @NonNull GenreService genreService;
-    @NonNull ReviewService reviewService;
-    @NonNull CurrencyService currencyService;
-    @NonNull PosterService posterService;
-    @NonNull MovieCache movieCache;
+    private final MovieDao movieDao;
+    private final CountryService countryService;
+    private final GenreService genreService;
+    private final ReviewService reviewService;
+    private final CurrencyService currencyService;
+    private final PosterService posterService;
+    private final MovieCache movieCache;
 
     private final ExecutorService executorService = Executors.newCachedThreadPool();
+
     @Value("${movieService.enrichmentTimeout}")
     private long enrichmentTimeout;
 

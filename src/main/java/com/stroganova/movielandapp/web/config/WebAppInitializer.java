@@ -1,7 +1,6 @@
-package com.stroganova.movielandapp.config;
+package com.stroganova.movielandapp.web.config;
 
 import com.stroganova.movielandapp.config.root.RootConfig;
-import com.stroganova.movielandapp.config.web.MovielandAppDispatcherServletConfig;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {

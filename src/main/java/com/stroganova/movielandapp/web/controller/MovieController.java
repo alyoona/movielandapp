@@ -9,7 +9,7 @@ import com.stroganova.movielandapp.request.RequestParameter;
 import com.stroganova.movielandapp.service.MovieService;
 import com.stroganova.movielandapp.view.View;
 
-import com.stroganova.movielandapp.web.annotation.ProtectedBy;
+import com.stroganova.movielandapp.web.annotation.Secured;
 import lombok.extern.slf4j.Slf4j;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -58,21 +58,21 @@ public class MovieController {
     }
 
     @PostMapping
-    @ProtectedBy(role = Role.ADMIN_ROLE)
+    @Secured(role = Role.ADMIN)
     @JsonView(View.MovieDetail.class)
     public Movie add(@RequestBody Movie movie) {
         return movieService.add(movie);
     }
 
     @PatchMapping("/{id}")
-    @ProtectedBy(role = Role.ADMIN_ROLE)
+    @Secured(role = Role.ADMIN)
     @JsonView(View.MovieDetail.class)
     public Movie partialUpdate(@PathVariable long id, @RequestBody MovieUpdateDirections updates) {
         return movieService.partialUpdate(id, updates);
     }
 
     @PutMapping
-    @ProtectedBy(role = Role.ADMIN_ROLE)
+    @Secured(role = Role.ADMIN)
     @JsonView(View.MovieDetail.class)
     public Movie update(@RequestBody Movie movie) {
         return movieService.update(movie);

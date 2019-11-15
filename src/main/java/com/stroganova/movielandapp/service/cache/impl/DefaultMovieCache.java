@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-public class MovieCacheDefault implements MovieCache {
+public class DefaultMovieCache implements MovieCache {
 
     private final Map<Long, Reference<Movie>> cache = new ConcurrentHashMap<>();
 

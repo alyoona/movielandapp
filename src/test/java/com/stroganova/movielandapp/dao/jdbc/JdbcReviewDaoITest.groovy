@@ -81,7 +81,7 @@ class JdbcReviewDaoITest {
                                                   password  : "jfhkjsdfhksfhksh",
                                                   first_name: "Big",
                                                   last_name : "Ben"])
-        namedJdbcTemplate.update(rolesInsertSql, [id: 5, name: "USER_ROLE"])
+        namedJdbcTemplate.update(rolesInsertSql, [id: 5, name: "USER"])
         namedJdbcTemplate.update(userRolesInsertSql, [id: 77, user_id: 22, role_id: 5])
         namedJdbcTemplate.update(movieInsertSql, [id          : 27L,
                                                   name_russian: "NameRussian",

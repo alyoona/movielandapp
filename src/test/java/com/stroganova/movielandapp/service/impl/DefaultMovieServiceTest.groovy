@@ -49,7 +49,8 @@ class DefaultMovieServiceTest {
         posterService = mock(PosterService.class)
         movieCache = mock(MovieCache.class)
 
-        movieService = new DefaultMovieService(movieDao, countryService, genreService, reviewService, currencyService, posterService,movieCache, 5)
+        movieService = new DefaultMovieService(movieDao, countryService, genreService, reviewService, currencyService, posterService,movieCache)
+
     }
 
     @Test
@@ -185,10 +186,6 @@ class DefaultMovieServiceTest {
 
     @Test
     void testGetById() {
-
-        def countries = [new Country(id: 10L, name: "USA"), new Country(id: 20, name: "GB")]
-        def genres = [new Genre(100L, "FirstGenre")]
-        def reviews = [new Review(id: 1000, text: "Great!", user: new User(id: 50, nickname: "Big Ben"))]
         def movie = new Movie(
                 id: 1L,
                 nameRussian: "NameRussian",
@@ -204,25 +201,9 @@ class DefaultMovieServiceTest {
         )
 
         when(movieDao.getById(1L)).thenReturn(movie)
-        when(countryService.getAll(movie)).thenReturn(countries)
-        when(genreService.getAll(movie)).thenReturn(genres)
-        when(reviewService.getAll(movie)).thenReturn(reviews)
 
-        def enrichedMovie = new Movie(
-                id: 1L,
-                nameRussian: "NameRussian",
-                nameNative: "NameNative",
-                yearOfRelease: LocalDate.of(1994, 1, 1),
-                rating: 8.99D,
-                price: 150.15D,
-                picturePath: "https://picture_path.png",
-                description: "empty",
-                countries: countries,
-                genres: genres,
-                reviews: reviews
-        )
 
-        assert enrichedMovie == movieService.getById(1L)
+        assert movie == movieService.getById(1L)
     }
 
     @Test

@@ -52,7 +52,7 @@ class ReviewControllerTest {
     void testAddMovieReview() {
 
         String token = UUID.randomUUID().toString()
-        def user = new User(id: 55L, email: "name@example.com", role: Role.USER_ROLE)
+        def user = new User(id: 55L, email: "name@example.com", role: Role.USER)
         Optional<Session> sessionOptional = Optional.of(new Session(token, user, LocalDateTime.now()))
         when(securityService.getAuthorization(token)).thenReturn(sessionOptional)
 

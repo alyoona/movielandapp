@@ -70,7 +70,7 @@ class MovieControllerTest {
     @Test
     void testUpdate() {
         String token = UUID.randomUUID().toString()
-        def user = new User(id: 55L, role: Role.ADMIN_ROLE)
+        def user = new User(id: 55L, role: Role.ADMIN)
         Optional<Session> sessionOptional = Optional.of(new Session(token, user, LocalDateTime.now()))
         when(securityService.getAuthorization(token)).thenReturn(sessionOptional)
 
@@ -125,7 +125,7 @@ class MovieControllerTest {
     @Test
     void testPartialUpdate() {
         String token = UUID.randomUUID().toString()
-        def user = new User(id: 55L, role: Role.ADMIN_ROLE)
+        def user = new User(id: 55L, role: Role.ADMIN)
         Optional<Session> sessionOptional = Optional.of(new Session(token, user, LocalDateTime.now()))
         when(securityService.getAuthorization(token)).thenReturn(sessionOptional)
 
@@ -196,7 +196,7 @@ class MovieControllerTest {
     void teatAdd() {
 
         String token = UUID.randomUUID().toString()
-        def user = new User(id: 55L, role: Role.ADMIN_ROLE)
+        def user = new User(id: 55L, role: Role.ADMIN)
         Optional<Session> sessionOptional = Optional.of(new Session(token, user, LocalDateTime.now()))
         when(securityService.getAuthorization(token)).thenReturn(sessionOptional)
 
