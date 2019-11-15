@@ -22,8 +22,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class DefaultSecurityService implements SecurityService {
 
-    private Map<String, Session> tokenCache = new ConcurrentHashMap<>();
     private final UserService userService;
+    private Map<String, Session> tokenCache = new ConcurrentHashMap<>();
     @Value("${securityService.tokenLifeTime}")
     private long tokenLifeTime;
 

@@ -21,9 +21,7 @@ import java.util.List;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class DefaultGenreService implements GenreService {
 
-    @NonNull
     GenreCache genreCache;
-    @NonNull
     GenreDao genreDao;
 
     @Override

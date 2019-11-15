@@ -10,11 +10,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class DefaultPosterService implements PosterService {
 
-    @NonNull
-    PosterDao posterDao;
+   private final PosterDao posterDao;
 
     @Override
     public void link(long movieId, String picturePath) {

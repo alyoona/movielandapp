@@ -141,24 +141,28 @@ public class DefaultMovieService implements MovieService {
     @Override
     @Transactional
     public Movie partialUpdate(long movieId, MovieUpdateDirections updates) {
-        movieCache.invalidateCachedMovie(movieId);
+
 
         movieDao.partialUpdate(movieId, updates.getMovieUpdates());
         posterService.update(movieId, updates.getPoster());
         countryService.updateLinks(movieId, updates.getCountries());
         genreService.updateLinks(movieId, updates.getGenres());
+
+        movieCache.invalidateCachedMovie(movieId);
+
         return getById(movieId);
     }
 
     @Override
     @Transactional
     public Movie update(Movie movie) {
-        movieCache.invalidateCachedMovie(movie.getId());
-
         movieDao.update(movie);
         posterService.update(movie.getId(), movie.getPicturePath());
         countryService.updateLinks(movie.getId(), movie.getCountries());
         genreService.updateLinks(movie.getId(), movie.getGenres());
+
+        movieCache.invalidateCachedMovie(movie.getId());
+
         return getById(movie.getId());
     }
 

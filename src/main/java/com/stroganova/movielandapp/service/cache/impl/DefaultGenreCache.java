@@ -19,13 +19,10 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class DefaultGenreCache implements GenreCache {
 
-    @NonNull
-    final GenreDao genreDao;
-
-    volatile List<Genre> genres;
+    private final GenreDao genreDao;
+    private volatile List<Genre> genres;
 
     @Override
     public List<Genre> getAll() {

@@ -25,19 +25,18 @@ import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class JdbcMovieDao implements MovieDao {
 
     private final static MovieRowMapper MOVIE_ROW_MAPPER = new MovieRowMapper();
     private final static MovieDetailsResultSetExtractor MOVIE_DETAILS_RESULT_SET_EXTRACTOR =
             new MovieDetailsResultSetExtractor(MOVIE_ROW_MAPPER);
 
-    @NonNull NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    @NonNull String getAllMoviesSql;
-    @NonNull String getThreeRandomMoviesSql;
-    @NonNull String getMoviesByGenreIdSql;
-    @NonNull String getMovieByIdSql;
-    @NonNull String movieInsertSql;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final String getAllMoviesSql;
+    private final String getThreeRandomMoviesSql;
+    private final String getMoviesByGenreIdSql;
+    private final String getMovieByIdSql;
+    private final String movieInsertSql;
 
     @Override
     public List<Movie> getAll() {

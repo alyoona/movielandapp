@@ -35,7 +35,7 @@ public class DefaultMovieCache implements MovieCache {
 
     @Override
     public void invalidateCachedMovie(long id) {
-
+            cache.remove(id);
     }
 
 
