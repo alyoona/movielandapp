@@ -4,10 +4,7 @@ import com.stroganova.movielandapp.dao.ReviewDao;
 import com.stroganova.movielandapp.entity.Movie;
 import com.stroganova.movielandapp.entity.Review;
 import com.stroganova.movielandapp.service.ReviewService;
-import lombok.AccessLevel;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

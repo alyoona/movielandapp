@@ -52,13 +52,13 @@ class JdbcCountryDaoITest {
                                                [id: 20L, name: "countrySecond"]]
         namedJdbcTemplate.batchUpdate(countryInsertSql, countryBatchValues)
 
-        def countries = [new Country(id: 10L, name: "countryFirst"), new Country(id: 20L, name: "countrySecond")]
+        def countries = [new Country(10L, "countryFirst"), new Country(20L, "countrySecond")]
         countryDao.link(movieId, countries)
-        def addedCountries = countryDao.getAll(new Movie(id: movieId))
+        def addedCountries = countryDao.getAll(new Movie.MovieBuilder().setId(movieId).build())
         assert countries == addedCountries
 
         countryDao.deleteAllLinks(movieId)
-        def allCountriesByMovieId = countryDao.getAll(new Movie(id: movieId))
+        def allCountriesByMovieId = countryDao.getAll(new Movie.MovieBuilder().setId(movieId).build())
         assert allCountriesByMovieId.isEmpty()
     }
 
@@ -76,13 +76,13 @@ class JdbcCountryDaoITest {
         Map<String, ?>[] countryBatchValues = [[id: 10L, name: "countryFirst"],
                                                [id: 20L, name: "countrySecond"]]
         namedJdbcTemplate.batchUpdate(countryInsertSql, countryBatchValues)
-        def countries = [new Country(id: 10L, name: "countryFirst"), new Country(id: 20L, name: "countrySecond")]
+        def countries = [new Country(10L, "countryFirst"), new Country(20L, "countrySecond")]
 
         long movieId = 44L
 
         countryDao.link(movieId, countries)
 
-        def addedCountries = countryDao.getAll(new Movie(id: movieId))
+        def addedCountries = countryDao.getAll(new Movie.MovieBuilder().setId(movieId).build())
 
         assert countries == addedCountries
 
@@ -108,9 +108,9 @@ class JdbcCountryDaoITest {
         namedJdbcTemplate.batchUpdate(countryInsertSql, countryBatchValues)
         namedJdbcTemplate.batchUpdate(movieCountryInsertSql, movieCountryBatchValues)
 
-        def countries = [new Country(id: 10L, name: "countryFirst"), new Country(id: 20L, name: "countrySecond")]
+        def countries = [new Country(10L, "countryFirst"), new Country(20L, "countrySecond")]
 
-        def actualCountries = countryDao.getAll(new Movie(id: 1L))
+        def actualCountries = countryDao.getAll(new Movie.MovieBuilder().setId(1L).build())
         assert countries == actualCountries
     }
 }

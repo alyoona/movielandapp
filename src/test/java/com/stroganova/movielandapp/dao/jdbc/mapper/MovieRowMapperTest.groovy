@@ -14,14 +14,14 @@ class MovieRowMapperTest {
     @Test
     void testMapRow() {
 
-        def expectedMovie = new Movie(id: 1L,
+        def expectedMovie = new Movie.MovieBuilder(id: 1L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
                 yearOfRelease: LocalDate.of(1995, 1, 1),
                 rating: 8.99D,
                 price: 150.15D,
                 picturePath: "https://picture_path.png"
-                )
+                ).build()
 
         def resultSet = mock(ResultSet.class)
         when(resultSet.getLong("id")).thenReturn(expectedMovie.getId())

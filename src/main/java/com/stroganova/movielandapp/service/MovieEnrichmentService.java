@@ -4,5 +4,5 @@ import com.stroganova.movielandapp.entity.Movie;
 
 public interface MovieEnrichmentService {
 
-    void enrich (Movie movie);
+    Movie enrich (Movie movie);
 }

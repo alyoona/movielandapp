@@ -1,5 +1,6 @@
 package com.stroganova.movielandapp.dao.jdbc.mapper
 
+import com.stroganova.movielandapp.entity.Role
 import com.stroganova.movielandapp.entity.User
 import org.junit.Test
 
@@ -21,7 +22,12 @@ class UserResultSetExtractorTest {
         when(resultSet.getString("role_name")).thenReturn("USER")
         def userResultSetExtractor = new UserResultSetExtractor()
         def actualUser = userResultSetExtractor.extractData(resultSet)
-        def user = new User(id: 1, email: "ronald.reynolds66@example.com", nickname: "FirstName LastName", role: "USER")
+        def user = new User.UserBuilder(
+                id: 1,
+                nickname: "FirstName LastName",
+                email: "ronald.reynolds66@example.com",
+                role: Role.USER
+        ).build()
         assert user == actualUser
     }
 }

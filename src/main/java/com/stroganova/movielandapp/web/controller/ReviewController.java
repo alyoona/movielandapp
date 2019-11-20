@@ -26,8 +26,12 @@ public class ReviewController {
     @PostMapping
     @Secured(role = Role.USER)
     public ResponseEntity<String> addMovieReview(@RequestBody Review review) {
-        review.setUser(UserHolder.getLoggedUser());
-        reviewService.add(review);
+
+        Review newReview = new Review.ReviewBuilder()
+                .newReview(review)
+                .setUser(UserHolder.getLoggedUser())
+                .build();
+        reviewService.add(newReview);
         return new ResponseEntity<>("Added movie review", HttpStatus.CREATED);
     }
 }

@@ -16,7 +16,6 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 
@@ -69,6 +68,7 @@ public class MovieController {
     @JsonView(View.MovieDetail.class)
     public Movie partialUpdate(@PathVariable long id, @RequestBody MovieUpdateDirections updates) {
         return movieService.partialUpdate(id, updates);
+
     }
 
     @PutMapping

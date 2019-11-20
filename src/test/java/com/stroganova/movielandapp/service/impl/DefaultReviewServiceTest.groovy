@@ -25,14 +25,22 @@ class DefaultReviewServiceTest {
 
     @Test
     void testGetAllByMovie() {
-        def reviews = [new Review(id: 1000, text: "Great!", user: new User(id: 50, nickname: "Big Ben"))]
-        when(reviewDao.getAll(new Movie(id: 2L))).thenReturn(reviews)
-        assert reviews == reviewService.getAll(new Movie(id: 2L))
+        def reviews = [new Review.ReviewBuilder(
+                id: 1000,
+                text: "Great!",
+                user: new User.UserBuilder(id: 50, nickname: "Big Ben").build()
+        ).build()]
+        when(reviewDao.getAll(new Movie.MovieBuilder(id: 2L).build())).thenReturn(reviews)
+        assert reviews == reviewService.getAll(new Movie.MovieBuilder(id: 2L).build())
     }
 
     @Test
     void testAdd() {
-        def review = new Review(user: new User(id: 12L), movie: new Movie(id: 27L), text: "Great!!!")
+        def review = new Review.ReviewBuilder(
+                user: new User.UserBuilder(id: 12L).build(),
+                movie: new Movie.MovieBuilder(id: 27L).build(),
+                text: "Great!!!"
+        ).build()
         reviewService.add(review)
         verify(reviewDao).add(review)
     }

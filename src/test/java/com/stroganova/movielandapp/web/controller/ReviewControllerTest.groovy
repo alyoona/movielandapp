@@ -52,7 +52,7 @@ class ReviewControllerTest {
     void testAddMovieReview() {
 
         String token = UUID.randomUUID().toString()
-        def user = new User(id: 55L, email: "name@example.com", role: Role.USER)
+        def user = new User.UserBuilder(id: 55L, email: "name@example.com", role: Role.USER).build()
         Optional<Session> sessionOptional = Optional.of(new Session(token, user, LocalDateTime.now()))
         when(securityService.getAuthorization(token)).thenReturn(sessionOptional)
 
@@ -66,6 +66,9 @@ class ReviewControllerTest {
         ).andReturn().response
 
         assert response.status == HttpStatus.CREATED.value()
-        verify(reviewService).add(new Review(text: "Очень понравилось!", movie: new Movie(id: 1L), user: user))
+        verify(reviewService).add(new Review.ReviewBuilder(
+                text: "Очень понравилось!",
+                movie: new Movie.MovieBuilder(id: 1L).build(),
+                user: user).build())
     }
 }

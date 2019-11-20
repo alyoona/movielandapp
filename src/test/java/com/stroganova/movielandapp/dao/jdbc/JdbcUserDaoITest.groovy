@@ -46,8 +46,9 @@ class JdbcUserDaoITest {
         namedJdbcTemplate.update(rolesInsertSql, [id: 5, name: "USER"])
         namedJdbcTemplate.update(userRolesInsertSql, [id: 77, user_id: 22, role_id: 5])
 
-        def user = new User(id: 22L, email: "testUser@example.com", nickname: "Big Ben", role: Role.USER)
-        def actualUser = userDao.get(new UserCredentials(email: "testUser@example.com", password: "jfhkjsdfhksfhksh"))
+        def user = new User.UserBuilder(id: 22L, nickname: "Big Ben", email: "testUser@example.com", role: Role.USER)
+                .build()
+        def actualUser = userDao.get(new UserCredentials("testUser@example.com", "jfhkjsdfhksfhksh"))
         assert user == actualUser
     }
 }

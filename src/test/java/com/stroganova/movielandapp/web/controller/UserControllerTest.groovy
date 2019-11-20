@@ -43,9 +43,9 @@ class UserControllerTest {
     void testLogin() {
 
 
-        def user = new UserCredentials(email: "ronald.reynolds66@example.com", password: "paco")
+        def user = new UserCredentials("ronald.reynolds66@example.com", "paco")
         String requestBodyJson = MAPPER.writeValueAsString(user)
-        def loggedIdUser = new User(nickname: "Big Ben")
+        def loggedIdUser = new User.UserBuilder(nickname: "Big Ben").build()
         when(securityService.login(user)).thenReturn(new Session("uuid123456789", loggedIdUser, LocalDateTime.now()))
 
         def response = mockMvc.perform(post("/login").content(requestBodyJson).contentType('application/json'))
@@ -72,7 +72,7 @@ class UserControllerTest {
 
     @Test
     void testLoginBadRequest(){
-        def user = new UserCredentials(email: "ronald.reynolds66@example.com", password: "paco")
+        def user = new UserCredentials("ronald.reynolds66@example.com", "paco")
         String requestBodyJson = MAPPER.writeValueAsString(user)
         when(securityService.login(user)).thenThrow(NotAuthenticatedException.class)
         def response = mockMvc.perform(post("/login").content(requestBodyJson).contentType('application/json'))

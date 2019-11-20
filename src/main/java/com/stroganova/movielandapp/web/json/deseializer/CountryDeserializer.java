@@ -15,8 +15,8 @@ public class CountryDeserializer extends StdDeserializer<Country> {
 
     @Override
     public Country deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
-        Country country = new Country();
-        country.setId(jsonParser.getLongValue());
-        return country;
+
+        long id = jsonParser.getLongValue();
+        return Country.create(id);
     }
 }

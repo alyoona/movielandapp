@@ -63,14 +63,15 @@ class MovieControllerTest {
         MockitoAnnotations.initMocks(this)
         mockMvc = MockMvcBuilders.standaloneSetup(movieController)
                 .setCustomArgumentResolvers(new RequestParameterArgumentResolver())
-                .addInterceptors(new SecurityHandlerInterceptor(securityService)).build()
+                .addInterceptors(new SecurityHandlerInterceptor(securityService))
+                .build()
     }
 
 
     @Test
     void testUpdate() {
         String token = UUID.randomUUID().toString()
-        def user = new User(id: 55L, role: Role.ADMIN)
+        def user = new User.UserBuilder(id: 55L, role: Role.ADMIN).build()
         Optional<Session> sessionOptional = Optional.of(new Session(token, user, LocalDateTime.now()))
         when(securityService.getAuthorization(token)).thenReturn(sessionOptional)
 
@@ -82,9 +83,11 @@ class MovieControllerTest {
                                                             price        : 150.15D,
                                                             picturePath  : "https://picture_path.png",
                                                             description  : "empty",
-                                                            countries    : [1, 2, 3], genres: [1, 2]])
+                                                            countries    : [1, 2, 3],
+                                                            genres       : [1, 2]]
+        )
 
-        def movie = new Movie(id: 25L,
+        def movie = new Movie.MovieBuilder(id: 25L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
                 yearOfRelease: LocalDate.of(1994, 1, 1),
@@ -92,8 +95,9 @@ class MovieControllerTest {
                 price: 150.15D,
                 picturePath: "https://picture_path.png",
                 description: "empty",
-                countries: [new Country(id: 1), new Country(id: 2), new Country(id: 3)],
-                genres: [new Genre(1, null), new Genre(2, null)])
+                countries: [Country.create(1), Country.create(2), Country.create(3)],
+                genres: [Genre.create(1), Genre.create(2)]
+        ).build()
         when(movieService.update(movie)).thenReturn(movie)
 
         def response = mockMvc.perform(put("/movie")
@@ -116,7 +120,7 @@ class MovieControllerTest {
                              description  : "empty",
                              countries    : [[id: 1, name: null], [id: 2, name: null], [id: 3, name: null]],
                              genres       : [[id: 1, name: null], [id: 2, name: null]],
-                             reviews      : null
+                             reviews      : []
         ]
         assert expectedMovie == actualMovie
 
@@ -125,7 +129,7 @@ class MovieControllerTest {
     @Test
     void testPartialUpdate() {
         String token = UUID.randomUUID().toString()
-        def user = new User(id: 55L, role: Role.ADMIN)
+        def user = new User.UserBuilder(id: 55L, email: "testPartialUpdate@test.com", role: Role.ADMIN).build()
         Optional<Session> sessionOptional = Optional.of(new Session(token, user, LocalDateTime.now()))
         when(securityService.getAuthorization(token)).thenReturn(sessionOptional)
 
@@ -138,22 +142,23 @@ class MovieControllerTest {
                                                             description  : "MovieDescription!!!",
                                                             countries    : [1, 2, 3], genres: [1, 2]])
 
-        def movie = new Movie(nameRussian: "NameRussian",
+        def movie = new Movie.MovieBuilder(nameRussian: "NameRussian",
                 nameNative: "NameNative",
                 yearOfRelease: LocalDate.of(1994, 1, 1),
                 rating: 8.99D,
                 price: 150.15D,
                 picturePath: "https://picture_path.png",
                 description: "MovieDescription!!!",
-                countries: [new Country(id: 1), new Country(id: 2), new Country(id: 3)],
-                genres: [new Genre(1, null), new Genre(2, null)])
+                countries: [Country.create(1), Country.create(2), Country.create(3)],
+                genres: [Genre.create(1), Genre.create(2)]
+        ).build()
 
         Map<MovieFieldUpdate, Object> map = new HashMap<>()
         for (MovieFieldUpdate fieldUpdate : MovieFieldUpdate.values()) {
             map.put(fieldUpdate, fieldUpdate.getValue(movie))
         }
 
-        def updatedMovie = new Movie(id: 26L,
+        Movie updatedMovie = new Movie.MovieBuilder(id: 26L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
                 yearOfRelease: LocalDate.of(1994, 1, 1),
@@ -161,9 +166,9 @@ class MovieControllerTest {
                 price: 150.15D,
                 picturePath: "https://picture_path.png",
                 description: "MovieDescription!!!",
-                countries: [new Country(id: 1), new Country(id: 2), new Country(id: 3)],
-                genres: [new Genre(1, null), new Genre(2, null)]
-        )
+                countries: [Country.create(1), Country.create(2), Country.create(3)],
+                genres: [Genre.create(1), Genre.create(2)]
+        ).build()
         when(movieService.partialUpdate(26L, new MovieUpdateDirections(map))).thenReturn(updatedMovie)
 
         def response = mockMvc.perform(patch("/movie/26")
@@ -186,17 +191,17 @@ class MovieControllerTest {
                              description  : "MovieDescription!!!",
                              countries    : [[id: 1, name: null], [id: 2, name: null], [id: 3, name: null]],
                              genres       : [[id: 1, name: null], [id: 2, name: null]],
-                             reviews      : null
+                             reviews      : []
         ]
         assert expectedMovie == actualMovie
 
     }
 
     @Test
-    void teatAdd() {
+    void testAdd() {
 
         String token = UUID.randomUUID().toString()
-        def user = new User(id: 55L, role: Role.ADMIN)
+        def user = new User.UserBuilder(id: 55L, role: Role.ADMIN).build()
         Optional<Session> sessionOptional = Optional.of(new Session(token, user, LocalDateTime.now()))
         when(securityService.getAuthorization(token)).thenReturn(sessionOptional)
 
@@ -209,18 +214,22 @@ class MovieControllerTest {
                                                             description  : "MovieDescription!!!",
                                                             countries    : [1, 2, 3], genres: [1, 2]])
 
-        def movie = new Movie(nameRussian: "NameRussian",
+
+        def movie = new Movie.MovieBuilder(nameRussian: "NameRussian",
                 nameNative: "NameNative",
                 yearOfRelease: LocalDate.of(1994, 1, 1),
                 rating: 8.99D,
                 price: 150.15D,
                 picturePath: "https://picture_path.png",
                 description: "MovieDescription!!!",
-                countries: [new Country(id: 1), new Country(id: 2), new Country(id: 3)],
-                genres: [new Genre(1, null), new Genre(2, null)])
+                countries: [Country.create(1), Country.create(2), Country.create(3)],
+                genres: [Genre.create(1), Genre.create(2)],
+                reviews: []
+
+        ).build()
 
 
-        def addedMovie = new Movie(id: 1L,
+        def addedMovie = new Movie.MovieBuilder(id: 1L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
                 yearOfRelease: LocalDate.of(1994, 1, 1),
@@ -228,18 +237,19 @@ class MovieControllerTest {
                 price: 150.15D,
                 picturePath: "https://picture_path.png",
                 description: "empty",
-                countries: [new Country(id: 1), new Country(id: 2), new Country(id: 3)],
-                genres: [new Genre(1, null), new Genre(2, null)]
-        )
+                countries: [Country.create(1), Country.create(2), Country.create(3)],
+                genres: [Genre.create(1), Genre.create(2)]
+        ).build()
         when(movieService.add(movie)).thenReturn(addedMovie)
 
         def response = mockMvc.perform(post("/movie")
                 .header("Token", token)
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(requestBodyJson)
         ).andReturn().response
 
         assert response.status == HttpStatus.OK.value()
+
 
         def actualMovie = new JsonSlurper().parseText(response.contentAsString)
 
@@ -253,9 +263,9 @@ class MovieControllerTest {
                              description  : "empty",
                              countries    : [[id: 1, name: null], [id: 2, name: null], [id: 3, name: null]],
                              genres       : [[id: 1, name: null], [id: 2, name: null]],
-                             reviews      : null
+                             reviews      : []
         ]
-        assert expectedMovie == actualMovie
+         assert expectedMovie == actualMovie
 
     }
 
@@ -263,7 +273,7 @@ class MovieControllerTest {
     @Test
     void testGetByIdAndConvert() {
 
-        def movie = new Movie(id: 1L,
+        def movie = new Movie.MovieBuilder(id: 1L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
                 yearOfRelease: LocalDate.of(1994, 1, 1),
@@ -272,13 +282,15 @@ class MovieControllerTest {
                 picturePath: "https://picture_path.png",
                 description: "MovieDescription!!!",
                 countries: null, genres: null, reviews: null
-        )
+        ).build()
 
         when(movieService.getById(1L, new RequestParameter(null, Currency.USD))).thenReturn(movie)
         def response = mockMvc.perform(get("/movie/1?currency=USD")).andReturn().response
         response.status == HttpStatus.OK.value()
         response.contentType.contains('application/json')
         response.contentType == 'application/json;charset=UTF-8'
+
+
 
         def actualMovie = new JsonSlurper().parseText(response.contentAsString)
 
@@ -290,7 +302,7 @@ class MovieControllerTest {
                              price        : "150.15",
                              picturePath  : "https://picture_path.png",
                              description  : "MovieDescription!!!",
-                             countries    : null, genres: null, reviews: null
+                             countries    : [], genres: [], reviews: []
         ]
         assert expectedMovie == actualMovie
     }
@@ -298,12 +310,15 @@ class MovieControllerTest {
     @Test
     void testGetById() {
 
-        def countries = [new Country(id: 1, name: "USA"), new Country(id: 2, name: "GB")]
-        def genres = [new Genre(1, "comedy"), new Genre(2, "family")]
-        def reviews = [new Review(id: 1, text: "Excellent!!!",
-                user: new User(id: 1, nickname: "fName lName", email: null, password: null))]
+        def countries = [Country.create(1, "USA"), Country.create(2, "GB")]
+        def genres = [Genre.create(1, "comedy"), Genre.create(2, "family")]
+        def reviews = [new Review.ReviewBuilder(
+                id: 1,
+                text: "Excellent!!!",
+                user: new User.UserBuilder(id: 1, nickname: "fName lName", email: null, password: null).build()
+        ).build()]
 
-        def movie = new Movie(id: 1L,
+        def movie = new Movie.MovieBuilder(id: 1L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
                 yearOfRelease: LocalDate.of(1994, 1, 1),
@@ -312,7 +327,7 @@ class MovieControllerTest {
                 picturePath: "https://picture_path.png",
                 description: "MovieDescription!!!",
                 countries: countries, genres: genres, reviews: reviews
-        )
+        ).build()
 
         when(movieService.getById(1)).thenReturn(movie)
         def response = mockMvc.perform(get("/movie/1")).andReturn().response
@@ -342,7 +357,7 @@ class MovieControllerTest {
 
     @Test
     void testGetAll() {
-        def movieFirst = new Movie(
+        def movieFirst = new Movie.MovieBuilder(
                 id: 1L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
@@ -350,8 +365,8 @@ class MovieControllerTest {
                 rating: 8.99D,
                 price: 150.15D,
                 picturePath: "https://picture_path.png"
-        )
-        def movieSecond = new Movie(
+        ).build()
+        def movieSecond = new Movie.MovieBuilder(
                 id: 2L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
@@ -359,7 +374,7 @@ class MovieControllerTest {
                 rating: 8D,
                 price: 150D,
                 picturePath: "https://picture_path2.png"
-        )
+        ).build()
         when(movieService.getAll()).thenReturn([movieFirst, movieSecond])
         def response = mockMvc.perform(get("/movie")).andReturn().response
         response.status == HttpStatus.OK.value()
@@ -389,7 +404,7 @@ class MovieControllerTest {
 
     @Test
     void testGetAllByGenreId() {
-        def movieFirst = new Movie(
+        def movieFirst = new Movie.MovieBuilder(
                 id: 1L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
@@ -397,8 +412,8 @@ class MovieControllerTest {
                 rating: 8.99D,
                 price: 150.15D,
                 picturePath: "https://picture_path.png"
-        )
-        def movieSecond = new Movie(
+        ).build()
+        def movieSecond = new Movie.MovieBuilder(
                 id: 2L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
@@ -406,7 +421,7 @@ class MovieControllerTest {
                 rating: 8D,
                 price: 150D,
                 picturePath: "https://picture_path2.png"
-        )
+        ).build()
         when(movieService.getAll(1L)).thenReturn([movieFirst, movieSecond])
 
         def response = mockMvc.perform(get("/movie/genre/1")).andReturn().response
@@ -437,7 +452,7 @@ class MovieControllerTest {
 
     @Test
     void testGetThreeRandomMovies() {
-        def movieFirst = new Movie(
+        def movieFirst = new Movie.MovieBuilder(
                 id: 1L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
@@ -445,8 +460,8 @@ class MovieControllerTest {
                 rating: 8.99D,
                 price: 150.15D,
                 picturePath: "https://picture_path.png"
-        )
-        def movieSecond = new Movie(
+        ).build()
+        def movieSecond = new Movie.MovieBuilder(
                 id: 2L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
@@ -454,7 +469,7 @@ class MovieControllerTest {
                 rating: 8D,
                 price: 150D,
                 picturePath: "https://picture_path2.png"
-        )
+        ).build()
 
         when(movieService.getThreeRandomMovies()).thenReturn([movieFirst, movieSecond])
 
@@ -485,7 +500,7 @@ class MovieControllerTest {
 
     @Test
     void testGetAllAndSort() {
-        def movieFirst = new Movie(
+        def movieFirst = new Movie.MovieBuilder(
                 id: 1L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
@@ -493,8 +508,8 @@ class MovieControllerTest {
                 rating: 8.99D,
                 price: 150.15D,
                 picturePath: "https://picture_path.png"
-        )
-        def movieSecond = new Movie(
+        ).build()
+        def movieSecond = new Movie.MovieBuilder(
                 id: 2L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
@@ -502,7 +517,7 @@ class MovieControllerTest {
                 rating: 8D,
                 price: 150D,
                 picturePath: "https://picture_path2.png"
-        )
+        ).build()
 
 
 
@@ -558,7 +573,7 @@ class MovieControllerTest {
 
     @Test
     void testGetAllByGenreIdAndSort() {
-        def movieFirst = new Movie(
+        def movieFirst = new Movie.MovieBuilder(
                 id: 1L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
@@ -566,7 +581,7 @@ class MovieControllerTest {
                 rating: 8.99D,
                 price: 150.15D,
                 picturePath: "https://picture_path.png"
-        )
+        ).build()
 
         def expectedMovies = [[id           : 1,
                                nameRussian  : "NameRussian",

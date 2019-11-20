@@ -11,13 +11,10 @@ import com.stroganova.movielandapp.service.cache.MovieCache;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @Slf4j
@@ -27,15 +24,10 @@ public class DefaultMovieService implements MovieService {
     private final MovieDao movieDao;
     private final CountryService countryService;
     private final GenreService genreService;
-    private final ReviewService reviewService;
     private final CurrencyService currencyService;
     private final PosterService posterService;
     private final MovieCache movieCache;
-
-    private final ExecutorService executorService = Executors.newCachedThreadPool();
-
-    @Value("${movieService.enrichmentTimeout}")
-    private long enrichmentTimeout;
+    private final MovieEnrichmentService enrichmentService;
 
     @Override
     public List<Movie> getAll() {
@@ -74,47 +66,16 @@ public class DefaultMovieService implements MovieService {
         if (cachedMovie != null) {
             return cachedMovie;
         }
-
         Movie movie = movieDao.getById(movieId);
         if (movie == null) {
             throw new EntityNotFoundException("No such movie");
         }
-
-        Movie enrichedMovie = enrich(movie);
-        if (enrichedMovie != null) {
-            movieCache.cacheMovie(enrichedMovie);
-            return enrichedMovie;
-        }
-
-        movieCache.cacheMovie(movie);
-        return movie;
+        Movie enrichedMovie = enrichmentService.enrich(movie);
+        movieCache.cacheMovie(enrichedMovie);
+        return enrichedMovie;
     }
 
-    private Movie enrich(Movie movie) {
-        AtomicReference<Movie> movieAtomicReference = new AtomicReference<>(movie);
-        try {
-            executorService.invokeAll(Arrays.asList(
-                    () -> movieAtomicReference.updateAndGet(m -> {
-                        m.setCountries(countryService.getAll(m));
-                        return m;
-                    })
-                    , () -> movieAtomicReference.updateAndGet(m -> {
-                        m.setGenres(genreService.getAll(m));
-                        return m;
-                    })
-                    , () -> movieAtomicReference.updateAndGet(m -> {
-                        m.setReviews(reviewService.getAll(m));
-                        return m;
-                    })
-                    )
-                    , enrichmentTimeout, TimeUnit.SECONDS
 
-            );
-        } catch (InterruptedException e) {
-            throw new RuntimeException("error while enrichment movie", e);
-        }
-        return movieAtomicReference.get();
-    }
 
     @Override
     public Movie getById(long movieId, RequestParameter requestParameter) {
@@ -122,7 +83,10 @@ public class DefaultMovieService implements MovieService {
         Currency currency = requestParameter.getCurrency();
         if (currency != null) {
             double convertedPrice = currencyService.convert(movie.getPrice(), currency);
-            movie.setPrice(convertedPrice);
+            return new Movie.MovieBuilder()
+                    .newMovie(movie)
+                    .setPrice(convertedPrice)
+                    .build();
         }
         return movie;
     }
@@ -141,8 +105,6 @@ public class DefaultMovieService implements MovieService {
     @Override
     @Transactional
     public Movie partialUpdate(long movieId, MovieUpdateDirections updates) {
-
-
         movieDao.partialUpdate(movieId, updates.getMovieUpdates());
         posterService.update(movieId, updates.getPoster());
         countryService.updateLinks(movieId, updates.getCountries());

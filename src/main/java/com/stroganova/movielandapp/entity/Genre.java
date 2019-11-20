@@ -4,12 +4,29 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.stroganova.movielandapp.view.View;
 import com.stroganova.movielandapp.web.json.deseializer.GenreDeserializer;
-import lombok.Value;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
-@Value
+@Getter
+@EqualsAndHashCode
 @JsonView(View.Summary.class)
 @JsonDeserialize(using = GenreDeserializer.class)
 public class Genre {
-    private long id;
-    private String name;
+    private final long id;
+    private final String name;
+
+    private Genre(long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public static Genre create(long id) {
+        return new Genre(id, null);
+    }
+
+    public static Genre create(long id, String name) {
+        return new Genre(id, name);
+    }
+
+
 }

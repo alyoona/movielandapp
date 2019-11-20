@@ -24,25 +24,25 @@ class DefaultCountryServiceTest {
 
     @Test
     void testUpdate() {
-        def countries = [new Country(id: 1), new Country(id: 2), new Country(id: 3)]
+        def countries = [new Country(1, null), new Country(2, null), new Country(3, null)]
         long movieId = 26L
         countryService.updateLinks(movieId, countries)
         verify(countryDao).deleteAllLinks(movieId)
-        verify(countryDao).link(movieId, [new Country(id: 1), new Country(id: 2), new Country(id: 3)])
+        verify(countryDao).link(movieId, [new Country(1, null), new Country(2, null), new Country(3, null)])
     }
 
     @Test
     void testAdd() {
         long movieId = 22L
-        def countries = [new Country(id: 10L, name: "USA"), new Country(id: 20, name: "GB")]
+        def countries = [new Country(10L, "USA"), new Country(20, "GB")]
         countryService.link(movieId, countries)
         verify(countryDao).link(movieId, countries)
     }
 
     @Test
     void testGetAllByMovie() {
-        def countries = [new Country(id: 10L, name: "USA"), new Country(id: 20, name: "GB")]
-        when(countryDao.getAll(new Movie(id: 1L))).thenReturn(countries)
-        assert countries == countryService.getAll(new Movie(id: 1L))
+        def countries = [new Country(10L, "USA"), new Country( 20,  "GB")]
+        when(countryDao.getAll(new Movie.MovieBuilder(id: 1L).build())).thenReturn(countries)
+        assert countries == countryService.getAll(new Movie.MovieBuilder(id: 1L).build())
     }
 }

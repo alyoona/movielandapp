@@ -16,11 +16,12 @@ public class UserResultSetExtractor implements ResultSetExtractor<User> {
     }
 
     private User mapRow(ResultSet rs) throws SQLException {
-        User user = new User();
-        user.setId(rs.getLong("id"));
-        user.setEmail(rs.getString("email"));
-        user.setNickname(rs.getString("first_name") + " " + rs.getString("last_name"));
-        user.setRole(Role.getByName(rs.getString("role_name")));
-        return user;
+        String nickname = rs.getString("first_name") + " " + rs.getString("last_name");
+        return new User.UserBuilder()
+                .setId(rs.getLong("id"))
+                .setNickname(nickname)
+                .setEmail(rs.getString("email"))
+                .setRole(Role.getByName(rs.getString("role_name")))
+                .build();
     }
 }

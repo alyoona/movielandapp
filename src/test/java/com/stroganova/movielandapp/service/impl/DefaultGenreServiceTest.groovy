@@ -61,8 +61,8 @@ class DefaultGenreServiceTest {
         def expectedGenres = [new Genre(1L, "genreFirstName"),
                               new Genre(1L, "genreFirstName")]
 
-        when(genreDao.getAll(new Movie(id: 10L))).thenReturn(expectedGenres)
-        def actualGenres = genreService.getAll(new Movie(id: 10L))
+        when(genreDao.getAll(new Movie.MovieBuilder(id: 10L).build())).thenReturn(expectedGenres)
+        def actualGenres = genreService.getAll(new Movie.MovieBuilder(id: 10L).build())
         assert expectedGenres == actualGenres
     }
 

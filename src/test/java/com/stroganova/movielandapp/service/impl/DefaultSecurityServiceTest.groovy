@@ -18,8 +18,8 @@ class DefaultSecurityServiceTest {
     void testLogin() {
 
         def userService = mock(UserService.class)
-        def user = new User(id: 1L, email: "test@example.com", nickname: "Big Ben")
-        when(userService.get(new UserCredentials(email: "test@example.com", password: "paco"))).thenReturn(user)
+        def user = new User.UserBuilder(id: 1L, email: "test@example.com", nickname: "Big Ben").build()
+        when(userService.get(new UserCredentials("test@example.com", "paco"))).thenReturn(user)
 
         def securityService = new DefaultSecurityService(userService)
         Field field = DefaultSecurityService.getDeclaredField("tokenLifeTime")
@@ -27,7 +27,7 @@ class DefaultSecurityServiceTest {
         ReflectionUtils.setField(field, securityService, 2L)
         field.setAccessible(false)
 
-        def token = securityService.login(new UserCredentials(email: "test@example.com", password: "paco"))
+        def token = securityService.login(new UserCredentials("test@example.com", "paco"))
 
         def uuid = token.getUuid()
 
@@ -40,8 +40,8 @@ class DefaultSecurityServiceTest {
     void testLogout() {
 
         def userService = mock(UserService.class)
-        def user = new User(id: 1L, email: "test@example.com", nickname: "Big Ben")
-        when(userService.get(new UserCredentials(email: "test@example.com", password: "paco"))).thenReturn(user)
+        def user = new User.UserBuilder(id: 1L, email: "test@example.com", nickname: "Big Ben").build()
+        when(userService.get(new UserCredentials("test@example.com", "paco"))).thenReturn(user)
 
         def securityService = new DefaultSecurityService(userService)
         Field field = DefaultSecurityService.getDeclaredField("tokenLifeTime")
@@ -49,7 +49,7 @@ class DefaultSecurityServiceTest {
         ReflectionUtils.setField(field, securityService, 2L)
         field.setAccessible(false)
 
-        def token = securityService.login(new UserCredentials(email: "test@example.com", password: "paco"))
+        def token = securityService.login(new UserCredentials("test@example.com",  "paco"))
 
         def uuid = token.getUuid()
 
@@ -64,10 +64,10 @@ class DefaultSecurityServiceTest {
     @Test
     void testNotAuthenticatedException() {
         def userService = mock(UserService.class)
-        when(userService.get(new UserCredentials(email: "test@example.com", password: "paco"))).thenReturn(null)
+        when(userService.get(new UserCredentials("test@example.com",  "paco"))).thenReturn(null)
         def securityService = new DefaultSecurityService(userService)
         def ex = expectThrown(NotAuthenticatedException) {
-            securityService.login(new UserCredentials(email: "test@example.com", password: "paco"))
+            securityService.login(new UserCredentials("test@example.com", "paco"))
         }
         assert ex.class == NotAuthenticatedException.class
         assert ex.getMessage() == "Wrong combination of login or password"

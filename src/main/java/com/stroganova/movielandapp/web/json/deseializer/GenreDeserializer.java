@@ -15,6 +15,6 @@ public class GenreDeserializer extends StdDeserializer<Genre> {
 
     @Override
     public Genre deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
-        return new Genre(jsonParser.getLongValue(), null);
+        return Genre.create(jsonParser.getLongValue());
     }
 }
