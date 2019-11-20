@@ -62,16 +62,19 @@ public class DefaultMovieService implements MovieService {
     @Transactional(readOnly = true)
     public Movie getById(long movieId) {
 
-        Movie cachedMovie = movieCache.getById(movieId);
+        /*Movie cachedMovie = movieCache.getById(movieId);
         if (cachedMovie != null) {
             return cachedMovie;
-        }
+        }*/
         Movie movie = movieDao.getById(movieId);
         if (movie == null) {
             throw new EntityNotFoundException("No such movie");
         }
         Movie enrichedMovie = enrichmentService.enrich(movie);
-        movieCache.cacheMovie(enrichedMovie);
+        //movieCache.cacheMovie(enrichedMovie);
+
+
+
         return enrichedMovie;
     }
 

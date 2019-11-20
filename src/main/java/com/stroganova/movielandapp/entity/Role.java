@@ -5,19 +5,19 @@ import java.util.Collections;
 import java.util.List;
 
 public enum Role {
-    GUEST("GUEST_ROLE") {
+    GUEST("GUEST") {
         @Override
         public List<Role> getIncludedRights() {
             return Collections.singletonList(GUEST);
         }
     },
-    USER("USER_ROLE") {
+    USER("USER") {
         @Override
         public List<Role> getIncludedRights() {
             return Arrays.asList(GUEST, USER);
         }
     },
-    ADMIN("ADMIN_ROLE") {
+    ADMIN("ADMIN") {
         @Override
         public List<Role> getIncludedRights() {
             return Arrays.asList(GUEST, USER, ADMIN);
