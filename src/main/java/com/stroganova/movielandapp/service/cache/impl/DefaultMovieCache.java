@@ -1,7 +1,11 @@
 package com.stroganova.movielandapp.service.cache.impl;
 
+import com.stroganova.movielandapp.dao.MovieDao;
 import com.stroganova.movielandapp.entity.Movie;
+import com.stroganova.movielandapp.exception.EntityNotFoundException;
+import com.stroganova.movielandapp.service.MovieEnrichmentService;
 import com.stroganova.movielandapp.service.cache.MovieCache;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.lang.ref.Reference;
@@ -10,33 +14,37 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
+@AllArgsConstructor
 public class DefaultMovieCache implements MovieCache {
-
+    private final MovieDao movieDao;
     private final Map<Long, Reference<Movie>> cache = new ConcurrentHashMap<>();
+    private final MovieEnrichmentService enrichmentService;
 
     @Override
-    public Movie getById(long id) {
-        Reference<Movie> movieReference = cache.get(id);
-        Movie movie = null;
-        if(movieReference != null) {
-            movie = movieReference.get();
-            if(movie == null) {
-                cache.remove(id);
+    public Movie getById(long movieId) {
+        cache.computeIfPresent(movieId, (key, currentMovieReference) -> {
+            if (currentMovieReference.get() == null) {
+                return findAndEnrich(key);
             }
+            return currentMovieReference;
+        });
+        cache.computeIfAbsent(movieId, this::findAndEnrich);
+
+        Reference<Movie> movieReference = cache.get(movieId);
+
+        return movieReference.get();
+    }
+
+    private Reference<Movie> findAndEnrich(long movieId) {
+        Movie movie = movieDao.getById(movieId);
+        if (movie == null) {
+            throw new EntityNotFoundException("No such movie");
         }
-        return  movie;
-    }
-    @Override
-    public void cacheMovie(Movie movie) {
-        Reference<Movie> movieReference = new SoftReference<>(movie);
-        cache.put(movie.getId(), movieReference);
-
+        return new SoftReference<>(enrichmentService.enrich(movie));
     }
 
     @Override
-    public void invalidateCachedMovie(long id) {
-            cache.remove(id);
+    public void invalidateCachedMovie(long movieId) {
+        cache.computeIfPresent(movieId, (key, ref) -> findAndEnrich(key));
     }
-
-
 }

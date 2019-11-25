@@ -35,24 +35,24 @@ class DefaultMovieServiceTest {
     private MovieDao movieDao
     private CountryService countryService
     private GenreService genreService
-    private ReviewService reviewService
+//    private ReviewService reviewService
     private CurrencyService currencyService
     private PosterService posterService
     private MovieCache movieCache
-    private MovieEnrichmentService enrichmentService
+//    private MovieEnrichmentService enrichmentService
 
     @Before
     void before() {
         movieDao = mock(MovieDao.class)
         countryService = mock(CountryService.class)
         genreService = mock(GenreService.class)
-        reviewService = mock(ReviewService.class)
+//        reviewService = mock(ReviewService.class)
         currencyService = mock(CurrencyService.class)
         posterService = mock(PosterService.class)
         movieCache = mock(MovieCache.class)
-        enrichmentService = mock(ParallelMovieEnrichmentService.class)
+//        enrichmentService = mock(ParallelMovieEnrichmentService.class)
 
-        movieService = new DefaultMovieService(movieDao, countryService, genreService, currencyService, posterService, movieCache, enrichmentService)
+        movieService = new DefaultMovieService(movieDao, countryService, genreService, currencyService, posterService, movieCache)
 
     }
 
@@ -66,12 +66,12 @@ class DefaultMovieServiceTest {
                 price: 150.15D,
                 picturePath: "https://picture_path.png",
                 description: "MovieDescription!!!",
-                countries: [new Country(3, null)],
-                genres: [new Genre(3, null)]
+                countries: [Country.create(3)],
+                genres: [Genre.create(3)]
         ).build()
 
         when(movieDao.getById(25L)).thenReturn(movie)
-        when(enrichmentService.enrich(movie)).thenReturn(movie)
+        when(movieCache.getById(25L)).thenReturn(movie)
 
         assert movie == movieService.update(movie)
 
@@ -92,8 +92,8 @@ class DefaultMovieServiceTest {
                 price: 150.15D,
                 picturePath: "https://picture_path.png",
                 description: "MovieDescription!!!",
-                countries: [new Country(1, null), new Country(2, null), new Country(3, null)],
-                genres: [new Genre(1, null), new Genre(2, null)]
+                countries: [Country.create(1), Country.create(2), Country.create(3)],
+                genres: [Genre.create(1), Genre.create(2)]
         ).build()
         Map<MovieFieldUpdate, Object> map = new HashMap<>()
         for (MovieFieldUpdate fieldUpdate : MovieFieldUpdate.values()) {
@@ -111,12 +111,12 @@ class DefaultMovieServiceTest {
                 price: 150.15D,
                 picturePath: "https://picture_path.png",
                 description: "empty",
-                countries: [new Country(1, null), new Country(2, null), new Country(3, null)],
-                genres: [new Genre(1, null), new Genre(2, null)],
-                reviews: null
+                countries: [Country.create(1), Country.create(2), Country.create(3)],
+                genres: [Genre.create(1), Genre.create(2)],
+                reviews: []
         ).build()
         when(movieDao.getById(movieId)).thenReturn(updatedMovie)
-        when(enrichmentService.enrich(updatedMovie)).thenReturn(updatedMovie)
+        when(movieCache.getById(movieId)).thenReturn(updatedMovie)
         assert updatedMovie == movieService.partialUpdate(movieId, updates)
         verify(movieDao).partialUpdate(movieId, updates.getMovieUpdates())
         verify(posterService).update(movieId, updates.poster)
@@ -162,8 +162,7 @@ class DefaultMovieServiceTest {
         ).build()
 
         when(movieDao.add(movie)).thenReturn(movieId)
-        when(movieDao.getById(movieId)).thenReturn(addedMovie)
-        when(enrichmentService.enrich(addedMovie)).thenReturn(addedMovie)
+        when(movieCache.getById(movieId)).thenReturn(addedMovie)
         assert addedMovie == movieService.add(movie)
         verify(movieDao).add(movie)
         verify(posterService).link(movieId, movie.getPicturePath())
@@ -185,8 +184,7 @@ class DefaultMovieServiceTest {
                 picturePath: "https://picture_path.png",
                 description: "empty",
         ).build()
-        when(movieDao.getById(1L)).thenReturn(movie)
-        when(enrichmentService.enrich(movie)).thenReturn(movie)
+        when(movieCache.getById(1L)).thenReturn(movie)
         when(currencyService.convert(movie.getPrice(), Currency.USD)).thenReturn(Double.valueOf(8.99 / 25))
         def actualMovieWithConvertedPrice = movieService.getById(1L, new RequestParameter(null, Currency.USD))
         assert Double.valueOf(8.99 / 25) == actualMovieWithConvertedPrice.getPrice()
@@ -208,9 +206,7 @@ class DefaultMovieServiceTest {
                 reviews: null
         ).build()
 
-        when(movieDao.getById(1L)).thenReturn(movie)
-        when(enrichmentService.enrich(movie)).thenReturn(movie)
-
+        when(movieCache.getById(1L)).thenReturn(movie)
         assert movie == movieService.getById(1L)
     }
 

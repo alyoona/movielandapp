@@ -2,7 +2,6 @@ package com.stroganova.movielandapp.service.impl;
 
 import com.stroganova.movielandapp.dao.MovieDao;
 import com.stroganova.movielandapp.entity.Movie;
-import com.stroganova.movielandapp.exception.EntityNotFoundException;
 import com.stroganova.movielandapp.request.Currency;
 import com.stroganova.movielandapp.request.MovieUpdateDirections;
 import com.stroganova.movielandapp.request.RequestParameter;
@@ -27,7 +26,7 @@ public class DefaultMovieService implements MovieService {
     private final CurrencyService currencyService;
     private final PosterService posterService;
     private final MovieCache movieCache;
-    private final MovieEnrichmentService enrichmentService;
+
 
     @Override
     public List<Movie> getAll() {
@@ -61,23 +60,8 @@ public class DefaultMovieService implements MovieService {
     @Override
     @Transactional(readOnly = true)
     public Movie getById(long movieId) {
-
-        /*Movie cachedMovie = movieCache.getById(movieId);
-        if (cachedMovie != null) {
-            return cachedMovie;
-        }*/
-        Movie movie = movieDao.getById(movieId);
-        if (movie == null) {
-            throw new EntityNotFoundException("No such movie");
-        }
-        Movie enrichedMovie = enrichmentService.enrich(movie);
-        //movieCache.cacheMovie(enrichedMovie);
-
-
-
-        return enrichedMovie;
+        return movieCache.getById(movieId);
     }
-
 
 
     @Override

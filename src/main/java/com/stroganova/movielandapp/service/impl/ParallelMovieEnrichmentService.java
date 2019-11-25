@@ -7,6 +7,7 @@ import com.stroganova.movielandapp.service.MovieEnrichmentService;
 import com.stroganova.movielandapp.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -24,10 +25,9 @@ public class ParallelMovieEnrichmentService implements MovieEnrichmentService {
     private final CountryService countryService;
     private final GenreService genreService;
     private final ReviewService reviewService;
+    private final ExecutorService executorService;
 
-    private final ExecutorService executorService = Executors.newCachedThreadPool();
-
-    @Value("${movieService.enrichmentTimeout}")
+    @Value("${movieEnrichmentService.enrichmentTimeout}")
     private long enrichmentTimeout;
 
     @Override
@@ -41,14 +41,13 @@ public class ParallelMovieEnrichmentService implements MovieEnrichmentService {
         List<Callable<Object>> callableList = tasks.stream().map(Executors::callable).collect(Collectors.toList());
 
         try {
-            executorService.invokeAll(callableList, 1, TimeUnit.SECONDS);
+            executorService.invokeAll(callableList, enrichmentTimeout, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             /*Restore the interrupted status*/
             Thread.currentThread().interrupt();
         }
 
-        executorService.shutdown();
-
         return builder.build();
     }
+
 }
