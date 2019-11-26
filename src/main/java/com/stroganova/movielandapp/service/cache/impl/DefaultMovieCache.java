@@ -22,17 +22,19 @@ public class DefaultMovieCache implements MovieCache {
 
     @Override
     public Movie getById(long movieId) {
-        cache.computeIfPresent(movieId, (key, currentMovieReference) -> {
-            if (currentMovieReference.get() == null) {
-                return findAndEnrich(key);
-            }
-            return currentMovieReference;
-        });
-        cache.computeIfAbsent(movieId, this::findAndEnrich);
 
         Reference<Movie> movieReference = cache.get(movieId);
 
-        return movieReference.get();
+        if (movieReference != null) {
+            if (movieReference.get() == null) {
+                movieReference = cache.computeIfPresent(movieId, (key, currentMovieReference) -> findAndEnrich(key));
+            }
+            return movieReference.get();
+        } else {
+            movieReference = cache.computeIfAbsent(movieId, this::findAndEnrich);
+            return movieReference.get();
+        }
+
     }
 
     private Reference<Movie> findAndEnrich(long movieId) {
