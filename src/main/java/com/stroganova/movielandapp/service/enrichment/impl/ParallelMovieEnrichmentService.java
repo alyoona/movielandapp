@@ -1,6 +1,9 @@
 package com.stroganova.movielandapp.service.enrichment.impl;
 
+import com.stroganova.movielandapp.entity.Country;
+import com.stroganova.movielandapp.entity.Genre;
 import com.stroganova.movielandapp.entity.Movie;
+import com.stroganova.movielandapp.entity.Review;
 import com.stroganova.movielandapp.service.CountryService;
 import com.stroganova.movielandapp.service.GenreService;
 import com.stroganova.movielandapp.service.enrichment.MovieEnrichmentService;
@@ -34,9 +37,24 @@ public class ParallelMovieEnrichmentService implements MovieEnrichmentService {
     public Movie enrich(Movie movie) {
         Movie.MovieBuilder builder = new Movie.MovieBuilder().newMovie(movie);
         List<Runnable> tasks = Arrays.asList(
-                () -> builder.setCountries(countryService.getAll(movie)),
-                () -> builder.setGenres(genreService.getAll(movie)),
-                () -> builder.setReviews(reviewService.getAll(movie)));
+                () -> {
+                    List<Country> countries = countryService.getAll(movie);
+                    if (!Thread.currentThread().isInterrupted()) {
+                        builder.setCountries(countries);
+                    }
+                },
+                () -> {
+                    List<Genre> genres = genreService.getAll(movie);
+                    if (!Thread.currentThread().isInterrupted()) {
+                        builder.setGenres(genres);
+                    }
+                },
+                () -> {
+                    List<Review> reviews = reviewService.getAll(movie);
+                    if (!Thread.currentThread().isInterrupted()) {
+                        builder.setReviews(reviews);
+                    }
+                });
 
         List<Callable<Object>> callableList = tasks.stream().map(Executors::callable).collect(Collectors.toList());
 
