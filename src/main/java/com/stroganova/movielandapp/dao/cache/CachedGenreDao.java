@@ -1,25 +1,23 @@
-package com.stroganova.movielandapp.service.cache.impl;
+package com.stroganova.movielandapp.dao.cache;
 
 import com.stroganova.movielandapp.dao.GenreDao;
-import com.stroganova.movielandapp.service.cache.GenreCache;
+import com.stroganova.movielandapp.entity.Movie;
 import com.stroganova.movielandapp.entity.Genre;
-import lombok.AccessLevel;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@Repository
 @Slf4j
 @RequiredArgsConstructor
-public class DefaultGenreCache implements GenreCache {
+@Primary
+public class CachedGenreDao implements GenreDao {
 
     private final GenreDao genreDao;
     private volatile List<Genre> genres;
@@ -28,6 +26,22 @@ public class DefaultGenreCache implements GenreCache {
     public List<Genre> getAll() {
         log.info("Get all genres from cache");
         return new ArrayList<>(genres);
+    }
+
+    @Override
+    public List<Genre> getAll(Movie movie) {
+        log.info("Get all genres by movie");
+        return genreDao.getAll(movie);
+    }
+
+    @Override
+    public void link(long movieId, List<Genre> genres) {
+        genreDao.link(movieId, genres);
+    }
+
+    @Override
+    public void deleteAllLinks(long movieId) {
+        genreDao.deleteAllLinks(movieId);
     }
 
     @Scheduled(fixedRateString = "${genresCache.refreshRate}", initialDelayString = "${genresCache.refreshRate}")
