@@ -14,8 +14,8 @@ import static org.mockito.Mockito.when
 class ReviewRowMapperTest {
     @Test
     void testMapRow() {
-        def user = new User(id: 1, nickname: "FirstName LastName")
-        def expectedReview = new Review(id: 1, text: "Description!", user: user)
+        def user = new User.UserBuilder(id:  1, nickname: "FirstName LastName").build()
+        def expectedReview = new Review.ReviewBuilder(id: 1, text: "Description!", user: user).build()
 
         def resultSet = mock(ResultSet.class)
         when(resultSet.getLong("id")).thenReturn(expectedReview.getId())

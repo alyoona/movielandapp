@@ -12,15 +12,16 @@ public class ReviewRowMapper implements RowMapper<Review> {
 
     @Override
     public Review mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-        Review review = new Review();
-        review.setId(resultSet.getLong("id"));
-        review.setText(resultSet.getString("description"));
+        String nickname = resultSet.getString("first_name") + " " + resultSet.getString("last_name");
+        User user = new User.UserBuilder()
+                .setId(resultSet.getLong("user_id"))
+                .setNickname(nickname)
+                .build();
 
-        User user = new User();
-        user.setId(resultSet.getLong("user_id"));
-        user.setNickname(resultSet.getString("first_name")+ " " + resultSet.getString("last_name"));
-        review.setUser(user);
-
-        return review;
+        return new Review.ReviewBuilder()
+                .setId(resultSet.getLong("id"))
+                .setText(resultSet.getString("description"))
+                .setUser(user)
+                .build();
     }
 }

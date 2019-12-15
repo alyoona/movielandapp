@@ -21,9 +21,9 @@ public class JdbcReviewDao implements ReviewDao {
 
     private final static ReviewRowMapper REVIEW_ROW_MAPPER = new ReviewRowMapper();
 
-    @NonNull NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    @NonNull String getAllReviewsByMovieIdSql;
-    @NonNull String addReviewSql;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final String getAllReviewsByMovieIdSql;
+    private final String addReviewSql;
 
     @Override
     public List<Review> getAll(Movie movie) {

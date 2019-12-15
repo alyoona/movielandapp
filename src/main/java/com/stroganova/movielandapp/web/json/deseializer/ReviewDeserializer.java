@@ -19,11 +19,13 @@ public class ReviewDeserializer extends StdDeserializer<Review> {
     public Review deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
         long movieId = node.get("movieId").asLong();
-        Review review = new Review();
-        review.setText(node.get("text").asText());
-        Movie movie = new Movie();
-        movie.setId(movieId);
-        review.setMovie(movie);
-        return review;
+        String text = node.get("text").asText();
+        Movie movie = new Movie.MovieBuilder()
+                .setId(movieId)
+                .build();
+        return new Review.ReviewBuilder()
+                .setText(text)
+                .setMovie(movie)
+                .build();
     }
 }

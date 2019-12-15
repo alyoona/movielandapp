@@ -22,15 +22,14 @@ import java.util.Map;
 @Repository
 @Slf4j
 @RequiredArgsConstructor
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class JdbcGenreDao implements GenreDao {
 
     private final GenreRowMapper genreRowMapper = new GenreRowMapper();
-    @NonNull NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    @NonNull String getAllGenresSql;
-    @NonNull String getAllGenresByMovieIdSql;
-    @NonNull String movieGenreInsertSql;
-    @NonNull String movieGenreDeleteSql;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final String getAllGenresSql;
+    private final String getAllGenresByMovieIdSql;
+    private final String movieGenreInsertSql;
+    private final String movieGenreDeleteSql;
 
     @Override
     public List<Genre> getAll() {

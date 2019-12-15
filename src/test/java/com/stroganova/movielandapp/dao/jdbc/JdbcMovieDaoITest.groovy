@@ -5,7 +5,7 @@ import com.stroganova.movielandapp.dao.MovieDao
 import com.stroganova.movielandapp.entity.Movie
 import com.stroganova.movielandapp.request.MovieFieldUpdate
 import com.stroganova.movielandapp.request.MovieUpdateDirections
-import com.stroganova.movielandapp.request.RequestParameter
+import com.stroganova.movielandapp.request.MovieRequestParameterList
 import com.stroganova.movielandapp.request.SortDirection
 import com.stroganova.movielandapp.request.SortOrder
 import org.junit.Before
@@ -69,14 +69,18 @@ class JdbcMovieDaoITest {
                                                   description : "",
                                                   rating      : 0D,
                                                   price       : 0D])
-        def newMovie = new Movie(
+        def newMovie = new Movie.MovieBuilder(
                 id: movieId,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
                 yearOfRelease: LocalDate.of(1994, 1, 1),
                 rating: 8.99D,
                 price: 150.15D,
-                description: "MovieDescription!!!")
+                description: "MovieDescription!!!",
+                countries: [],
+                genres: [],
+                reviews: []
+        ).build()
 
         movieDao.update(newMovie)
 
@@ -97,13 +101,17 @@ class JdbcMovieDaoITest {
                                                   rating      : 0D,
                                                   price       : 0D])
 
-        def movie = new Movie(
+        def movie = new Movie.MovieBuilder(
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
                 yearOfRelease: LocalDate.of(1994, 1, 1),
                 rating: 8.99D,
                 price: 150.15D,
-                description: "MovieDescription!!!")
+                description: "MovieDescription!!!",
+                countries: [],
+                genres: [],
+                reviews: []
+        ).build()
 
         Map<MovieFieldUpdate, Object> mapUpdates = new HashMap<>()
         for (MovieFieldUpdate fieldUpdate : MovieFieldUpdate.values()) {
@@ -113,13 +121,17 @@ class JdbcMovieDaoITest {
         def updates = new MovieUpdateDirections(mapUpdates)
         movieDao.partialUpdate(movieId, updates.getMovieUpdates())
 
-        def expectedMovie = new Movie(id: movieId,
+        def expectedMovie = new Movie.MovieBuilder(id: movieId,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
                 yearOfRelease: LocalDate.of(1994, 1, 1),
                 rating: 8.99D,
                 price: 150.15D,
-                description: "MovieDescription!!!")
+                description: "MovieDescription!!!",
+                countries: [],
+                genres: [],
+                reviews: []
+        ).build()
 
 
         def actualMovie = movieDao.getById(movieId)
@@ -131,12 +143,12 @@ class JdbcMovieDaoITest {
 
     @Test
     void testAdd() {
-        def movie = new Movie(nameRussian: "NameRussian",
+        def movie = new Movie.MovieBuilder(nameRussian: "NameRussian",
                 nameNative: "NameNative",
                 yearOfRelease: LocalDate.of(1994, 1, 1),
                 description: "empty",
                 rating: 8.99D,
-                price: 150.15D)
+                price: 150.15D).build()
 
         def movieId = movieDao.add(movie)
         assert movieId != 0
@@ -165,14 +177,18 @@ class JdbcMovieDaoITest {
                                                    movie_id    : 1L,
                                                    picture_path: "https://picture_path.png"])
 
-        def expectedMovie = new Movie(id: 1L,
+        def expectedMovie = new Movie.MovieBuilder(id: 1L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
                 yearOfRelease: LocalDate.of(1995, 1, 1),
                 rating: 8.99D,
                 price: 150.15D,
                 picturePath: "https://picture_path.png",
-                description: "empty")
+                description: "empty",
+                countries: [],
+                genres: [],
+                reviews: []
+        ).build()
         def actualMovie = movieDao.getById(1L)
 
         assert expectedMovie == actualMovie
@@ -210,20 +226,20 @@ class JdbcMovieDaoITest {
         namedJdbcTemplate.batchUpdate(posterInsertSql, posterBatchValues)
 
         def expectedMovies = [
-                new Movie(id: 1L,
+                new Movie.MovieBuilder(id: 1L,
                         nameRussian: "NameRussian",
                         nameNative: "NameNative",
                         yearOfRelease: LocalDate.of(1995, 1, 1),
                         rating: 8.99D,
                         price: 150.15D,
-                        picturePath: "https://picture_path.png"),
-                new Movie(id: 2L,
+                        picturePath: "https://picture_path.png").build(),
+                new Movie.MovieBuilder(id: 2L,
                         nameRussian: "NameRussian",
                         nameNative: "NameNative",
                         yearOfRelease: LocalDate.of(1994, 1, 1),
                         rating: 8.99D,
                         price: 150.15D,
-                        picturePath: "https://picture_path2.png")]
+                        picturePath: "https://picture_path2.png").build()]
 
 
         def actualMovies = movieDao.getAll()
@@ -278,53 +294,53 @@ class JdbcMovieDaoITest {
         namedJdbcTemplate.batchUpdate(movieInsertSql, movieBatchValues)
 
         def expectedMoviesPriceDesc = [
-                new Movie(id: 2L,
+                new Movie.MovieBuilder(id: 2L,
                         nameRussian: "NameRussian",
                         nameNative: "NameNative",
                         yearOfRelease: LocalDate.of(1994, 1, 1),
                         rating: 8.99D,
-                        price: 150.16D),
-                new Movie(id: 1L,
+                        price: 150.16D).build(),
+                new Movie.MovieBuilder(id: 1L,
                         nameRussian: "NameRussian",
                         nameNative: "NameNative",
                         yearOfRelease: LocalDate.of(1995, 1, 1),
                         rating: 9D,
-                        price: 150.15D)]
+                        price: 150.15D).build()]
 
         def priceDescSortDirection = new SortDirection("price", SortOrder.DESC)
-        assert expectedMoviesPriceDesc == movieDao.getAll(new RequestParameter(priceDescSortDirection, null))
+        assert expectedMoviesPriceDesc == movieDao.getAll(new MovieRequestParameterList(priceDescSortDirection, null))
 
         def expectedMoviesPriceAsc = [
-                new Movie(id: 1L,
+                new Movie.MovieBuilder(id: 1L,
                         nameRussian: "NameRussian",
                         nameNative: "NameNative",
                         yearOfRelease: LocalDate.of(1995, 1, 1),
                         rating: 9D,
-                        price: 150.15D),
-                new Movie(id: 2L,
+                        price: 150.15D).build(),
+                new Movie.MovieBuilder(id: 2L,
                         nameRussian: "NameRussian",
                         nameNative: "NameNative",
                         yearOfRelease: LocalDate.of(1994, 1, 1),
                         rating: 8.99D,
-                        price: 150.16D)]
+                        price: 150.16D).build()]
         def priceAscSortDirection = new SortDirection("price", SortOrder.ASC)
-        assert expectedMoviesPriceAsc == movieDao.getAll(new RequestParameter(priceAscSortDirection, null))
+        assert expectedMoviesPriceAsc == movieDao.getAll(new MovieRequestParameterList(priceAscSortDirection, null))
 
         def expectedMoviesRatingDesc = [
-                new Movie(id: 1L,
+                new Movie.MovieBuilder(id: 1L,
                         nameRussian: "NameRussian",
                         nameNative: "NameNative",
                         yearOfRelease: LocalDate.of(1995, 1, 1),
                         rating: 9D,
-                        price: 150.15D),
-                new Movie(id: 2L,
+                        price: 150.15D).build(),
+                new Movie.MovieBuilder(id: 2L,
                         nameRussian: "NameRussian",
                         nameNative: "NameNative",
                         yearOfRelease: LocalDate.of(1994, 1, 1),
                         rating: 8.99D,
-                        price: 150.16D)]
+                        price: 150.16D).build()]
         def ratingDescSortDirection = new SortDirection("price", SortOrder.ASC)
-        assert expectedMoviesRatingDesc == movieDao.getAll(new RequestParameter(ratingDescSortDirection, null))
+        assert expectedMoviesRatingDesc == movieDao.getAll(new MovieRequestParameterList(ratingDescSortDirection, null))
 
     }
 
@@ -434,20 +450,20 @@ class JdbcMovieDaoITest {
         namedJdbcTemplate.batchUpdate(movieGenreInsertSql, movieGenreBatchValues)
 
         def expectedMovies = [
-                new Movie(id: 1L,
+                new Movie.MovieBuilder(id: 1L,
                         nameRussian: "NameRussian",
                         nameNative: "NameNative",
                         yearOfRelease: LocalDate.of(1995, 1, 1),
                         rating: 8.99D,
                         price: 150.15D,
-                        picturePath: "https://picture_path.png"),
-                new Movie(id: 2L,
+                        picturePath: "https://picture_path.png").build(),
+                new Movie.MovieBuilder(id: 2L,
                         nameRussian: "NameRussian",
                         nameNative: "NameNative",
                         yearOfRelease: LocalDate.of(1994, 1, 1),
                         rating: 8.99D,
                         price: 150.15D,
-                        picturePath: "https://picture_path2.png")]
+                        picturePath: "https://picture_path2.png").build()]
 
 
         def actualMovies = movieDao.getAll(1L)
@@ -481,55 +497,55 @@ class JdbcMovieDaoITest {
         namedJdbcTemplate.batchUpdate(movieGenreInsertSql, movieGenreBatchValues)
 
         def expectedMoviesPriceDesc = [
-                new Movie(id: 2L,
+                new Movie.MovieBuilder(id: 2L,
                         nameRussian: "NameRussian",
                         nameNative: "NameNative",
                         yearOfRelease: LocalDate.of(1994, 1, 1),
                         rating: 10D,
-                        price: 500D),
-                new Movie(id: 1L,
+                        price: 500D).build(),
+                new Movie.MovieBuilder(id: 1L,
                         nameRussian: "NameRussian",
                         nameNative: "NameNative",
                         yearOfRelease: LocalDate.of(1995, 1, 1),
                         rating: 20D,
-                        price: 300D)]
+                        price: 300D).build()]
 
 
 
         def priceDescSortDirection = new SortDirection("price", SortOrder.DESC)
-        assert expectedMoviesPriceDesc == movieDao.getAll(1L, new RequestParameter(priceDescSortDirection, null))
+        assert expectedMoviesPriceDesc == movieDao.getAll(1L, new MovieRequestParameterList(priceDescSortDirection, null))
 
         def expectedMoviesPriceAsc = [
-                new Movie(id: 1L,
+                new Movie.MovieBuilder(id: 1L,
                         nameRussian: "NameRussian",
                         nameNative: "NameNative",
                         yearOfRelease: LocalDate.of(1995, 1, 1),
                         rating: 20D,
-                        price: 300D),
-                new Movie(id: 2L,
+                        price: 300D).build(),
+                new Movie.MovieBuilder(id: 2L,
                         nameRussian: "NameRussian",
                         nameNative: "NameNative",
                         yearOfRelease: LocalDate.of(1994, 1, 1),
                         rating: 10D,
-                        price: 500D)]
+                        price: 500D).build()]
         def priceAscSortDirection = new SortDirection("price", SortOrder.ASC)
-        assert expectedMoviesPriceAsc == movieDao.getAll(1L, new RequestParameter(priceAscSortDirection, null))
+        assert expectedMoviesPriceAsc == movieDao.getAll(1L, new MovieRequestParameterList(priceAscSortDirection, null))
 
         def expectedMoviesRatingDesc = [
-                new Movie(id: 1L,
+                new Movie.MovieBuilder(id: 1L,
                         nameRussian: "NameRussian",
                         nameNative: "NameNative",
                         yearOfRelease: LocalDate.of(1995, 1, 1),
                         rating: 20D,
-                        price: 300D),
-                new Movie(id: 2L,
+                        price: 300D).build(),
+                new Movie.MovieBuilder(id: 2L,
                         nameRussian: "NameRussian",
                         nameNative: "NameNative",
                         yearOfRelease: LocalDate.of(1994, 1, 1),
                         rating: 10D,
-                        price: 500D)]
+                        price: 500D).build()]
         def ratingDescSortDirection = new SortDirection("price", SortOrder.ASC)
-        assert expectedMoviesRatingDesc == movieDao.getAll(1L, new RequestParameter(ratingDescSortDirection, null))
+        assert expectedMoviesRatingDesc == movieDao.getAll(1L, new MovieRequestParameterList(ratingDescSortDirection, null))
     }
 
 

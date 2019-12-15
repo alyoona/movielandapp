@@ -57,11 +57,11 @@ class JdbcGenreDaoITest {
         def genres = [new Genre(100L, "genreFirst"),
                       new Genre(200L, "genreSecond")]
         genreDao.link(movieId, genres)
-        def addedGenres = genreDao.getAll(new Movie(id: movieId))
+        def addedGenres = genreDao.getAll(new Movie.MovieBuilder().setId(movieId).build())
         assert genres == addedGenres
 
         genreDao.deleteAllLinks(movieId)
-        def allGenresByMovieId = genreDao.getAll(new Movie(id: movieId))
+        def allGenresByMovieId = genreDao.getAll(new Movie.MovieBuilder().setId(movieId).build())
         assert allGenresByMovieId.isEmpty()
 
     }
@@ -87,7 +87,7 @@ class JdbcGenreDaoITest {
         long movieId = 44L
         genreDao.link(movieId, genres)
 
-        def addedGenres = genreDao.getAll(new Movie(id: movieId))
+        def addedGenres = genreDao.getAll(new Movie.MovieBuilder().setId(movieId).build())
 
         assert genres == addedGenres
     }
@@ -128,7 +128,7 @@ class JdbcGenreDaoITest {
 
         def genres = [new Genre(100L, "genreFirst"), new Genre(200L, "genreSecond")]
 
-        def actualGenres = genreDao.getAll(new Movie(id: 3L))
+        def actualGenres = genreDao.getAll(new Movie.MovieBuilder().setId(3L).build())
         assert genres == actualGenres
     }
 

@@ -20,15 +20,14 @@ import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class JdbcCountryDao implements CountryDao {
 
     private final static CountryRowMapper COUNTRY_ROW_MAPPER = new CountryRowMapper();
 
-    @NonNull NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    @NonNull String getAllCountriesByMovieIdSql;
-    @NonNull String movieCountryInsertSql;
-    @NonNull String movieCountryDeleteSql;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final String getAllCountriesByMovieIdSql;
+    private final String movieCountryInsertSql;
+    private final String movieCountryDeleteSql;
 
     @Override
     public List<Country> getAll(Movie movie) {

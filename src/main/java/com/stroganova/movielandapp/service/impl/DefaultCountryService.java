@@ -18,7 +18,7 @@ import java.util.List;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class DefaultCountryService implements CountryService {
 
-    @NonNull CountryDao countryDao;
+    CountryDao countryDao;
 
     @Override
     public List<Country> getAll(Movie movie) {

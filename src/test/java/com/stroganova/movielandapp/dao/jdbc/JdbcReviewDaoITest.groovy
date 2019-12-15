@@ -65,10 +65,11 @@ class JdbcReviewDaoITest {
         Map<String, ?>[] reviewBatchValues = [[id: 1L, user_id: 1000L, movie_id: 1L, description: "Excellent!!!"],
                                               [id: 2L, user_id: 1000L, movie_id: 1L, description: "Great!!!"]]
         namedJdbcTemplate.batchUpdate(reviewInsertSql, reviewBatchValues)
-        def user = new User(id: 1000L, nickname: "Big Ben")
-        def reviews = [new Review(id: 1L, text: "Excellent!!!", user: user), new Review(id: 2L, text: "Great!!!", user: user)]
+        def user = new User.UserBuilder(id:  1000L, nickname: "Big Ben").build()
+        def reviews = [new Review.ReviewBuilder(id: 1L, text: "Excellent!!!", user: user).build(),
+                       new Review.ReviewBuilder(id: 2L, text: "Great!!!", user: user).build()]
 
-        def actualReviews = reviewDao.getAll(new Movie(id: 1L))
+        def actualReviews = reviewDao.getAll(new Movie.MovieBuilder(id: 1L).build())
         assert reviews == actualReviews
     }
 
@@ -81,7 +82,7 @@ class JdbcReviewDaoITest {
                                                   password  : "jfhkjsdfhksfhksh",
                                                   first_name: "Big",
                                                   last_name : "Ben"])
-        namedJdbcTemplate.update(rolesInsertSql, [id: 5, name: "USER_ROLE"])
+        namedJdbcTemplate.update(rolesInsertSql, [id: 5, name: "USER"])
         namedJdbcTemplate.update(userRolesInsertSql, [id: 77, user_id: 22, role_id: 5])
         namedJdbcTemplate.update(movieInsertSql, [id          : 27L,
                                                   name_russian: "NameRussian",
@@ -90,8 +91,11 @@ class JdbcReviewDaoITest {
                                                   description : "empty",
                                                   rating      : 8.99D,
                                                   price       : 150.15D])
-        reviewDao.add(new Review(user: new User(id: 22L), movie: new Movie(id: 27L), text: "Great!!!"))
-        List<Review> list = reviewDao.getAll(new Movie(id: 27L))
+        reviewDao.add(new Review.ReviewBuilder(
+                user: new User.UserBuilder(id: 22L).build(),
+                movie: new Movie.MovieBuilder(id: 27L).build(),
+                text: "Great!!!").build())
+        List<Review> list = reviewDao.getAll(new Movie.MovieBuilder(id: 27L).build())
         def review = list.get(0)
         assert review.user.id == 22L
         assert review.user.nickname == "Big Ben"

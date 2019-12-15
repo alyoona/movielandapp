@@ -3,8 +3,7 @@ package com.stroganova.movielandapp.dao.jdbc;
 import com.stroganova.movielandapp.dao.UserDao;
 import com.stroganova.movielandapp.dao.jdbc.mapper.UserResultSetExtractor;
 import com.stroganova.movielandapp.entity.User;
-import com.stroganova.movielandapp.entity.UserCredentials;
-import lombok.NonNull;
+import com.stroganova.movielandapp.security.entity.UserCredentials;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -15,8 +14,8 @@ import org.springframework.stereotype.Repository;
 public class JdbcUserDao implements UserDao {
 
     private final static UserResultSetExtractor USER_RESULT_SET_EXTRACTOR = new UserResultSetExtractor();
-    @NonNull private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    @NonNull private final String getUserByEmailAndPasswordSql;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final String getUserByEmailAndPasswordSql;
     @Override
 
     public User get(UserCredentials userCredentials) {

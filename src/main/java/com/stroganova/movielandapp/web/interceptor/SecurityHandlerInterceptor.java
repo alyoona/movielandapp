@@ -1,10 +1,10 @@
 package com.stroganova.movielandapp.web.interceptor;
 
 import com.stroganova.movielandapp.entity.Role;
-import com.stroganova.movielandapp.entity.Session;
+import com.stroganova.movielandapp.security.entity.Session;
 import com.stroganova.movielandapp.entity.User;
-import com.stroganova.movielandapp.service.SecurityService;
-import com.stroganova.movielandapp.web.annotation.ProtectedBy;
+import com.stroganova.movielandapp.security.service.SecurityService;
+import com.stroganova.movielandapp.web.annotation.Secured;
 import com.stroganova.movielandapp.web.handler.UserHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -33,8 +33,8 @@ public class SecurityHandlerInterceptor implements HandlerInterceptor {
 
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         Method method = handlerMethod.getMethod();
-        ProtectedBy protectedBy = method.getDeclaredAnnotation(ProtectedBy.class);
-        if (protectedBy != null) {
+        Secured secured = method.getDeclaredAnnotation(Secured.class);
+        if (secured != null) {
 
             Optional<Session> authorizationToken = securityService.getAuthorization(request.getHeader("Token"));
             if (authorizationToken.isPresent()) {
@@ -44,7 +44,7 @@ public class SecurityHandlerInterceptor implements HandlerInterceptor {
                 mdcPut(user);
 
                 List<Role> roles = user.getRole().getIncludedRights();
-                if (roles.contains(protectedBy.role())) {
+                if (roles.contains(secured.role())) {
                     return true;
                 } else {
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);

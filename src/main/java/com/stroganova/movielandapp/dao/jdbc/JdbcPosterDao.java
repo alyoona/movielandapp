@@ -13,12 +13,11 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class JdbcPosterDao implements PosterDao {
 
-    @NonNull NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    @NonNull String posterInsertSql;
-    @NonNull String posterUpdateSql;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final String posterInsertSql;
+    private final String posterUpdateSql;
 
     @Override
     public void link(long movieId, String picturePath) {

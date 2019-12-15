@@ -1,11 +1,10 @@
-package com.stroganova.movielandapp.config.web;
+package com.stroganova.movielandapp.web.config;
 
-
-import com.stroganova.movielandapp.service.SecurityService;
+import com.stroganova.movielandapp.security.service.SecurityService;
 import com.stroganova.movielandapp.web.handler.RequestParameterArgumentResolver;
 import com.stroganova.movielandapp.web.interceptor.RequestLoggingHandlerInterceptor;
 import com.stroganova.movielandapp.web.interceptor.SecurityHandlerInterceptor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -18,10 +17,10 @@ import java.util.List;
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = "com.stroganova.movielandapp.web")
+@AllArgsConstructor
 public class MovielandAppDispatcherServletConfig implements WebMvcConfigurer {
 
-    @Autowired
-    private SecurityService securityService;
+    private final SecurityService securityService;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
@@ -33,4 +32,5 @@ public class MovielandAppDispatcherServletConfig implements WebMvcConfigurer {
         registry.addInterceptor(new RequestLoggingHandlerInterceptor());
         registry.addInterceptor(new SecurityHandlerInterceptor(securityService));
     }
+
 }

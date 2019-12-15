@@ -17,9 +17,10 @@ public class MovieDetailsResultSetExtractor implements ResultSetExtractor<Movie>
     @Override
     public Movie extractData(ResultSet rs) throws SQLException, DataAccessException {
         if(rs.next()){
-            Movie movie = movieRowMapper.mapRow(rs, 0);
-            movie.setDescription(rs.getString("description"));
-            return movie;
+            return new Movie.MovieBuilder()
+                    .newMovie(movieRowMapper.mapRow(rs, 0))
+                    .setDescription(rs.getString("description"))
+                    .build();
         }
         return null;
     }

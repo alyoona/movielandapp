@@ -9,7 +9,7 @@ import com.stroganova.movielandapp.entity.User
 import com.stroganova.movielandapp.request.Currency
 import com.stroganova.movielandapp.request.MovieFieldUpdate
 import com.stroganova.movielandapp.request.MovieUpdateDirections
-import com.stroganova.movielandapp.request.RequestParameter
+import com.stroganova.movielandapp.request.MovieRequestParameterList
 import com.stroganova.movielandapp.request.SortDirection
 import com.stroganova.movielandapp.request.SortOrder
 import com.stroganova.movielandapp.service.CountryService
@@ -17,7 +17,7 @@ import com.stroganova.movielandapp.service.CurrencyService
 import com.stroganova.movielandapp.service.GenreService
 import com.stroganova.movielandapp.service.MovieService
 import com.stroganova.movielandapp.service.PosterService
-import com.stroganova.movielandapp.service.ReviewService
+import com.stroganova.movielandapp.service.cache.MovieCache
 import org.junit.Before
 import org.junit.Test
 
@@ -33,25 +33,30 @@ class DefaultMovieServiceTest {
     private MovieDao movieDao
     private CountryService countryService
     private GenreService genreService
-    private ReviewService reviewService
+//    private ReviewService reviewService
     private CurrencyService currencyService
     private PosterService posterService
+    private MovieCache movieCache
+//    private MovieEnrichmentService enrichmentService
 
     @Before
     void before() {
         movieDao = mock(MovieDao.class)
         countryService = mock(CountryService.class)
         genreService = mock(GenreService.class)
-        reviewService = mock(ReviewService.class)
+//        reviewService = mock(ReviewService.class)
         currencyService = mock(CurrencyService.class)
         posterService = mock(PosterService.class)
+        movieCache = mock(MovieCache.class)
+//        enrichmentService = mock(ParallelMovieEnrichmentService.class)
 
-        movieService = new DefaultMovieService(movieDao, countryService, genreService, reviewService, currencyService, posterService, 5)
+        movieService = new DefaultMovieService(movieDao, countryService, genreService, currencyService, posterService, movieCache)
+
     }
 
     @Test
     void testUpdate() {
-        def movie = new Movie(id: 25L,
+        def movie = new Movie.MovieBuilder(id: 25L,
                 nameRussian: "NEWNameRussian",
                 nameNative: "NameNative",
                 yearOfRelease: LocalDate.of(2000, 1, 1),
@@ -59,17 +64,17 @@ class DefaultMovieServiceTest {
                 price: 150.15D,
                 picturePath: "https://picture_path.png",
                 description: "MovieDescription!!!",
-                countries: [new Country(id: 3)],
-                genres: [new Genre(3, null)])
+                countries: [Country.create(3)],
+                genres: [Genre.create(3)]
+        ).build()
 
         when(movieDao.getById(25L)).thenReturn(movie)
-        when(countryService.getAll(movie)).thenReturn([new Country(id: 3)])
-        when(genreService.getAll(movie)).thenReturn([new Genre(3, null)])
-        when(reviewService.getAll(movie)).thenReturn(null)
+        when(movieCache.getById(25L)).thenReturn(movie)
 
         assert movie == movieService.update(movie)
+
         verify(movieDao).update(movie)
-        verify(posterService).update(movie.id, movie.picturePath)
+        verify(posterService).update(movie.id, movie.getPicturePath())
         verify(countryService).updateLinks(movie.id, movie.countries)
         verify(genreService).updateLinks(movie.id, movie.genres)
 
@@ -78,15 +83,16 @@ class DefaultMovieServiceTest {
 
     @Test
     void testPartialUpdate() {
-        def movie = new Movie(nameRussian: "NameRussian",
+        def movie = new Movie.MovieBuilder(nameRussian: "NameRussian",
                 nameNative: "NameNative",
                 yearOfRelease: LocalDate.of(1994, 1, 1),
                 rating: 8.99D,
                 price: 150.15D,
                 picturePath: "https://picture_path.png",
                 description: "MovieDescription!!!",
-                countries: [new Country(id: 1), new Country(id: 2), new Country(id: 3)],
-                genres: [new Genre(1, null), new Genre(2, null)])
+                countries: [Country.create(1), Country.create(2), Country.create(3)],
+                genres: [Genre.create(1), Genre.create(2)]
+        ).build()
         Map<MovieFieldUpdate, Object> map = new HashMap<>()
         for (MovieFieldUpdate fieldUpdate : MovieFieldUpdate.values()) {
             map.put(fieldUpdate, fieldUpdate.getValue(movie))
@@ -95,7 +101,7 @@ class DefaultMovieServiceTest {
         long movieId = 26L
         def updates = new MovieUpdateDirections(map)
 
-        def updatedMovie = new Movie(id: movieId,
+        def updatedMovie = new Movie.MovieBuilder(id: movieId,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
                 yearOfRelease: LocalDate.of(1994, 1, 1),
@@ -103,12 +109,12 @@ class DefaultMovieServiceTest {
                 price: 150.15D,
                 picturePath: "https://picture_path.png",
                 description: "empty",
-                countries: [new Country(id: 1), new Country(id: 2), new Country(id: 3)],
-                genres: [new Genre(1, null), new Genre(2, null)],
-                reviews: null
-        )
+                countries: [Country.create(1), Country.create(2), Country.create(3)],
+                genres: [Genre.create(1), Genre.create(2)],
+                reviews: []
+        ).build()
         when(movieDao.getById(movieId)).thenReturn(updatedMovie)
-
+        when(movieCache.getById(movieId)).thenReturn(updatedMovie)
         assert updatedMovie == movieService.partialUpdate(movieId, updates)
         verify(movieDao).partialUpdate(movieId, updates.getMovieUpdates())
         verify(posterService).update(movieId, updates.poster)
@@ -118,10 +124,14 @@ class DefaultMovieServiceTest {
 
     @Test
     void testAdd() {
-        def countries = [new Country(id: 10L, name: "USA"), new Country(id: 20, name: "GB")]
-        def genres = [new Genre(100L, "FirstGenre")]
-        def reviews = [new Review(id: 1000, text: "Great!", user: new User(id: 50, nickname: "Big Ben"))]
-        def movie = new Movie(
+        def countries = [Country.create(10L, "USA"), Country.create(20, "GB")]
+        def genres = [Genre.create(100L, "FirstGenre")]
+        def reviews = [new Review.ReviewBuilder(
+                id: 1000,
+                text: "Great!",
+                user: new User.UserBuilder(id:  50, nickname: "Big Ben").build()
+        ).build()]
+        def movie = new Movie.MovieBuilder(
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
                 yearOfRelease: LocalDate.of(1994, 1, 1),
@@ -132,11 +142,11 @@ class DefaultMovieServiceTest {
                 countries: countries,
                 genres: genres,
                 reviews: reviews
-        )
+        ).build()
 
         long movieId = 11L
 
-        def addedMovie = new Movie(id: movieId,
+        def addedMovie = new Movie.MovieBuilder(id: movieId,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
                 yearOfRelease: LocalDate.of(1994, 1, 1),
@@ -147,11 +157,10 @@ class DefaultMovieServiceTest {
                 countries: countries,
                 genres: genres,
                 reviews: reviews
-        )
+        ).build()
 
         when(movieDao.add(movie)).thenReturn(movieId)
-        when(movieDao.getById(movieId)).thenReturn(addedMovie)
-
+        when(movieCache.getById(movieId)).thenReturn(addedMovie)
         assert addedMovie == movieService.add(movie)
         verify(movieDao).add(movie)
         verify(posterService).link(movieId, movie.getPicturePath())
@@ -163,7 +172,7 @@ class DefaultMovieServiceTest {
     @Test
     void testGetByIdAndConvert() {
 
-        def movie = new Movie(
+        def movie = new Movie.MovieBuilder(
                 id: 1L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
@@ -171,22 +180,17 @@ class DefaultMovieServiceTest {
                 rating: 8.99D,
                 price: 150.15D,
                 picturePath: "https://picture_path.png",
-                description: "empty"
-        )
-        when(movieDao.getById(1L)).thenReturn(movie)
+                description: "empty",
+        ).build()
+        when(movieCache.getById(1L)).thenReturn(movie)
         when(currencyService.convert(movie.getPrice(), Currency.USD)).thenReturn(Double.valueOf(8.99 / 25))
-        def actualMovie = movieService.getById(1L, new RequestParameter(null, Currency.USD))
-        assert movie == actualMovie
-        assert Double.valueOf(8.99 / 25) == actualMovie.getPrice()
+        def actualMovieWithConvertedPrice = movieService.getById(1L, new MovieRequestParameterList(null, Currency.USD))
+        assert Double.valueOf(8.99 / 25) == actualMovieWithConvertedPrice.getPrice()
     }
 
     @Test
     void testGetById() {
-
-        def countries = [new Country(id: 10L, name: "USA"), new Country(id: 20, name: "GB")]
-        def genres = [new Genre(100L, "FirstGenre")]
-        def reviews = [new Review(id: 1000, text: "Great!", user: new User(id: 50, nickname: "Big Ben"))]
-        def movie = new Movie(
+        def movie = new Movie.MovieBuilder(
                 id: 1L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
@@ -198,34 +202,16 @@ class DefaultMovieServiceTest {
                 countries: null,
                 genres: null,
                 reviews: null
-        )
+        ).build()
 
-        when(movieDao.getById(1L)).thenReturn(movie)
-        when(countryService.getAll(movie)).thenReturn(countries)
-        when(genreService.getAll(movie)).thenReturn(genres)
-        when(reviewService.getAll(movie)).thenReturn(reviews)
-
-        def enrichedMovie = new Movie(
-                id: 1L,
-                nameRussian: "NameRussian",
-                nameNative: "NameNative",
-                yearOfRelease: LocalDate.of(1994, 1, 1),
-                rating: 8.99D,
-                price: 150.15D,
-                picturePath: "https://picture_path.png",
-                description: "empty",
-                countries: countries,
-                genres: genres,
-                reviews: reviews
-        )
-
-        assert enrichedMovie == movieService.getById(1L)
+        when(movieCache.getById(1L)).thenReturn(movie)
+        assert movie == movieService.getById(1L)
     }
 
     @Test
     void testGetAll() {
 
-        def movieFirst = new Movie(
+        def movieFirst = new Movie.MovieBuilder(
                 id: 1L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
@@ -233,8 +219,8 @@ class DefaultMovieServiceTest {
                 rating: 8.99D,
                 price: 150.15D,
                 picturePath: "https://picture_path.png"
-        )
-        def movieSecond = new Movie(
+        ).build()
+        def movieSecond = new Movie.MovieBuilder(
                 id: 2L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
@@ -242,7 +228,7 @@ class DefaultMovieServiceTest {
                 rating: 8D,
                 price: 150D,
                 picturePath: "https://picture_path2.png"
-        )
+        ).build()
 
         def expectedMovies = [movieFirst, movieSecond]
 
@@ -256,7 +242,7 @@ class DefaultMovieServiceTest {
     @Test
     void testGetAllByGenreId() {
 
-        def movieFirst = new Movie(
+        def movieFirst = new Movie.MovieBuilder(
                 id: 1L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
@@ -264,8 +250,8 @@ class DefaultMovieServiceTest {
                 rating: 8.99D,
                 price: 150.15D,
                 picturePath: "https://picture_path.png"
-        )
-        def movieSecond = new Movie(
+        ).build()
+        def movieSecond = new Movie.MovieBuilder(
                 id: 2L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
@@ -273,7 +259,7 @@ class DefaultMovieServiceTest {
                 rating: 8D,
                 price: 150D,
                 picturePath: "https://picture_path2.png"
-        )
+        ).build()
 
         def expectedMovies = [movieFirst, movieSecond]
 
@@ -286,7 +272,7 @@ class DefaultMovieServiceTest {
 
     @Test
     void testGetThreeRandomMovies() {
-        def movieFirst = new Movie(
+        def movieFirst = new Movie.MovieBuilder(
                 id: 1L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
@@ -294,8 +280,8 @@ class DefaultMovieServiceTest {
                 rating: 8.99D,
                 price: 150.15D,
                 picturePath: "https://picture_path.png"
-        )
-        def movieSecond = new Movie(
+        ).build()
+        def movieSecond = new Movie.MovieBuilder(
                 id: 2L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
@@ -303,7 +289,7 @@ class DefaultMovieServiceTest {
                 rating: 8D,
                 price: 150D,
                 picturePath: "https://picture_path2.png"
-        )
+        ).build()
 
         def expectedMovies = [movieFirst, movieSecond]
 
@@ -317,7 +303,7 @@ class DefaultMovieServiceTest {
     @Test
     void testGetAllAndSort() {
 
-        def movieFirst = new Movie(
+        def movieFirst = new Movie.MovieBuilder(
                 id: 1L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
@@ -325,8 +311,8 @@ class DefaultMovieServiceTest {
                 rating: 8.99D,
                 price: 150.15D,
                 picturePath: "https://picture_path.png"
-        )
-        def movieSecond = new Movie(
+        ).build()
+        def movieSecond = new Movie.MovieBuilder(
                 id: 2L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
@@ -334,12 +320,12 @@ class DefaultMovieServiceTest {
                 rating: 8D,
                 price: 150D,
                 picturePath: "https://picture_path2.png"
-        )
+        ).build()
 
         def expectedMovies = [movieFirst, movieSecond]
 
         def sortDirection = new SortDirection("test", SortOrder.ASC)
-        def requestParameter = new RequestParameter(sortDirection, null)
+        def requestParameter = new MovieRequestParameterList(sortDirection, null)
 
         when(movieDao.getAll(requestParameter)).thenReturn(expectedMovies)
         def actualMovies = movieService.getAll(requestParameter)
@@ -350,7 +336,7 @@ class DefaultMovieServiceTest {
     @Test
     void testGetAllByGenreIdAndSort() {
 
-        def movieFirst = new Movie(
+        def movieFirst = new Movie.MovieBuilder(
                 id: 1L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
@@ -358,8 +344,8 @@ class DefaultMovieServiceTest {
                 rating: 8.99D,
                 price: 150.15D,
                 picturePath: "https://picture_path.png"
-        )
-        def movieSecond = new Movie(
+        ).build()
+        def movieSecond = new Movie.MovieBuilder(
                 id: 2L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
@@ -367,12 +353,12 @@ class DefaultMovieServiceTest {
                 rating: 8D,
                 price: 150D,
                 picturePath: "https://picture_path2.png"
-        )
+        ).build()
 
         def expectedMovies = [movieFirst, movieSecond]
 
         def sortDirection = new SortDirection("test", SortOrder.ASC)
-        def requestParameter = new RequestParameter(sortDirection, null)
+        def requestParameter = new MovieRequestParameterList(sortDirection, null)
 
         when(movieDao.getAll(1L, requestParameter)).thenReturn(expectedMovies)
 

@@ -16,14 +16,18 @@ class MovieDetailsResultSetExtractorTest {
     @Test
     void testExtractData() {
 
-        def expectedMovie = new Movie(id: 1L,
+        def expectedMovie = new Movie.MovieBuilder(id: 1L,
                 nameRussian: "NameRussian",
                 nameNative: "NameNative",
                 yearOfRelease: LocalDate.of(1995, 1, 1),
                 rating: 8.99D,
                 price: 150.15D,
                 picturePath: "https://picture_path.png",
-                description: "movie description")
+                description: "movie description",
+                countries: [],
+                genres: [],
+                reviews: []
+        ).build()
 
         def resultSet = mock(ResultSet.class)
         when(resultSet.next()).thenReturn(true)

@@ -1,11 +1,11 @@
 package com.stroganova.movielandapp.web.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.stroganova.movielandapp.entity.Session
+import com.stroganova.movielandapp.security.entity.Session
 import com.stroganova.movielandapp.entity.User
-import com.stroganova.movielandapp.entity.UserCredentials
+import com.stroganova.movielandapp.security.entity.UserCredentials
 import com.stroganova.movielandapp.exception.NotAuthenticatedException
-import com.stroganova.movielandapp.service.SecurityService
+import com.stroganova.movielandapp.security.service.SecurityService
 import groovy.json.JsonSlurper
 import org.junit.Before
 import org.junit.Test
@@ -23,14 +23,14 @@ import static org.mockito.Mockito.when
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 
-class UserControllerTest {
+class AuthorizationControllerTest {
 
     private final ObjectMapper MAPPER = new ObjectMapper()
 
     @Mock
     private SecurityService securityService
     @InjectMocks
-    private UserController userController
+    private AuthorizationController userController
     private MockMvc mockMvc
 
     @Before
@@ -43,9 +43,9 @@ class UserControllerTest {
     void testLogin() {
 
 
-        def user = new UserCredentials(email: "ronald.reynolds66@example.com", password: "paco")
+        def user = new UserCredentials("ronald.reynolds66@example.com", "paco")
         String requestBodyJson = MAPPER.writeValueAsString(user)
-        def loggedIdUser = new User(nickname: "Big Ben")
+        def loggedIdUser = new User.UserBuilder(nickname: "Big Ben").build()
         when(securityService.login(user)).thenReturn(new Session("uuid123456789", loggedIdUser, LocalDateTime.now()))
 
         def response = mockMvc.perform(post("/login").content(requestBodyJson).contentType('application/json'))
@@ -72,7 +72,7 @@ class UserControllerTest {
 
     @Test
     void testLoginBadRequest(){
-        def user = new UserCredentials(email: "ronald.reynolds66@example.com", password: "paco")
+        def user = new UserCredentials("ronald.reynolds66@example.com", "paco")
         String requestBodyJson = MAPPER.writeValueAsString(user)
         when(securityService.login(user)).thenThrow(NotAuthenticatedException.class)
         def response = mockMvc.perform(post("/login").content(requestBodyJson).contentType('application/json'))

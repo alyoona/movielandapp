@@ -1,7 +1,7 @@
 package com.stroganova.movielandapp.web.handler;
 
 import com.stroganova.movielandapp.request.Currency;
-import com.stroganova.movielandapp.request.RequestParameter;
+import com.stroganova.movielandapp.request.MovieRequestParameterList;
 import com.stroganova.movielandapp.request.SortDirection;
 import com.stroganova.movielandapp.request.SortOrder;
 import org.springframework.core.MethodParameter;
@@ -19,7 +19,7 @@ public class RequestParameterArgumentResolver implements HandlerMethodArgumentRe
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(RequestParameter.class);
+        return parameter.getParameterType().equals(MovieRequestParameterList.class);
     }
 
     @Override
@@ -45,13 +45,13 @@ public class RequestParameterArgumentResolver implements HandlerMethodArgumentRe
         String currencyValue = webRequest.getParameter(CURRENCY_SORT_ATTRIBUTE);
         if (currencyValue != null) {
             Currency currency = Currency.getByName(currencyValue);
-            return new RequestParameter(null, currency);
+            return new MovieRequestParameterList(null, currency);
         }
          return null;
     }
 
-    private RequestParameter getSortDirectionRequestParameter(String sortAttribute, SortOrder orderValue) {
+    private MovieRequestParameterList getSortDirectionRequestParameter(String sortAttribute, SortOrder orderValue) {
         SortDirection sortDirection = new SortDirection(sortAttribute, orderValue);
-        return new RequestParameter(sortDirection, null);
+        return new MovieRequestParameterList(sortDirection, null);
     }
 }

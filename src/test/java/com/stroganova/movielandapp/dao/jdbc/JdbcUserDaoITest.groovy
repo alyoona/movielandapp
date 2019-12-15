@@ -4,7 +4,7 @@ import com.stroganova.movielandapp.config.TestJdbcDaoConfig
 import com.stroganova.movielandapp.dao.UserDao
 import com.stroganova.movielandapp.entity.Role
 import com.stroganova.movielandapp.entity.User
-import com.stroganova.movielandapp.entity.UserCredentials
+import com.stroganova.movielandapp.security.entity.UserCredentials
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -43,11 +43,12 @@ class JdbcUserDaoITest {
                                                   password  : "jfhkjsdfhksfhksh",
                                                   first_name: "Big",
                                                   last_name : "Ben"])
-        namedJdbcTemplate.update(rolesInsertSql, [id: 5, name: "USER_ROLE"])
+        namedJdbcTemplate.update(rolesInsertSql, [id: 5, name: "USER"])
         namedJdbcTemplate.update(userRolesInsertSql, [id: 77, user_id: 22, role_id: 5])
 
-        def user = new User(id: 22L, email: "testUser@example.com", nickname: "Big Ben", role: Role.USER_ROLE)
-        def actualUser = userDao.get(new UserCredentials(email: "testUser@example.com", password: "jfhkjsdfhksfhksh"))
+        def user = new User.UserBuilder(id: 22L, nickname: "Big Ben", email: "testUser@example.com", role: Role.USER)
+                .build()
+        def actualUser = userDao.get(new UserCredentials("testUser@example.com", "jfhkjsdfhksfhksh"))
         assert user == actualUser
     }
 }
