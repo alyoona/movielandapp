@@ -137,18 +137,18 @@ public class Movie {
         }
         @JsonProperty("countries")
         public MovieBuilder setCountries(List<Country> countries) {
-            this.countries = countries != null ? new ArrayList<>(countries) : Collections.EMPTY_LIST;
+            this.countries = countries != null ? new ArrayList<>(countries) : getEmptyList();
             return this;
         }
         @JsonProperty("genres")
         public MovieBuilder setGenres(List<Genre> genres) {
-            this.genres = genres != null ? new ArrayList<>(genres) : Collections.EMPTY_LIST;
+            this.genres = genres != null ? new ArrayList<>(genres) : getEmptyList();
             return this;
 
         }
         @JsonProperty("reviews")
         public MovieBuilder setReviews(List<Review> reviews) {
-            this.reviews = reviews != null ? new ArrayList<>(reviews) : Collections.EMPTY_LIST;
+            this.reviews = reviews != null ? new ArrayList<>(reviews) : getEmptyList();
             return this;
         }
 
@@ -157,17 +157,21 @@ public class Movie {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    static <T> List<T> getEmptyList(){
+        return (List<T>) Collections.EMPTY_LIST;
+    }
 
     public List<Country> getCountries() {
-        return countries != null ? new ArrayList<>(countries) : Collections.EMPTY_LIST;
+        return countries != null ? new ArrayList<>(countries) : getEmptyList();
     }
 
     public List<Genre> getGenres() {
-        return genres != null ? new ArrayList<>(genres) : Collections.EMPTY_LIST;
+        return genres != null ? new ArrayList<>(genres) : getEmptyList();
     }
 
     public List<Review> getReviews() {
-        return reviews != null ? new ArrayList<>(reviews) : Collections.EMPTY_LIST;
+        return reviews != null ? new ArrayList<>(reviews) : getEmptyList();
     }
 
 

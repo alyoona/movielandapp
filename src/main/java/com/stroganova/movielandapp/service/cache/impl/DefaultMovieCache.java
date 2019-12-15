@@ -26,10 +26,12 @@ public class DefaultMovieCache implements MovieCache {
         Reference<Movie> movieReference = cache.get(movieId);
 
         if (movieReference != null) {
-            if (movieReference.get() == null) {
+            Movie movie = movieReference.get();
+            if (movie == null) {
                 movieReference = cache.computeIfPresent(movieId, (key, currentMovieReference) -> findAndEnrich(key));
+                return movieReference.get();
             }
-            return movieReference.get();
+            return movie;
         } else {
             movieReference = cache.computeIfAbsent(movieId, this::findAndEnrich);
             return movieReference.get();
