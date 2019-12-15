@@ -6,16 +6,16 @@ import com.stroganova.movielandapp.entity.Genre
 import com.stroganova.movielandapp.entity.Movie
 import com.stroganova.movielandapp.entity.Review
 import com.stroganova.movielandapp.entity.Role
-import com.stroganova.movielandapp.entity.Session
+import com.stroganova.movielandapp.security.entity.Session
 import com.stroganova.movielandapp.entity.User
 import com.stroganova.movielandapp.request.Currency
 import com.stroganova.movielandapp.request.MovieFieldUpdate
 import com.stroganova.movielandapp.request.MovieUpdateDirections
-import com.stroganova.movielandapp.request.RequestParameter
+import com.stroganova.movielandapp.request.MovieRequestParameterList
 import com.stroganova.movielandapp.service.MovieService
 import com.stroganova.movielandapp.request.SortDirection
 import com.stroganova.movielandapp.request.SortOrder
-import com.stroganova.movielandapp.service.SecurityService
+import com.stroganova.movielandapp.security.service.SecurityService
 import com.stroganova.movielandapp.web.handler.RequestParameterArgumentResolver
 import com.stroganova.movielandapp.web.interceptor.SecurityHandlerInterceptor
 import groovy.json.JsonSlurper
@@ -140,7 +140,10 @@ class MovieControllerTest {
                                                             price        : 150.15D,
                                                             picturePath  : "https://picture_path.png",
                                                             description  : "MovieDescription!!!",
-                                                            countries    : [1, 2, 3], genres: [1, 2]])
+                                                            countries    : [1, 2, 3],
+                                                            genres       : [1, 2],
+                                                            reviews      : []
+        ])
 
         def movie = new Movie.MovieBuilder(nameRussian: "NameRussian",
                 nameNative: "NameNative",
@@ -150,7 +153,9 @@ class MovieControllerTest {
                 picturePath: "https://picture_path.png",
                 description: "MovieDescription!!!",
                 countries: [Country.create(1), Country.create(2), Country.create(3)],
-                genres: [Genre.create(1), Genre.create(2)]
+                genres: [Genre.create(1), Genre.create(2)],
+                reviews: []
+
         ).build()
 
         Map<MovieFieldUpdate, Object> map = new HashMap<>()
@@ -167,7 +172,8 @@ class MovieControllerTest {
                 picturePath: "https://picture_path.png",
                 description: "MovieDescription!!!",
                 countries: [Country.create(1), Country.create(2), Country.create(3)],
-                genres: [Genre.create(1), Genre.create(2)]
+                genres: [Genre.create(1), Genre.create(2)],
+                reviews: []
         ).build()
         when(movieService.partialUpdate(26L, new MovieUpdateDirections(map))).thenReturn(updatedMovie)
 
@@ -265,7 +271,7 @@ class MovieControllerTest {
                              genres       : [[id: 1, name: null], [id: 2, name: null]],
                              reviews      : []
         ]
-         assert expectedMovie == actualMovie
+        assert expectedMovie == actualMovie
 
     }
 
@@ -284,7 +290,7 @@ class MovieControllerTest {
                 countries: null, genres: null, reviews: null
         ).build()
 
-        when(movieService.getById(1L, new RequestParameter(null, Currency.USD))).thenReturn(movie)
+        when(movieService.getById(1L, new MovieRequestParameterList(null, Currency.USD))).thenReturn(movie)
         def response = mockMvc.perform(get("/movie/1?currency=USD")).andReturn().response
         response.status == HttpStatus.OK.value()
         response.contentType.contains('application/json')
@@ -538,7 +544,7 @@ class MovieControllerTest {
                                picturePath  : "https://picture_path2.png"]]
 
         def priceDescSortDirection = new SortDirection("price", SortOrder.DESC)
-        def priceDescRequestParameter = new RequestParameter(priceDescSortDirection, null)
+        def priceDescRequestParameter = new MovieRequestParameterList(priceDescSortDirection, null)
         when(movieService.getAll(eq(priceDescRequestParameter))).thenReturn([movieFirst, movieSecond])
 
         def priceDescResponse = mockMvc.perform(get("/movie?price=desc")).andReturn().response
@@ -549,7 +555,7 @@ class MovieControllerTest {
 
 
         def priceAscSortDirection = new SortDirection("price", SortOrder.ASC)
-        def priceAscRequestParameter = new RequestParameter(priceAscSortDirection, null)
+        def priceAscRequestParameter = new MovieRequestParameterList(priceAscSortDirection, null)
         when(movieService.getAll(eq(priceAscRequestParameter))).thenReturn([movieFirst, movieSecond])
 
         def priceAscResponse = mockMvc.perform(get("/movie?price=asc")).andReturn().response
@@ -560,7 +566,7 @@ class MovieControllerTest {
 
 
         def ratingDescSortDirection = new SortDirection("rating", SortOrder.DESC)
-        def ratingDescRequestParameter = new RequestParameter(ratingDescSortDirection, null)
+        def ratingDescRequestParameter = new MovieRequestParameterList(ratingDescSortDirection, null)
         when(movieService.getAll(eq(ratingDescRequestParameter))).thenReturn([movieFirst, movieSecond])
 
         def ratingDescResponse = mockMvc.perform(get("/movie?rating=desc")).andReturn().response
@@ -594,7 +600,7 @@ class MovieControllerTest {
 
 
         def priceDescSortDirection = new SortDirection("price", SortOrder.DESC)
-        def priceDescRequestParameter = new RequestParameter(priceDescSortDirection, null)
+        def priceDescRequestParameter = new MovieRequestParameterList(priceDescSortDirection, null)
         when(movieService.getAll(anyLong(), eq(priceDescRequestParameter))).thenReturn([movieFirst])
 
         def priceDescResponse = mockMvc.perform(get("/movie/genre/1?price=desc")).andReturn().response
@@ -605,7 +611,7 @@ class MovieControllerTest {
 
 
         def priceAscSortDirection = new SortDirection("price", SortOrder.ASC)
-        def priceAscRequestParameter = new RequestParameter(priceAscSortDirection, null)
+        def priceAscRequestParameter = new MovieRequestParameterList(priceAscSortDirection, null)
         when(movieService.getAll(anyLong(), eq(priceAscRequestParameter))).thenReturn([movieFirst])
 
         def priceAscResponse = mockMvc.perform(get("/movie/genre/1?price=asc")).andReturn().response
@@ -616,7 +622,7 @@ class MovieControllerTest {
 
 
         def ratingDescSortDirection = new SortDirection("rating", SortOrder.DESC)
-        def ratingDescRequestParameter = new RequestParameter(ratingDescSortDirection, null)
+        def ratingDescRequestParameter = new MovieRequestParameterList(ratingDescSortDirection, null)
         when(movieService.getAll(anyLong(), eq(ratingDescRequestParameter))).thenReturn([movieFirst])
 
         def ratingDescResponse = mockMvc.perform(get("/movie/genre/1?rating=desc")).andReturn().response

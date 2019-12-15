@@ -1,4 +1,4 @@
-package com.stroganova.movielandapp.entity;
+package com.stroganova.movielandapp.security.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,8 +8,8 @@ import lombok.Getter;
 @Getter
 @EqualsAndHashCode
 public class UserCredentials {
-    private String email;
-    private String password;
+    private final String email;
+    private final String password;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public UserCredentials(@JsonProperty("email") String email, @JsonProperty("password") String password) {

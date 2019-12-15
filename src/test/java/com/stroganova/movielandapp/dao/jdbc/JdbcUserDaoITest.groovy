@@ -4,7 +4,7 @@ import com.stroganova.movielandapp.config.TestJdbcDaoConfig
 import com.stroganova.movielandapp.dao.UserDao
 import com.stroganova.movielandapp.entity.Role
 import com.stroganova.movielandapp.entity.User
-import com.stroganova.movielandapp.entity.UserCredentials
+import com.stroganova.movielandapp.security.entity.UserCredentials
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

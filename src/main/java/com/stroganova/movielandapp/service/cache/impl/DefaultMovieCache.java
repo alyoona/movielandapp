@@ -3,7 +3,7 @@ package com.stroganova.movielandapp.service.cache.impl;
 import com.stroganova.movielandapp.dao.MovieDao;
 import com.stroganova.movielandapp.entity.Movie;
 import com.stroganova.movielandapp.exception.EntityNotFoundException;
-import com.stroganova.movielandapp.service.MovieEnrichmentService;
+import com.stroganova.movielandapp.service.enrichment.MovieEnrichmentService;
 import com.stroganova.movielandapp.service.cache.MovieCache;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

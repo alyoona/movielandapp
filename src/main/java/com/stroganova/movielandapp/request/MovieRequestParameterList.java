@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class RequestParameter {
+public class MovieRequestParameterList {
     SortDirection sortDirection;
     Currency currency;
 }

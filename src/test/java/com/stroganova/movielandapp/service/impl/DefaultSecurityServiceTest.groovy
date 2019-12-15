@@ -1,8 +1,9 @@
 package com.stroganova.movielandapp.service.impl
 
 import com.stroganova.movielandapp.entity.User
-import com.stroganova.movielandapp.entity.UserCredentials
+import com.stroganova.movielandapp.security.entity.UserCredentials
 import com.stroganova.movielandapp.exception.NotAuthenticatedException
+import com.stroganova.movielandapp.security.service.impl.DefaultSecurityService
 import com.stroganova.movielandapp.service.UserService
 import org.junit.Test
 import org.springframework.util.ReflectionUtils

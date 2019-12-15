@@ -9,16 +9,14 @@ import com.stroganova.movielandapp.entity.User
 import com.stroganova.movielandapp.request.Currency
 import com.stroganova.movielandapp.request.MovieFieldUpdate
 import com.stroganova.movielandapp.request.MovieUpdateDirections
-import com.stroganova.movielandapp.request.RequestParameter
+import com.stroganova.movielandapp.request.MovieRequestParameterList
 import com.stroganova.movielandapp.request.SortDirection
 import com.stroganova.movielandapp.request.SortOrder
 import com.stroganova.movielandapp.service.CountryService
 import com.stroganova.movielandapp.service.CurrencyService
 import com.stroganova.movielandapp.service.GenreService
-import com.stroganova.movielandapp.service.MovieEnrichmentService
 import com.stroganova.movielandapp.service.MovieService
 import com.stroganova.movielandapp.service.PosterService
-import com.stroganova.movielandapp.service.ReviewService
 import com.stroganova.movielandapp.service.cache.MovieCache
 import org.junit.Before
 import org.junit.Test
@@ -186,7 +184,7 @@ class DefaultMovieServiceTest {
         ).build()
         when(movieCache.getById(1L)).thenReturn(movie)
         when(currencyService.convert(movie.getPrice(), Currency.USD)).thenReturn(Double.valueOf(8.99 / 25))
-        def actualMovieWithConvertedPrice = movieService.getById(1L, new RequestParameter(null, Currency.USD))
+        def actualMovieWithConvertedPrice = movieService.getById(1L, new MovieRequestParameterList(null, Currency.USD))
         assert Double.valueOf(8.99 / 25) == actualMovieWithConvertedPrice.getPrice()
     }
 
@@ -327,7 +325,7 @@ class DefaultMovieServiceTest {
         def expectedMovies = [movieFirst, movieSecond]
 
         def sortDirection = new SortDirection("test", SortOrder.ASC)
-        def requestParameter = new RequestParameter(sortDirection, null)
+        def requestParameter = new MovieRequestParameterList(sortDirection, null)
 
         when(movieDao.getAll(requestParameter)).thenReturn(expectedMovies)
         def actualMovies = movieService.getAll(requestParameter)
@@ -360,7 +358,7 @@ class DefaultMovieServiceTest {
         def expectedMovies = [movieFirst, movieSecond]
 
         def sortDirection = new SortDirection("test", SortOrder.ASC)
-        def requestParameter = new RequestParameter(sortDirection, null)
+        def requestParameter = new MovieRequestParameterList(sortDirection, null)
 
         when(movieDao.getAll(1L, requestParameter)).thenReturn(expectedMovies)
 

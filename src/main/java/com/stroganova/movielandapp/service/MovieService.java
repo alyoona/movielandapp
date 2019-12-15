@@ -1,8 +1,8 @@
 package com.stroganova.movielandapp.service;
 
 import com.stroganova.movielandapp.entity.Movie;
+import com.stroganova.movielandapp.request.MovieRequestParameterList;
 import com.stroganova.movielandapp.request.MovieUpdateDirections;
-import com.stroganova.movielandapp.request.RequestParameter;
 
 import java.util.List;
 
@@ -14,13 +14,13 @@ public interface MovieService {
 
     List<Movie> getThreeRandomMovies();
 
-    List<Movie> getAll(RequestParameter requestParameter);
+    List<Movie> getAll(MovieRequestParameterList movieRequestParameterList);
 
-    List<Movie> getAll(long genreId, RequestParameter requestParameter);
+    List<Movie> getAll(long genreId, MovieRequestParameterList movieRequestParameterList);
 
     Movie getById(long movieId);
 
-    Movie getById(long movieId, RequestParameter requestParameter);
+    Movie getById(long movieId, MovieRequestParameterList movieRequestParameterList);
 
     Movie add(Movie movie);
 

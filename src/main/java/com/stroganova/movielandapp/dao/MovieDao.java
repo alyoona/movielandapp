@@ -2,7 +2,7 @@ package com.stroganova.movielandapp.dao;
 
 import com.stroganova.movielandapp.entity.Movie;
 import com.stroganova.movielandapp.request.MovieFieldUpdate;
-import com.stroganova.movielandapp.request.RequestParameter;
+import com.stroganova.movielandapp.request.MovieRequestParameterList;
 
 import java.util.List;
 import java.util.Map;
@@ -15,9 +15,9 @@ public interface MovieDao {
 
     List<Movie> getAll(long genreId);
 
-    List<Movie> getAll(RequestParameter requestParameter);
+    List<Movie> getAll(MovieRequestParameterList movieRequestParameterList);
 
-    List<Movie> getAll(long genreId, RequestParameter requestParameter);
+    List<Movie> getAll(long genreId, MovieRequestParameterList movieRequestParameterList);
 
     Movie getById(long movieId);
 

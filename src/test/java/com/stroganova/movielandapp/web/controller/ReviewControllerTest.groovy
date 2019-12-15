@@ -4,10 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.stroganova.movielandapp.entity.Movie
 import com.stroganova.movielandapp.entity.Review
 import com.stroganova.movielandapp.entity.Role
-import com.stroganova.movielandapp.entity.Session
+import com.stroganova.movielandapp.security.entity.Session
 import com.stroganova.movielandapp.entity.User
 import com.stroganova.movielandapp.service.ReviewService
-import com.stroganova.movielandapp.service.SecurityService
+import com.stroganova.movielandapp.security.service.SecurityService
 import com.stroganova.movielandapp.web.interceptor.SecurityHandlerInterceptor
 import org.junit.Before
 import org.junit.Test

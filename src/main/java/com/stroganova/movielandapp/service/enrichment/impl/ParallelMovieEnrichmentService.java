@@ -1,9 +1,9 @@
-package com.stroganova.movielandapp.service.impl;
+package com.stroganova.movielandapp.service.enrichment.impl;
 
 import com.stroganova.movielandapp.entity.Movie;
 import com.stroganova.movielandapp.service.CountryService;
 import com.stroganova.movielandapp.service.GenreService;
-import com.stroganova.movielandapp.service.MovieEnrichmentService;
+import com.stroganova.movielandapp.service.enrichment.MovieEnrichmentService;
 import com.stroganova.movielandapp.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +27,7 @@ public class ParallelMovieEnrichmentService implements MovieEnrichmentService {
     private final ReviewService reviewService;
     private final ExecutorService executorService;
 
-    @Value("${movieEnrichmentService.enrichmentTimeout}")
+    @Value("${movieEnrichmentService.enrichmentTimeout.seconds:5}")
     private long enrichmentTimeout;
 
     @Override

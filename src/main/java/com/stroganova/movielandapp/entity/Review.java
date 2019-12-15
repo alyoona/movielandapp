@@ -3,7 +3,7 @@ package com.stroganova.movielandapp.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.stroganova.movielandapp.view.View;
+import com.stroganova.movielandapp.views.MovieView;
 import com.stroganova.movielandapp.web.json.deseializer.ReviewDeserializer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -11,13 +11,13 @@ import lombok.Getter;
 @Getter
 @EqualsAndHashCode
 @JsonDeserialize(using = ReviewDeserializer.class)
-@JsonView(View.Summary.class)
+@JsonView(MovieView.Summary.class)
 public class Review {
-    private long id;
-    private String text;
-    private User user;
+    private final long id;
+    private final String text;
+    private final User user;
     @JsonIgnore
-    private Movie movie;
+    private final Movie movie;
 
     private Review(ReviewBuilder reviewBuilder) {
         this.id = reviewBuilder.id;

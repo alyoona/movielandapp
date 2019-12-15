@@ -1,6 +1,6 @@
 package com.stroganova.movielandapp.web.config;
 
-import com.stroganova.movielandapp.service.SecurityService;
+import com.stroganova.movielandapp.security.service.SecurityService;
 import com.stroganova.movielandapp.web.handler.RequestParameterArgumentResolver;
 import com.stroganova.movielandapp.web.interceptor.RequestLoggingHandlerInterceptor;
 import com.stroganova.movielandapp.web.interceptor.SecurityHandlerInterceptor;

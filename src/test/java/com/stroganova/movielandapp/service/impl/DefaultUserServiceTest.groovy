@@ -2,7 +2,7 @@ package com.stroganova.movielandapp.service.impl
 
 import com.stroganova.movielandapp.dao.UserDao
 import com.stroganova.movielandapp.entity.User
-import com.stroganova.movielandapp.entity.UserCredentials
+import com.stroganova.movielandapp.security.entity.UserCredentials
 import org.junit.Test
 
 import static org.mockito.Mockito.mock

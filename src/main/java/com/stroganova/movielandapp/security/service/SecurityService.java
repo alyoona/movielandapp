@@ -1,7 +1,7 @@
-package com.stroganova.movielandapp.service;
+package com.stroganova.movielandapp.security.service;
 
-import com.stroganova.movielandapp.entity.Session;
-import com.stroganova.movielandapp.entity.UserCredentials;
+import com.stroganova.movielandapp.security.entity.Session;
+import com.stroganova.movielandapp.security.entity.UserCredentials;
 
 import java.util.Optional;
 

@@ -1,10 +1,10 @@
-package com.stroganova.movielandapp.service.impl;
+package com.stroganova.movielandapp.security.service.impl;
 
-import com.stroganova.movielandapp.entity.Session;
+import com.stroganova.movielandapp.security.entity.Session;
 import com.stroganova.movielandapp.entity.User;
-import com.stroganova.movielandapp.entity.UserCredentials;
+import com.stroganova.movielandapp.security.entity.UserCredentials;
 import com.stroganova.movielandapp.exception.NotAuthenticatedException;
-import com.stroganova.movielandapp.service.SecurityService;
+import com.stroganova.movielandapp.security.service.SecurityService;
 import com.stroganova.movielandapp.service.UserService;
 import lombok.RequiredArgsConstructor;
 
@@ -24,7 +24,7 @@ public class DefaultSecurityService implements SecurityService {
 
     private final UserService userService;
     private Map<String, Session> tokenCache = new ConcurrentHashMap<>();
-    @Value("${securityService.tokenLifeTime}")
+    @Value("${securityService.tokenLifeTime.minutes:120}")
     private long tokenLifeTime;
 
     @Override
@@ -49,7 +49,7 @@ public class DefaultSecurityService implements SecurityService {
 
     private Session createAndCacheSession(User user) {
         String token = UUID.randomUUID().toString();
-        Session session = new Session(token, user, LocalDateTime.now().plusHours(tokenLifeTime));
+        Session session = new Session(token, user, LocalDateTime.now().plusMinutes(tokenLifeTime));
         tokenCache.put(token, session);
         return session;
     }

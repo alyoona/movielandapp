@@ -1,20 +1,20 @@
 package com.stroganova.movielandapp.entity;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.stroganova.movielandapp.view.View;
+import com.stroganova.movielandapp.views.MovieView;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @EqualsAndHashCode
 @Getter
 public class User {
-    @JsonView(View.MovieDetail.class)
-    private long id;
-    @JsonView(View.MovieDetail.class)
-    private String nickname;
-    private String email;
-    private String password;
-    private Role role;
+    @JsonView(MovieView.MovieDetail.class)
+    private final long id;
+    @JsonView(MovieView.MovieDetail.class)
+    private final String nickname;
+    private final String email;
+    private final String password;
+    private final Role role;
 
     private User(UserBuilder userBuilder) {
         this.id = userBuilder.id;

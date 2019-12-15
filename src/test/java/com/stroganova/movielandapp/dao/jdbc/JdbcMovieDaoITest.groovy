@@ -5,7 +5,7 @@ import com.stroganova.movielandapp.dao.MovieDao
 import com.stroganova.movielandapp.entity.Movie
 import com.stroganova.movielandapp.request.MovieFieldUpdate
 import com.stroganova.movielandapp.request.MovieUpdateDirections
-import com.stroganova.movielandapp.request.RequestParameter
+import com.stroganova.movielandapp.request.MovieRequestParameterList
 import com.stroganova.movielandapp.request.SortDirection
 import com.stroganova.movielandapp.request.SortOrder
 import org.junit.Before
@@ -308,7 +308,7 @@ class JdbcMovieDaoITest {
                         price: 150.15D).build()]
 
         def priceDescSortDirection = new SortDirection("price", SortOrder.DESC)
-        assert expectedMoviesPriceDesc == movieDao.getAll(new RequestParameter(priceDescSortDirection, null))
+        assert expectedMoviesPriceDesc == movieDao.getAll(new MovieRequestParameterList(priceDescSortDirection, null))
 
         def expectedMoviesPriceAsc = [
                 new Movie.MovieBuilder(id: 1L,
@@ -324,7 +324,7 @@ class JdbcMovieDaoITest {
                         rating: 8.99D,
                         price: 150.16D).build()]
         def priceAscSortDirection = new SortDirection("price", SortOrder.ASC)
-        assert expectedMoviesPriceAsc == movieDao.getAll(new RequestParameter(priceAscSortDirection, null))
+        assert expectedMoviesPriceAsc == movieDao.getAll(new MovieRequestParameterList(priceAscSortDirection, null))
 
         def expectedMoviesRatingDesc = [
                 new Movie.MovieBuilder(id: 1L,
@@ -340,7 +340,7 @@ class JdbcMovieDaoITest {
                         rating: 8.99D,
                         price: 150.16D).build()]
         def ratingDescSortDirection = new SortDirection("price", SortOrder.ASC)
-        assert expectedMoviesRatingDesc == movieDao.getAll(new RequestParameter(ratingDescSortDirection, null))
+        assert expectedMoviesRatingDesc == movieDao.getAll(new MovieRequestParameterList(ratingDescSortDirection, null))
 
     }
 
@@ -513,7 +513,7 @@ class JdbcMovieDaoITest {
 
 
         def priceDescSortDirection = new SortDirection("price", SortOrder.DESC)
-        assert expectedMoviesPriceDesc == movieDao.getAll(1L, new RequestParameter(priceDescSortDirection, null))
+        assert expectedMoviesPriceDesc == movieDao.getAll(1L, new MovieRequestParameterList(priceDescSortDirection, null))
 
         def expectedMoviesPriceAsc = [
                 new Movie.MovieBuilder(id: 1L,
@@ -529,7 +529,7 @@ class JdbcMovieDaoITest {
                         rating: 10D,
                         price: 500D).build()]
         def priceAscSortDirection = new SortDirection("price", SortOrder.ASC)
-        assert expectedMoviesPriceAsc == movieDao.getAll(1L, new RequestParameter(priceAscSortDirection, null))
+        assert expectedMoviesPriceAsc == movieDao.getAll(1L, new MovieRequestParameterList(priceAscSortDirection, null))
 
         def expectedMoviesRatingDesc = [
                 new Movie.MovieBuilder(id: 1L,
@@ -545,7 +545,7 @@ class JdbcMovieDaoITest {
                         rating: 10D,
                         price: 500D).build()]
         def ratingDescSortDirection = new SortDirection("price", SortOrder.ASC)
-        assert expectedMoviesRatingDesc == movieDao.getAll(1L, new RequestParameter(ratingDescSortDirection, null))
+        assert expectedMoviesRatingDesc == movieDao.getAll(1L, new MovieRequestParameterList(ratingDescSortDirection, null))
     }
 
 

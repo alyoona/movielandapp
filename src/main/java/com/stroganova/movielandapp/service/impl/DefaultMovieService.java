@@ -3,8 +3,8 @@ package com.stroganova.movielandapp.service.impl;
 import com.stroganova.movielandapp.dao.MovieDao;
 import com.stroganova.movielandapp.entity.Movie;
 import com.stroganova.movielandapp.request.Currency;
+import com.stroganova.movielandapp.request.MovieRequestParameterList;
 import com.stroganova.movielandapp.request.MovieUpdateDirections;
-import com.stroganova.movielandapp.request.RequestParameter;
 import com.stroganova.movielandapp.service.*;
 import com.stroganova.movielandapp.service.cache.MovieCache;
 
@@ -47,14 +47,14 @@ public class DefaultMovieService implements MovieService {
     }
 
     @Override
-    public List<Movie> getAll(RequestParameter requestParameter) {
-        return movieDao.getAll(requestParameter);
+    public List<Movie> getAll(MovieRequestParameterList movieRequestParameterList) {
+        return movieDao.getAll(movieRequestParameterList);
     }
 
     @Override
-    public List<Movie> getAll(long genreId, RequestParameter requestParameter) {
+    public List<Movie> getAll(long genreId, MovieRequestParameterList movieRequestParameterList) {
         log.info("Get all movies by genre id");
-        return movieDao.getAll(genreId, requestParameter);
+        return movieDao.getAll(genreId, movieRequestParameterList);
     }
 
     @Override
@@ -65,9 +65,9 @@ public class DefaultMovieService implements MovieService {
 
 
     @Override
-    public Movie getById(long movieId, RequestParameter requestParameter) {
+    public Movie getById(long movieId, MovieRequestParameterList movieRequestParameterList) {
         Movie movie = getById(movieId);
-        Currency currency = requestParameter.getCurrency();
+        Currency currency = movieRequestParameterList.getCurrency();
         if (currency != null) {
             double convertedPrice = currencyService.convert(movie.getPrice(), currency);
             return new Movie.MovieBuilder()

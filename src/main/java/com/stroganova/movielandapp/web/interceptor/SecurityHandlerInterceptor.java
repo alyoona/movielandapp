@@ -1,9 +1,9 @@
 package com.stroganova.movielandapp.web.interceptor;
 
 import com.stroganova.movielandapp.entity.Role;
-import com.stroganova.movielandapp.entity.Session;
+import com.stroganova.movielandapp.security.entity.Session;
 import com.stroganova.movielandapp.entity.User;
-import com.stroganova.movielandapp.service.SecurityService;
+import com.stroganova.movielandapp.security.service.SecurityService;
 import com.stroganova.movielandapp.web.annotation.Secured;
 import com.stroganova.movielandapp.web.handler.UserHolder;
 import lombok.extern.slf4j.Slf4j;

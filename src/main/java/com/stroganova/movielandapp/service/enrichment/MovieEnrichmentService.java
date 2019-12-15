@@ -1,4 +1,4 @@
-package com.stroganova.movielandapp.service;
+package com.stroganova.movielandapp.service.enrichment;
 
 import com.stroganova.movielandapp.entity.Movie;
 

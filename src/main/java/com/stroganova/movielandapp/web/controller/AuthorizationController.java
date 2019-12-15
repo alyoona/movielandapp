@@ -2,10 +2,11 @@ package com.stroganova.movielandapp.web.controller;
 
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.stroganova.movielandapp.entity.UserCredentials;
+import com.stroganova.movielandapp.security.entity.UserCredentials;
 import com.stroganova.movielandapp.exception.NotAuthenticatedException;
-import com.stroganova.movielandapp.service.SecurityService;
-import com.stroganova.movielandapp.view.View;
+import com.stroganova.movielandapp.security.entity.Session;
+import com.stroganova.movielandapp.security.service.SecurityService;
+import com.stroganova.movielandapp.views.SessionView;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +21,13 @@ import org.springframework.web.server.ResponseStatusException;
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class UserController {
+public class AuthorizationController {
 
     @NonNull SecurityService securityService;
 
-    @JsonView(View.Session.class)
+    @JsonView(SessionView.Session.class)
     @PostMapping("/login")
-    public com.stroganova.movielandapp.entity.Session login(@RequestBody UserCredentials userCredentials) {
+    public Session login(@RequestBody UserCredentials userCredentials) {
         try {
             return securityService.login(userCredentials);
         } catch (NotAuthenticatedException ex) {

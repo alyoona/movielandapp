@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.stroganova.movielandapp.view.View;
+import com.stroganova.movielandapp.views.MovieView;
 import com.stroganova.movielandapp.web.json.deseializer.YearLocalDateDeserializer;
 import com.stroganova.movielandapp.web.json.serializer.DoubleSerializer;
 import com.stroganova.movielandapp.web.json.serializer.YearLocalDateSerializer;
@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 @JsonDeserialize(builder = Movie.MovieBuilder.class)
-@JsonView(View.Summary.class)
+@JsonView(MovieView.Summary.class)
 @Getter
 @EqualsAndHashCode
 public class Movie {
@@ -34,16 +34,16 @@ public class Movie {
     private final double price;
     private final String picturePath;
 
-    @JsonView(View.MovieDetail.class)
+    @JsonView(MovieView.MovieDetail.class)
     private final String description;
 
-    @JsonView(View.MovieDetail.class)
+    @JsonView(MovieView.MovieDetail.class)
     private final List<Country> countries;
 
-    @JsonView(View.MovieDetail.class)
+    @JsonView(MovieView.MovieDetail.class)
     private final List<Genre> genres;
 
-    @JsonView(View.MovieDetail.class)
+    @JsonView(MovieView.MovieDetail.class)
     private final List<Review> reviews;
 
     private Movie(MovieBuilder movieBuilder) {

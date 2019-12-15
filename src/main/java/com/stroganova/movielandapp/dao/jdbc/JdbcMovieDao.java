@@ -6,14 +6,11 @@ import com.stroganova.movielandapp.dao.jdbc.mapper.MovieRowMapper;
 import com.stroganova.movielandapp.dao.jdbc.util.QueryBuilder;
 import com.stroganova.movielandapp.entity.Movie;
 import com.stroganova.movielandapp.request.MovieFieldUpdate;
-import com.stroganova.movielandapp.request.RequestParameter;
+import com.stroganova.movielandapp.request.MovieRequestParameterList;
 import com.stroganova.movielandapp.request.SortDirection;
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import lombok.AccessLevel;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -50,17 +47,17 @@ public class JdbcMovieDao implements MovieDao {
     }
 
     @Override
-    public List<Movie> getAll(RequestParameter requestParameter) {
-        SortDirection sortDirection = requestParameter.getSortDirection();
+    public List<Movie> getAll(MovieRequestParameterList movieRequestParameterList) {
+        SortDirection sortDirection = movieRequestParameterList.getSortDirection();
         String getAllMoviesAndSortDirectionSql = QueryBuilder.getOrderBySql(getAllMoviesSql, sortDirection);
         return namedParameterJdbcTemplate.query(getAllMoviesAndSortDirectionSql, EmptySqlParameterSource.INSTANCE, MOVIE_ROW_MAPPER);
     }
 
     @Override
-    public List<Movie> getAll(long genreId, RequestParameter requestParameter) {
+    public List<Movie> getAll(long genreId, MovieRequestParameterList movieRequestParameterList) {
         MapSqlParameterSource sqlParameterSource = new MapSqlParameterSource();
         sqlParameterSource.addValue("genre_id", genreId);
-        SortDirection sortDirection = requestParameter.getSortDirection();
+        SortDirection sortDirection = movieRequestParameterList.getSortDirection();
         String getMoviesByGenreIdAndSortDirectionSql = QueryBuilder.getOrderBySql(getMoviesByGenreIdSql, sortDirection);
         return namedParameterJdbcTemplate.query(getMoviesByGenreIdAndSortDirectionSql, sqlParameterSource, MOVIE_ROW_MAPPER);
     }

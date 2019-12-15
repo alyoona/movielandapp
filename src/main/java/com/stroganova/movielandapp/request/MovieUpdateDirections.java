@@ -23,6 +23,7 @@ public class MovieUpdateDirections {
         copy.remove(MovieFieldUpdate.PICTURE_PATH);
         copy.remove(MovieFieldUpdate.COUNTRIES);
         copy.remove(MovieFieldUpdate.GENRES);
+        copy.remove(MovieFieldUpdate.REVIEWS);
         return copy;
     }
 
@@ -31,12 +32,18 @@ public class MovieUpdateDirections {
     }
 
     public List<Country> getCountries() {
-        return (List<Country>) map.get(MovieFieldUpdate.COUNTRIES);
+        @SuppressWarnings("unchecked")
+        List<Country> countries = (List<Country>) map.get(MovieFieldUpdate.COUNTRIES);
+        return countries;
     }
 
     public List<Genre> getGenres() {
-        return (List<Genre>) map.get(MovieFieldUpdate.GENRES);
+        @SuppressWarnings("unchecked")
+        List<Genre> genres = (List<Genre>) map.get(MovieFieldUpdate.GENRES);
+        return genres;
     }
+
+
 
 
 }
